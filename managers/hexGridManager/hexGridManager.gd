@@ -12,7 +12,7 @@ const TILE_MATERIALS = [
 ]
 
 const TILE_SIZE := 1.0
-const HEX_TILE = preload("res://hexGrid/hexTiles/hexTile.tscn")
+const HEX_TILE = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
 
 export (int, 2, 200) var grid_size := 10 # good values: 10, 50
 

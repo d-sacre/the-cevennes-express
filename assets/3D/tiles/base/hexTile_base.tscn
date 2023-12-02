@@ -1,7 +1,6 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://hexGrid/hexTiles/custom1(Clone).material" type="Material" id=1]
-[ext_resource path="res://hexGrid/hexTiles/hexTile.gd" type="Script" id=2]
+[ext_resource path="res://assets/3D/tiles/base/hexTile_base.gd" type="Script" id=2]
 
 [sub_resource type="ArrayMesh" id=1]
 surfaces/0 = {
@@ -28,7 +27,6 @@ surfaces/0 = {
 "blend_shape_data": [  ],
 "format": 2097943,
 "index_count": 60,
-"material": ExtResource( 1 ),
 "primitive": 4,
 "skeleton_aabb": [  ],
 "vertex_count": 36
