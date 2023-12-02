@@ -1,6 +1,6 @@
 extends Spatial
 
-#const CAMERA_FOV_DEFAULTS : Dictionary = {"default": 70,"min": 15, "max": 150}
+signal cursor_over_tile(current_tile_index,last_tile_index)
 
 const CAMERA_FOV_DEFAULTS : Dictionary = {"default": 0, "min": -4, "max": 15} # min: -2
 
@@ -11,24 +11,29 @@ const CAMERA_SPEED : Dictionary = {
 	"zoom": {"slow": 0.5, "fast": 1} # old: "zoom": {"slow": 1, "fast": 2}
 }
 
-var fov_current = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
-var fov_requested = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
+var zoom_current = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
+var zoom_requested = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
 var position_current = CAMERA_POSITION_DEFAULT
 var position_requested = CAMERA_POSITION_DEFAULT
 var current_camera_speed_mode = "slow"
+
+onready var _camera = $cameraRotator/camera
+
+func _on_camera_raycast_result(current_tile_index,last_tile_index):
+	emit_signal("cursor_over_tile", current_tile_index, last_tile_index)
 
 func _input(event):
 	# https://docs.godotengine.org/en/3.5/tutorials/inputs/input_examples.html
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_WHEEL_UP and event.pressed:
-			fov_requested += Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
-			if fov_requested.x > CAMERA_FOV_DEFAULTS["max"]:
-				fov_requested.x =  CAMERA_FOV_DEFAULTS["max"]
+			zoom_requested += Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
+			if zoom_requested.x > CAMERA_FOV_DEFAULTS["max"]:
+				zoom_requested.x =  CAMERA_FOV_DEFAULTS["max"]
 			
 		if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
-			fov_requested -= Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
-			if fov_requested.x < CAMERA_FOV_DEFAULTS["min"]:
-				fov_requested.x =  CAMERA_FOV_DEFAULTS["min"]
+			zoom_requested -= Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
+			if zoom_requested.x < CAMERA_FOV_DEFAULTS["min"]:
+				zoom_requested.x =  CAMERA_FOV_DEFAULTS["min"]
 				
 	if event is InputEventKey and event.pressed:
 		if event.shift:
@@ -36,7 +41,8 @@ func _input(event):
 		else:
 			current_camera_speed_mode = "slow"
 		
-			
+func _ready():
+	_camera.connect("camera_raycast_result", self, "_on_camera_raycast_result")
 
 func _process(delta):
 	# Input strength
@@ -57,9 +63,7 @@ func _process(delta):
 		position_current = position_current.linear_interpolate(position_requested,0.1)
 		self.transform.origin = position_current
 		
-	fov_current = Vector2($cameraRotator/Camera.transform.origin.z,0)
-	if fov_current != fov_requested:
-		#print("Zoom change requested")
-		fov_current = fov_current.linear_interpolate(fov_requested,0.125)
-		#$Camera.fov = fov_current.x old fov logic via focal length
-		$cameraRotator/Camera.transform.origin.z = fov_current.x
+	zoom_current = Vector2(_camera.transform.origin.z,0)
+	if zoom_current != zoom_requested:
+		zoom_current = zoom_current.linear_interpolate(zoom_requested,0.125)
+		_camera.transform.origin.z = zoom_current.x

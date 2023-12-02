@@ -1,6 +1,7 @@
 extends Node
 
 onready var hexGridManager = $hexGridManager
+onready var cameraManager = $cameraManager
 
 func _on_cursor_over_tile(current_tile_index,last_tile_index):
 	print("current tile: ", current_tile_index, ", last tile: ", last_tile_index)
@@ -15,6 +16,6 @@ func _on_cursor_over_tile(current_tile_index,last_tile_index):
 		last_tile.change_material = true
 
 func _ready():
-	$cameraContainer/cameraRotator/Camera.connect("cursor_over_tile",self,"_on_cursor_over_tile")
+	cameraManager.connect("cursor_over_tile",self,"_on_cursor_over_tile")
 	
 

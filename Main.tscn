@@ -1,10 +1,9 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://managers/hexGridManager/hexGridManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://debugInfo.gd" type="Script" id=2]
-[ext_resource path="res://CameraControl.gd" type="Script" id=3]
+[ext_resource path="res://managers/cameraManager/cameraManager.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Main.gd" type="Script" id=4]
-[ext_resource path="res://CameraRaycast.gd" type="Script" id=5]
 [ext_resource path="res://default_env.tres" type="Environment" id=6]
 
 [sub_resource type="Theme" id=1]
@@ -23,16 +22,7 @@ transform = Transform( -1, 6.18173e-08, -6.18173e-08, 0, 0.707107, 0.707107, 8.7
 light_color = Color( 0.933333, 0.823529, 0.32549, 1 )
 light_indirect_energy = 2.0
 
-[node name="cameraContainer" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 3, -3 )
-script = ExtResource( 3 )
-
-[node name="cameraRotator" type="Spatial" parent="cameraContainer"]
-transform = Transform( -1, -1.42109e-14, -8.74228e-08, -4.37114e-08, 0.866026, 0.5, 7.57104e-08, 0.5, -0.866026, 0, 0, 0 )
-
-[node name="Camera" type="Camera" parent="cameraContainer/cameraRotator"]
-size = 10.0
-script = ExtResource( 5 )
+[node name="cameraManager" parent="." instance=ExtResource( 3 )]
 
 [node name="hexGridManager" parent="." instance=ExtResource( 1 )]
 
