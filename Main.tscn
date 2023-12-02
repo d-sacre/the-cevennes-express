@@ -1,0 +1,54 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://hexGrid/hexGrid.tscn" type="PackedScene" id=1]
+[ext_resource path="res://debugInfo.gd" type="Script" id=2]
+[ext_resource path="res://CameraControl.gd" type="Script" id=3]
+[ext_resource path="res://Main.gd" type="Script" id=4]
+[ext_resource path="res://CameraRaycast.gd" type="Script" id=5]
+[ext_resource path="res://default_env.tres" type="Environment" id=6]
+
+[sub_resource type="Theme" id=1]
+RichTextLabel/fonts/bold_font = null
+
+[node name="Main" type="Spatial"]
+script = ExtResource( 4 )
+
+[node name="lighting_setup" type="Node" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="lighting_setup"]
+environment = ExtResource( 6 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="lighting_setup"]
+transform = Transform( -1, 6.18173e-08, -6.18173e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 20, 0 )
+light_color = Color( 0.933333, 0.823529, 0.32549, 1 )
+light_indirect_energy = 2.0
+
+[node name="cameraContainer" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 3, -3 )
+script = ExtResource( 3 )
+
+[node name="cameraRotator" type="Spatial" parent="cameraContainer"]
+transform = Transform( -1, -1.42109e-14, -8.74228e-08, -4.37114e-08, 0.866026, 0.5, 7.57104e-08, 0.5, -0.866026, 0, 0, 0 )
+
+[node name="Camera" type="Camera" parent="cameraContainer/cameraRotator"]
+size = 10.0
+script = ExtResource( 5 )
+
+[node name="HexGrid" parent="." instance=ExtResource( 1 )]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="debugPanelContainer" type="PanelContainer" parent="CanvasLayer"]
+anchor_right = 0.133
+margin_right = 0.639999
+margin_bottom = 256.0
+rect_min_size = Vector2( 128, 384 )
+script = ExtResource( 2 )
+
+[node name="debugInfoRichtText" type="RichTextLabel" parent="CanvasLayer/debugPanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 249.0
+margin_bottom = 377.0
+theme = SubResource( 1 )
+text = "Test"
