@@ -40,14 +40,14 @@ func _generate_grid():
 			tile.tile_index = tile_index
 			tile_index += 1
 			
-			# add station
-			var stationLOAD = load("res://assets/gare_medium.tscn")
-			var station = stationLOAD.instance()
-			tile.add_child(station)
-			
-			rng.randomize()
-			var rotation_y = rng.randf_range(0.0, 180.0)
-			station.rotation_degrees = Vector3(0,rotation_y,0)
+#			# add station
+#			var stationLOAD = load("res://assets/gare_medium.tscn")
+#			var station = stationLOAD.instance()
+#			tile.add_child(station)
+#
+#			rng.randomize()
+#			var rotation_y = rng.randf_range(0.0, 180.0)
+#			station.rotation_degrees = Vector3(0,rotation_y,0)
 
 func get_tile_material(tile_index: int):
 	var index = tile_index % TILE_MATERIALS.size()

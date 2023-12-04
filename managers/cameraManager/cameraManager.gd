@@ -1,6 +1,7 @@
 extends Spatial
 
-signal cursor_over_tile(current_tile_index,last_tile_index)
+# signal cursor_over_tile(current_tile_index,last_tile_index)
+signal raycast_result(current_collision_information)
 
 const CAMERA_FOV_DEFAULTS : Dictionary = {"default": 0, "min": -4, "max": 15} # min: -2
 
@@ -19,8 +20,17 @@ var current_camera_speed_mode = "slow"
 
 onready var _camera = $cameraRotator/camera
 
-func _on_camera_raycast_result(current_tile_index,last_tile_index):
-	emit_signal("cursor_over_tile", current_tile_index, last_tile_index)
+func enable_raycasting():
+	_camera.raycasting_permitted = true
+
+func disable_raycasting():
+	_camera.raycasting_permitted = false
+
+# func _on_camera_raycast_result(current_tile_index,last_tile_index):
+# 	emit_signal("cursor_over_tile", current_tile_index, last_tile_index)
+
+func _on_camera_raycast_result(current_collision_information):
+	emit_signal("raycast_result", current_collision_information)
 
 func _input(event):
 	# https://docs.godotengine.org/en/3.5/tutorials/inputs/input_examples.html
