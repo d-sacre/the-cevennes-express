@@ -91,6 +91,7 @@ func _process(delta) -> void:
 	
 	position_current = self.transform.origin
 	if position_current != position_requested:
+		_camera.initiate_raycast_from_last_position() # fix to move highlighted position with camera movement
 		position_current = position_current.linear_interpolate(position_requested,0.1)
 		self.transform.origin = position_current
 		
