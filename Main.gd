@@ -44,6 +44,7 @@ func _ready() -> void:
 	cameraManager.connect("raycast_result",self,"_on_raycast_result")
 	cameraManager.enable_raycasting()
 
+# REMARK: Should be moved to userInputManager (when created)
 func _input(event) -> void:
 	if event is InputEventMouse:
 		raycast_screenspace_position = event.position

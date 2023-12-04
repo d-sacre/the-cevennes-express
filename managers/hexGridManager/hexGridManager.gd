@@ -4,8 +4,7 @@ extends Spatial
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
-var rng = RandomNumberGenerator.new()
-const HEX_TILE = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
+const HEX_TILE : Resource = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
@@ -17,12 +16,12 @@ const TILE_MATERIALS = [
 	"yellow"
 ]
 
-const TILE_SIZE := 1.0
+const TILE_SIZE : float = 1.0
 
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
-export (int, 2, 200) var grid_size := 10 # good values: 10, 50
+export (int, 2, 200) var grid_size : int = 10 # good values: 10, 50
 
 var tile_reference = []
 
@@ -44,17 +43,9 @@ func _generate_grid():
 			tile_coordinates.y += TILE_SIZE
 			tile.material_id = get_tile_material(tile_index)
 			tile.change_material = true
+			tile.initial_tile_configuration()
 			tile.tile_index = tile_index
 			tile_index += 1
-			
-#			# add station
-#			var stationLOAD = load("res://assets/gare_medium.tscn")
-#			var station = stationLOAD.instance()
-#			tile.add_child(station)
-#
-#			rng.randomize()
-#			var rotation_y = rng.randf_range(0.0, 180.0)
-#			station.rotation_degrees = Vector3(0,rotation_y,0)
 
 func get_tile_material(tile_index: int):
 	var index = tile_index % TILE_MATERIALS.size()
