@@ -1,7 +1,13 @@
 extends Spatial
 
+################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
 signal raycast_result(current_collision_information)
 
+################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
 const CAMERA_FOV_DEFAULTS : Dictionary = {"default": 0, "min": -4, "max": 15} # min: -2
 
 const CAMERA_POSITION_DEFAULT = Vector3(3.6,3,-3)
@@ -11,27 +17,44 @@ const CAMERA_SPEED : Dictionary = {
 	"zoom": {"slow": 0.5, "fast": 1} # old: "zoom": {"slow": 1, "fast": 2}
 }
 
+################################################################################
+#### VARIABLE DEFINITIONS ######################################################
+################################################################################
 var zoom_current = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
 var zoom_requested = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
 var position_current = CAMERA_POSITION_DEFAULT
 var position_requested = CAMERA_POSITION_DEFAULT
 var current_camera_speed_mode = "slow"
 
+################################################################################
+#### Onready Member Variables ##################################################
+################################################################################
 onready var _camera = $cameraRotator/camera
 
+################################################################################
+#### FUNCTION DEFINITIONS ######################################################
+################################################################################
 func enable_raycasting() -> void:
 	_camera.raycasting_permitted = true
 
 func disable_raycasting() -> void:
 	_camera.raycasting_permitted = false
 
+func initiate_raycast_from_position(screenspace_position) -> void:
+	_camera.initiate_raycast_from_position(screenspace_position)
+
+################################################################################
+#### SIGNAL HANDLING ###########################################################
+################################################################################
 func _on_camera_raycast_result(current_collision_information) -> void:
 	emit_signal("raycast_result", current_collision_information)
 
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
 func _ready() -> void:
 	_camera.connect("camera_raycast_result", self, "_on_camera_raycast_result")
 	
-
 # REMARK: From a management/logic separation perspective not ideal to get the mouse 
 # buttons/user input in the camera manager script
 func _input(event) -> void:
