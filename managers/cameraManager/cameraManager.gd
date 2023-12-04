@@ -1,6 +1,5 @@
 extends Spatial
 
-# signal cursor_over_tile(current_tile_index,last_tile_index)
 signal raycast_result(current_collision_information)
 
 const CAMERA_FOV_DEFAULTS : Dictionary = {"default": 0, "min": -4, "max": 15} # min: -2
@@ -20,19 +19,22 @@ var current_camera_speed_mode = "slow"
 
 onready var _camera = $cameraRotator/camera
 
-func enable_raycasting():
+func enable_raycasting() -> void:
 	_camera.raycasting_permitted = true
 
-func disable_raycasting():
+func disable_raycasting() -> void:
 	_camera.raycasting_permitted = false
 
-# func _on_camera_raycast_result(current_tile_index,last_tile_index):
-# 	emit_signal("cursor_over_tile", current_tile_index, last_tile_index)
-
-func _on_camera_raycast_result(current_collision_information):
+func _on_camera_raycast_result(current_collision_information) -> void:
 	emit_signal("raycast_result", current_collision_information)
 
-func _input(event):
+func _ready() -> void:
+	_camera.connect("camera_raycast_result", self, "_on_camera_raycast_result")
+	
+
+# REMARK: From a management/logic separation perspective not ideal to get the mouse 
+# buttons/user input in the camera manager script
+func _input(event) -> void:
 	# https://docs.godotengine.org/en/3.5/tutorials/inputs/input_examples.html
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_WHEEL_UP and event.pressed:
@@ -50,11 +52,8 @@ func _input(event):
 			current_camera_speed_mode = "fast"
 		else:
 			current_camera_speed_mode = "slow"
-		
-func _ready():
-	_camera.connect("camera_raycast_result", self, "_on_camera_raycast_result")
-
-func _process(delta):
+	
+func _process(delta) -> void:
 	# Input strength
 	var cameraMovementRequest : Vector2 = Vector2(
 		Input.get_action_strength("camera_move_left") - Input.get_action_strength("camera_move_right"),
