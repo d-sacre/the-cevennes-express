@@ -21,24 +21,6 @@ onready var hexGridManager = $hexGridManager
 onready var cameraManager = $cameraManager
 
 ################################################################################
-#### FUNCTION DEFINITIONS ######################################################
-################################################################################
-# REMARK: From a logic separation point of view, this should be outsourced to the hexGridManager 
-# and separated even further to accomodate highlighting of multiple tiles at once (independent 
-# of a ray cast event)
-func highlight_tiles(_current_tile_index, _last_tile_index):
-	print("current tile: ", _current_tile_index, ", last tile: ", _last_tile_index)
-	if _current_tile_index != -1:
-		var current_tile = hexGridManager.tile_reference[_current_tile_index]
-		current_tile.highlight=true
-		current_tile.change_material = true
-		
-	if _last_tile_index != -1:
-		var last_tile = hexGridManager.tile_reference[_last_tile_index]
-		last_tile.highlight = false
-		last_tile.change_material = true
-
-################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_raycast_result(current_collision_information):
@@ -52,7 +34,8 @@ func _on_raycast_result(current_collision_information):
 	else:
 		_current_tile_index = -1
 
-	highlight_tiles(_current_tile_index, _last_tile_index)
+	if _current_tile_index != _last_tile_index:
+		hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index)
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################

@@ -1,9 +1,15 @@
 tool
 extends Spatial
 
+################################################################################
+#### RESOURCE AND CLASS LOADING ################################################
+################################################################################
 var rng = RandomNumberGenerator.new()
+const HEX_TILE = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
 
-
+################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
 const TILE_MATERIALS = [
 	"blue",
 	"green",
@@ -12,16 +18,17 @@ const TILE_MATERIALS = [
 ]
 
 const TILE_SIZE := 1.0
-const HEX_TILE = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
 
+################################################################################
+#### VARIABLE DEFINITIONS ######################################################
+################################################################################
 export (int, 2, 200) var grid_size := 10 # good values: 10, 50
 
 var tile_reference = []
 
-func _ready() -> void:
-	_generate_grid()
-
-
+################################################################################
+#### FUNCTION DEFINITIONS ######################################################
+################################################################################
 func _generate_grid():
 	var tile_index : int = 0
 	for x in range(grid_size):
@@ -52,5 +59,27 @@ func _generate_grid():
 func get_tile_material(tile_index: int):
 	var index = tile_index % TILE_MATERIALS.size()
 	return TILE_MATERIALS[index]
+
+func set_single_tile_highlight(index, highlight_status):
+	var _tile = self.tile_reference[index]
+	_tile.highlight = highlight_status
+	_tile.change_material = true
+
+func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):
+	print("current tile: ", _current_tile_index, ", last tile: ", _last_tile_index)
+	if _current_tile_index != -1:
+		self.set_single_tile_highlight(_current_tile_index, true)
+		
+	if _last_tile_index != -1:
+		self.set_single_tile_highlight(_last_tile_index, false)
+
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
+func _ready() -> void:
+	_generate_grid()
+
+
+
 
 

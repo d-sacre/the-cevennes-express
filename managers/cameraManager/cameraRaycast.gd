@@ -14,7 +14,6 @@ signal camera_raycast_result(current_collision_information)
 # property to ensure that ray casting can be switched off when it might cause
 # undesired behavior, e.g. when a menu pop-up is on screen
 var raycasting_permitted : bool = false 
-# var screenspace_position : Vector2 = Vector2(0,0)
 
 ################################################################################
 #### Private Member Variables ##################################################
@@ -45,13 +44,6 @@ func initiate_raycast_from_position(position) -> void:
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-# REMARK: From a management/logic separation perspective not ideal to get the mouse 
-# position in the camera script
-# func _input(event) -> void:
-# 	if raycasting_permitted:
-# 		if event is InputEventMouse:
-# 			screenspace_position = event.position
-		
 func _process(delta) -> void:
 	if raycasting_permitted: # if raycast operation is allowed
 		# initiate_raycast_from_position(screenspace_position)
