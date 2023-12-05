@@ -1,6 +1,11 @@
 extends Node
 
 ################################################################################
+#### RESOURCE AND CLASS LOADING ################################################
+################################################################################
+var rng = RandomNumberGenerator.new()
+
+################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
 
@@ -65,8 +70,15 @@ func _process(delta):
 	if Input.is_action_just_pressed("place_tile"):
 		if _current_tile_index != -1:
 			print("place tile at ", _current_tile_index)
-			hexGridManager.set_status_placeholder(_current_tile_index)
 
+			rng.randomize()
+			var _odd_even = rng.randi_range(0, 100) % 2
+			if _odd_even == 0:
+				hexGridManager.set_status_placeholder(_current_tile_index,true, false)
+				hexGridManager.place_floating_tile_at_index(_current_tile_index)
+			else:
+				hexGridManager.set_status_placeholder(_current_tile_index,false, true)
+			
 	# rotation of the tile
 	if Input.is_action_just_pressed("rotate_tile_clockwise"):
 		hexGridManager.rotate_floating_tile_clockwise()

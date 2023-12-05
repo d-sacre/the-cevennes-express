@@ -64,17 +64,13 @@ func set_single_tile_highlight(index, highlight_status):
 	_tile.highlight = highlight_status
 	_tile.change_material = true
 
-func set_status_placeholder(index): # needs more arguments in the future to pass status
+func set_status_placeholder(index, _possible, _impossible): # needs more arguments in the future to pass status
 	var _tile = self.tile_reference[index]["reference"]
 
 	# only temporary to test possible/impossible texture change
 	if self.tile_reference[index]["type"]=="placeholder":
-		rng.randomize()
-		var _odd_even = rng.randi_range(0, 100) % 2
-		if _odd_even == 0:
-			_tile.placement_possible = true
-		else:
-			_tile.placement_impossible = true
+		_tile.placement_possible = _possible
+		_tile.placement_impossible = _impossible
 	
 	_tile.change_material = true
 
@@ -102,9 +98,37 @@ func create_tile_floating_over_grid(index,tile_id):
 	move_floating_tile_to(index)
 
 func rotate_floating_tile_clockwise():
-	floating_tile_rotation -= 60
-	floating_tile_rotation = floating_tile_rotation % 360
-	floating_tile_reference.rotation_degrees = Vector3(0,floating_tile_rotation,0)
+	if floating_tile_reference != self: # to prevent rotation of the grid when no floating tile available
+		floating_tile_rotation -= 60
+		floating_tile_rotation = floating_tile_rotation % 360
+		floating_tile_reference.rotation_degrees = Vector3(0,floating_tile_rotation,0)
+
+func place_floating_tile_at_index(index):
+	var grid_element  = self.tile_reference[index]["reference"]
+	var ft_starting_position : Vector3 = floating_tile_reference.transform.origin
+	var grid_physical_position : Vector3 = grid_element.transform.origin
+
+	var ft_current_position : Vector3 = ft_starting_position
+
+	# for safety: check whether floating tile is still at the correct position
+	if (ft_starting_position.x == grid_physical_position.x) and (ft_starting_position.z == grid_physical_position.z):
+		# setting the tile_index to the correct value
+		floating_tile_reference.tile_index = index
+		floating_tile_reference.transform.origin = grid_physical_position # set floating tile on grid layer (perhaps some smoothing)
+		
+		# collision needs to be switched on again on all child elements, otherwise the raycast will not detect the placed tile; 
+		# includes all the assets that will be placed on the tile!
+		# TO-DO: Write for loop to obtain all collision objects and re-enable them
+		floating_tile_reference.get_node("hexCollider/CollisionShape2").disabled = false
+
+		# add floating tile to the tile reference
+		self.tile_reference[index]["reference"] = floating_tile_reference
+		self.tile_reference[index]["type"] = "tile"
+
+		# clean up
+		floating_tile_reference = self # clear the floating tile reference
+		grid_element.queue_free()# remove placeholder
+		
 
 # REMARK: Requires more logic to not interfer with chain highlighting set by the logic
 func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):
