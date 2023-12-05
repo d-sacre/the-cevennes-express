@@ -4,25 +4,12 @@ extends Spatial
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
-const HEX_TILE : Resource = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
+const PLACEHOLDER_TILE : Resource = preload("res://assets/3D/tiles/placeholder/hexTile_placeholder.tscn")
 var rng = RandomNumberGenerator.new()
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
-# const TILE_MATERIALS = [
-# 	"blue",
-# 	"green",
-# 	"red",
-# 	"yellow"
-# ]
-
-const TILE_MATERIALS = [
-	"default",
-	"variant"
-]
-
-
 const TILE_SIZE : float = 1.0
 
 ################################################################################
@@ -55,29 +42,21 @@ func _generate_grid():
 		tile_coordinates.y = 0 if x % 2 == 0 else TILE_SIZE / 2
 
 		for y in range(grid_size):
-			# print("tile index: ", tile_index, ", x: ", x, ", y:", y)
-			var tile = HEX_TILE.instance()
+			var tile = PLACEHOLDER_TILE.instance()
 			add_child(tile)
 			tile_reference.append(tile)
 			tile.translate(Vector3(tile_coordinates.x, 0, tile_coordinates.y))
 			tile_coordinates.y += TILE_SIZE
-			# tile.material_id = get_tile_material(tile_index)
-			# tile.change_material = true
-			rng.randomize()
-			var base_texture_index = rng.randi_range(0, len(TILE_MATERIALS)-1)
-			tile.initial_tile_configuration(TILE_MATERIALS[base_texture_index])
+			tile.initial_placeholder_configuration()
 			tile.tile_index = tile_index
 			tile_index += 1
-
-# func get_tile_material(tile_index: int):
-# 	var index = tile_index % TILE_MATERIALS.size()
-# 	return TILE_MATERIALS[index]
 
 func set_single_tile_highlight(index, highlight_status):
 	var _tile = self.tile_reference[index]
 	_tile.highlight = highlight_status
 	_tile.change_material = true
 
+# REMARK: Requires more logic to not interfer with chain highlighting set by the logic
 func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):
 	print("current tile: ", _current_tile_index, ", last tile: ", _last_tile_index)
 	if _current_tile_index != -1:

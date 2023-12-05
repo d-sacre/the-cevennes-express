@@ -5,32 +5,10 @@ extends Spatial
 ################################################################################
 var rng = RandomNumberGenerator.new()
 
-# required for testing with colored grid
-# const TILE_MATERIALS = {
-# 	"blue": preload("res://assets/3D/tiles/base/materials/blue.tres"),
-# 	"green": preload("res://assets/3D/tiles/base/materials/green.tres"),
-# 	"red": preload("res://assets/3D/tiles/base/materials/red.tres"),
-# 	"yellow": preload("res://assets/3D/tiles/base/materials/yellow.tres"),
-# }
-
-# const TILE_MATERIALS_HIGHLIGHT = {
-# 	"blue": preload("res://assets/3D/tiles/base/materials/blue_highlight.tres"),
-# 	"green": preload("res://assets/3D/tiles/base/materials/green_highlight.tres"),
-# 	"red": preload("res://assets/3D/tiles/base/materials/red_highlight.tres"),
-# 	"yellow": preload("res://assets/3D/tiles/base/materials/yellow_highlight.tres"),
-# }
-
-# const TILE_MATERIALS = {
-# 	"blue": preload("res://assets/3D/tiles/base/materials/base-material_test.material"),
-# }
-
-#const TILE_MATERIALS_HIGHLIGHT = {
-#	"blue": preload("res://assets/3D/tiles/base/materials/base-material_test_highlight.material"),
-#}
-
-const TILE_BASE_TEXTURES = {
-	"default": preload("res://assets/3D/tiles/base/textures/hexagon_tile_base-material_grass.png"),
-	"variant": preload("res://assets/3D/tiles/base/textures/hexagon_tile_texture_track_straight_default.png")
+const PLACEHOLDER_BASE_TEXTURES = {
+	"default": preload("res://assets/3D/tiles/placeholder/textures/hexagon_tile_placeholder_texture_default.png"),
+	"placement_possible": preload("res://assets/3D/tiles/placeholder/textures/hexagon_tile_placeholder_texture_placement-possible.png"),
+	"placement_impossible": preload("res://assets/3D/tiles/placeholder/textures/hexagon_tile_placeholder_texture_placement-possible.png")
 }
 
 
@@ -44,11 +22,13 @@ var tile_index : int
 var change_material : bool = false
 
 var highlight : bool = false
+var placement_possible : bool = false
+var placement_impossible : bool = false
 
 ################################################################################
 #### Private Member Variables ##################################################
 ################################################################################
-# var _material : Resource 
+var _albedo_texture : Resource 
 
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
@@ -56,40 +36,43 @@ var highlight : bool = false
 
 func _check_and_set_highlight() -> void:
 	if self.change_material:
-		# get_node("OutlineMesh").visible = self.highlight # outline mesh currently not used
+		if placement_possible:
+			_albedo_texture = PLACEHOLDER_BASE_TEXTURES["placement_possible"]
+			placement_impossible = false # as a safety measure to ensure no other logic is called afterwards
+
+		if placement_impossible:
+			_albedo_texture = PLACEHOLDER_BASE_TEXTURES["placement_impossible"]
+			placement_possible = false # as a safety measure to ensure no other logic is called afterwards
+
 		var base_material = get_node("hexMesh").get_active_material(0)
 
 		if self.highlight: 
-			# _material = TILE_MATERIALS_HIGHLIGHT[material_id]
 			base_material.set_shader_param("highlight", true)
 		else:
 			base_material.set_shader_param("highlight", false)
-			# _material = TILE_MATERIALS[material_id]
-			# get_node("hexMesh")#.mesh.surface_get_material(0).set_shader_param("highlight",false)
 
-		# get_node("hexMesh").material_override = _material
 		self.change_material = false
 
-func initial_tile_configuration(tile_id) -> void:
+func initial_placeholder_configuration() -> void:
+	pass
 	var base_material = get_node("hexMesh").get_active_material(0)
 
-	var base_albedo_texture = TILE_BASE_TEXTURES[tile_id]
+	var base_albedo_texture = PLACEHOLDER_BASE_TEXTURES["default"]
 	base_material.set_shader_param("texture_albedo_default", base_albedo_texture)
 	base_material.set_shader_param("texture_albedo_highlight", base_albedo_texture)
-	base_material.set_shader_param("texture_normal", load("res://assets/3D/tiles/base/textures/hexagon_tile_thick_normalmap_impasso.png"))
-	base_material.set_shader_param("normal_scale",0.5) # has to be adjusted
+
 	base_material.set_shader_param("texture_emission", load("res://assets/3D/tiles/base/textures/test-tile-texture_highlight-emission.png"))
 	base_material.set_shader_param("emission_energy", 0.2)
 
-	if tile_id == "default":
-		# add station
-		var stationLOAD = load("res://assets/gare_medium.tscn")
-		var station = stationLOAD.instance()
-		self.add_child(station)
+	# if tile_id == "default":
+	# 	# add station
+	# 	var stationLOAD = load("res://assets/gare_medium.tscn")
+	# 	var station = stationLOAD.instance()
+	# 	self.add_child(station)
 
-		rng.randomize()
-		var rotation_y = rng.randf_range(0.0, 180.0)
-		station.rotation_degrees = Vector3(0,rotation_y,0)
+	# 	rng.randomize()
+	# 	var rotation_y = rng.randf_range(0.0, 180.0)
+	# 	station.rotation_degrees = Vector3(0,rotation_y,0)
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
