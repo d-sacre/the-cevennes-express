@@ -5,16 +5,23 @@ extends Spatial
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
 const HEX_TILE : Resource = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
+var rng = RandomNumberGenerator.new()
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
+# const TILE_MATERIALS = [
+# 	"blue",
+# 	"green",
+# 	"red",
+# 	"yellow"
+# ]
+
 const TILE_MATERIALS = [
-	"blue",
-	"green",
-	"red",
-	"yellow"
+	"default",
+	"variant"
 ]
+
 
 const TILE_SIZE : float = 1.0
 
@@ -56,13 +63,15 @@ func _generate_grid():
 			tile_coordinates.y += TILE_SIZE
 			# tile.material_id = get_tile_material(tile_index)
 			# tile.change_material = true
-			tile.initial_tile_configuration()
+			rng.randomize()
+			var base_texture_index = rng.randi_range(0, len(TILE_MATERIALS)-1)
+			tile.initial_tile_configuration(TILE_MATERIALS[base_texture_index])
 			tile.tile_index = tile_index
 			tile_index += 1
 
-func get_tile_material(tile_index: int):
-	var index = tile_index % TILE_MATERIALS.size()
-	return TILE_MATERIALS[index]
+# func get_tile_material(tile_index: int):
+# 	var index = tile_index % TILE_MATERIALS.size()
+# 	return TILE_MATERIALS[index]
 
 func set_single_tile_highlight(index, highlight_status):
 	var _tile = self.tile_reference[index]
