@@ -28,6 +28,18 @@ var tile_reference = []
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
+
+# Conversion single array index to dual array index
+# maxWidth, maxHeight
+# x, y -> c
+# x + y * maxWidth = c
+
+# c -> x,y
+
+# x = c % maxWidth
+# y = c / maxWidth # normal integer division
+# y = c / (maxWidth - c % maxWidth) 
+
 func _generate_grid():
 	var tile_index : int = 0
 	for x in range(grid_size):
@@ -36,13 +48,14 @@ func _generate_grid():
 		tile_coordinates.y = 0 if x % 2 == 0 else TILE_SIZE / 2
 
 		for y in range(grid_size):
+			# print("tile index: ", tile_index, ", x: ", x, ", y:", y)
 			var tile = HEX_TILE.instance()
 			add_child(tile)
 			tile_reference.append(tile)
 			tile.translate(Vector3(tile_coordinates.x, 0, tile_coordinates.y))
 			tile_coordinates.y += TILE_SIZE
-			tile.material_id = get_tile_material(tile_index)
-			tile.change_material = true
+			# tile.material_id = get_tile_material(tile_index)
+			# tile.change_material = true
 			tile.initial_tile_configuration()
 			tile.tile_index = tile_index
 			tile_index += 1

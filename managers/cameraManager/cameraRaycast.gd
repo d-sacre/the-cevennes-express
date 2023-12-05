@@ -53,7 +53,11 @@ func initiate_raycast_from_position(position) -> void:
 ################################################################################
 func _process(delta) -> void:
 	if raycasting_permitted: # if raycast operation is allowed
-		# initiate_raycast_from_position(screenspace_position)
+		# raycast called each frame, even if not necessary (e.g. no mouse or 
+		# camera movement) could lead to performance issues when alot is going on
+		# Advantage: Only few callers for raycast if centralized like this, which 
+		# could help to omit problems with who calls/called when
+		initiate_raycast_from_last_position() 
 		if _current_collision[0]:
 			if _last_collision[1] != _current_collision[1]:
 				emit_signal("camera_raycast_result",_current_collision)
