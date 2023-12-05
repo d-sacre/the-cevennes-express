@@ -5,29 +5,6 @@ extends Spatial
 ################################################################################
 var rng = RandomNumberGenerator.new()
 
-# required for testing with colored grid
-# const TILE_MATERIALS = {
-# 	"blue": preload("res://assets/3D/tiles/base/materials/blue.tres"),
-# 	"green": preload("res://assets/3D/tiles/base/materials/green.tres"),
-# 	"red": preload("res://assets/3D/tiles/base/materials/red.tres"),
-# 	"yellow": preload("res://assets/3D/tiles/base/materials/yellow.tres"),
-# }
-
-# const TILE_MATERIALS_HIGHLIGHT = {
-# 	"blue": preload("res://assets/3D/tiles/base/materials/blue_highlight.tres"),
-# 	"green": preload("res://assets/3D/tiles/base/materials/green_highlight.tres"),
-# 	"red": preload("res://assets/3D/tiles/base/materials/red_highlight.tres"),
-# 	"yellow": preload("res://assets/3D/tiles/base/materials/yellow_highlight.tres"),
-# }
-
-# const TILE_MATERIALS = {
-# 	"blue": preload("res://assets/3D/tiles/base/materials/base-material_test.material"),
-# }
-
-#const TILE_MATERIALS_HIGHLIGHT = {
-#	"blue": preload("res://assets/3D/tiles/base/materials/base-material_test_highlight.material"),
-#}
-
 const TILE_BASE_TEXTURES = {
 	"default": preload("res://assets/3D/tiles/base/textures/hexagon_tile_base-material_grass.png"),
 	"variant": preload("res://assets/3D/tiles/base/textures/hexagon_tile_texture_track_straight_default.png")

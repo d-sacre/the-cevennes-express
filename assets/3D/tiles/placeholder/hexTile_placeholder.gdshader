@@ -4,7 +4,6 @@ shader_type spatial;
 render_mode async_visible,blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
 
 uniform sampler2D texture_albedo_default : hint_albedo;
-uniform sampler2D texture_albedo_highlight : hint_albedo;
 
 uniform bool highlight;
 
@@ -26,13 +25,10 @@ void fragment() {
 	vec2 base_uv = UV;
 	
 	if (highlight){
-		vec4 albedo_tex = texture(texture_albedo_highlight,base_uv);
-		ALBEDO = albedo_tex.rgb;
-
 		vec3 emission_tex = texture(texture_emission,base_uv).rgb;
 		EMISSION = emission_tex*emission_energy;
-	} else {
-		vec4 albedo_tex = texture(texture_albedo_default,base_uv);
-		ALBEDO = albedo_tex.rgb;
-	}
+	} else {}
+
+	vec4 albedo_tex = texture(texture_albedo_default,base_uv);
+	ALBEDO = albedo_tex.rgb;
 }

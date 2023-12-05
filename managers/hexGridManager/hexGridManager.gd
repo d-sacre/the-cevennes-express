@@ -44,7 +44,7 @@ func _generate_grid():
 		for y in range(grid_size):
 			var tile = PLACEHOLDER_TILE.instance()
 			add_child(tile)
-			tile_reference.append(tile)
+			tile_reference.append({"type": "placeholder", "reference": tile})
 			tile.translate(Vector3(tile_coordinates.x, 0, tile_coordinates.y))
 			tile_coordinates.y += TILE_SIZE
 			tile.initial_placeholder_configuration()
@@ -52,16 +52,32 @@ func _generate_grid():
 			tile_index += 1
 
 func set_single_tile_highlight(index, highlight_status):
-	var _tile = self.tile_reference[index]
+	var _tile = self.tile_reference[index]["reference"]
 	_tile.highlight = highlight_status
 	_tile.change_material = true
+
+func set_status_placeholder(index): # needs more arguments in the future to pass status
+	var _tile = self.tile_reference[index]["reference"]
+
+	# only temporary to test possible/impossible texture change
+	if self.tile_reference[index]["type"]=="placeholder":
+		rng.randomize()
+		var _odd_even = rng.randi_range(0, 100) % 2
+		if _odd_even == 0:
+			_tile.placement_possible = true
+		else:
+			_tile.placement_impossible = true
+	
+	_tile.change_material = true
+	print("Force tile to change material: ", _tile.change_material)
+
 
 # REMARK: Requires more logic to not interfer with chain highlighting set by the logic
 func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):
 	print("current tile: ", _current_tile_index, ", last tile: ", _last_tile_index)
 	if _current_tile_index != -1:
 		self.set_single_tile_highlight(_current_tile_index, true)
-		
+
 	if _last_tile_index != -1:
 		self.set_single_tile_highlight(_last_tile_index, false)
 

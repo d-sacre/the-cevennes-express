@@ -50,3 +50,10 @@ func _input(event) -> void:
 		raycast_screenspace_position = event.position
 		cameraManager.initiate_raycast_from_position(raycast_screenspace_position)
 
+func _process(delta):
+	# only temporarily to check placeholder status functionality
+	if Input.is_action_just_pressed("place_tile"):
+		if _current_tile_index != -1:
+			print("place tile at ", _current_tile_index)
+			hexGridManager.set_status_placeholder(_current_tile_index)
+
