@@ -12,8 +12,8 @@ func _process(delta):
 	var static_memory = "%.2f" % (OS.get_static_memory_usage()/1000000.0)
 	var rendered_vertices = str(Performance.get_monitor(Performance.RENDER_VERTICES_IN_FRAME))
 	
-#	var tmp_grid_size = self.get_parent().get_parent().get_node("HexGrid").grid_size
-#	geometry_info_prefix = str(tmp_grid_size*tmp_grid_size) + " Hexagons,\n"
+	var tmp_grid_size = self.get_parent().get_parent().get_node("hexGridManager").grid_size
+	geometry_info_prefix = str(tmp_grid_size*tmp_grid_size) + " Hexagons,\n"
 	
 	var debug_info_string = "[u]Performance[/u]\n\nFrame Rate: " + fps + " fps,"
 	
@@ -23,7 +23,7 @@ func _process(delta):
 	debug_info_string +=  "\nAudio Latency: "  + str(audioLatency) + str(" ms")
 	debug_info_string += "\n\n[u]Geometry[/u]\n\n" + geometry_info_prefix + rendered_vertices + " Vertices, "
 
-	debug_info_string += "\n\n[u]Controls[/u]\n\nWASD = Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out"
+	debug_info_string += "\n\n[u]Controls[/u]\n\nWASD = Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out,\nRight Click: Rotate Tile,\nLeft Click: Request Tile Placement"
 	
 	$debugInfoRichtText.set_bbcode(debug_info_string)
 	

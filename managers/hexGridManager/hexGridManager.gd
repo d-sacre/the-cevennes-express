@@ -5,19 +5,22 @@ extends Spatial
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
 const PLACEHOLDER_TILE : Resource = preload("res://assets/3D/tiles/placeholder/hexTile_placeholder.tscn")
+const BASE_TILE : Resource = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
 var rng = RandomNumberGenerator.new()
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const TILE_SIZE : float = 1.0
+const FLOATING_TILE_DISTANCE_ABOVE_GRID : float = 1.0
 
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
 export (int, 2, 200) var grid_size : int = 10 # good values: 10, 50
 
-var tile_reference = []
+var tile_reference : Array = []
+var floating_tile_reference = self # always needs a reference, even when no floating tile
 
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
@@ -34,6 +37,10 @@ var tile_reference = []
 # y = c / maxWidth # normal integer division
 # y = c / (maxWidth - c % maxWidth) 
 
+# creates a hexagonal grid and fills it with the placeholder tiles
+# REMARK: For performance reasons, this should be changed in the future
+# to a different approach (e.g. calculating all the positions, but 
+# only instancing the tiles which are set from the start)
 func _generate_grid():
 	var tile_index : int = 0
 	for x in range(grid_size):
@@ -69,7 +76,29 @@ func set_status_placeholder(index): # needs more arguments in the future to pass
 			_tile.placement_impossible = true
 	
 	_tile.change_material = true
-	print("Force tile to change material: ", _tile.change_material)
+
+func move_floating_tile_to(index):
+	if index != -1: # ensures that tile does not move if cursor is over an area outside the allowed grid area
+		if floating_tile_reference != self:
+			var grid_reference = self.tile_reference[index]["reference"]
+			var grid_position_physical = grid_reference.transform.origin
+			print(grid_position_physical)
+			floating_tile_reference.set_global_translation(Vector3(grid_position_physical.x, FLOATING_TILE_DISTANCE_ABOVE_GRID, grid_position_physical.z)) # translate to above the desired grid position
+
+func create_tile_floating_over_grid(index,tile_id):
+	# create tile and add it to the scene tree
+	var tile = BASE_TILE.instance()
+	add_child(tile)
+
+	floating_tile_reference = tile
+
+	# configure the tile
+	tile.initial_tile_configuration(tile_id)
+	# collision needs to be switched off on all child elements, otherwise the raycast will falsely detect a hit,
+	# which leads to jumping of the tile; includes all the assets that will be placed on the tile!
+	# TO-DO: Write for loop to obtain all collision objects and disable them
+	tile.get_node("hexCollider/CollisionShape2").disabled = true
+	move_floating_tile_to(index)
 
 
 # REMARK: Requires more logic to not interfer with chain highlighting set by the logic

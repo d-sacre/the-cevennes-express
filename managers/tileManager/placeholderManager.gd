@@ -38,7 +38,6 @@ func _check_and_set_highlight() -> void:
 	if self.change_material:
 		var base_material = get_node("hexMesh").get_active_material(0)
 
-		print("BEFORE: placement: (possible/impossible): ", placement_possible, "/", placement_impossible)
 		if placement_possible:
 			_albedo_texture = PLACEHOLDER_BASE_TEXTURES["placement_possible"]
 			placement_impossible = false # as a safety measure to ensure no other logic is called afterwards
@@ -59,7 +58,6 @@ func _check_and_set_highlight() -> void:
 			base_material.set_shader_param("highlight", false)
 
 		self.change_material = false
-		print("AFTER: placement: (possible/impossible): ", placement_possible, "/", placement_impossible)
 
 func initial_placeholder_configuration() -> void:
 	var base_material = get_node("hexMesh").get_active_material(0)

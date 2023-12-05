@@ -36,14 +36,23 @@ func _on_raycast_result(current_collision_information):
 
 	if _current_tile_index != _last_tile_index:
 		hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index)
+		hexGridManager.move_floating_tile_to(_current_tile_index)
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready() -> void:
+	# setting up all camera related stuff
+	# TO-DO: Set starting position to the center of the grid
 	cameraManager.connect("raycast_result",self,"_on_raycast_result")
 	cameraManager.enable_raycasting()
 
+	# setting up the grid
+	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
+	hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index) # set the highlight correctly
+
+	hexGridManager.create_tile_floating_over_grid(_current_tile_index,"default")
+	
 # REMARK: Should be moved to userInputManager (when created)
 func _input(event) -> void:
 	if event is InputEventMouse:
