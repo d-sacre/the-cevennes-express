@@ -23,6 +23,7 @@ func _process(delta):
 	debug_info_string +=  "\nAudio Latency: "  + str(audioLatency) + str(" ms")
 	debug_info_string += "\n\n[u]Geometry[/u]\n\n" + geometry_info_prefix + rendered_vertices + " Vertices, "
 
+	debug_info_string += "\n\n Camera Zoom = " + str(self.get_parent().get_parent().get_node("cameraManager").zoom_current.x)
 	debug_info_string += "\n\n[u]Controls[/u]\n\nWASD = Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out,\nRight Click: Rotate Tile,\nLeft Click: Request Tile Placement"
 	
 	$debugInfoRichtText.set_bbcode(debug_info_string)

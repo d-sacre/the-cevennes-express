@@ -21,6 +21,7 @@ export (int, 2, 200) var grid_size : int = 10 # good values: 10, 50
 
 var tile_reference : Array = []
 var floating_tile_reference = self # always needs a reference, even when no floating tile
+var floating_tile_rotation : int = 0 # angle in degree, but only allowing 60° increments!
 
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
@@ -100,6 +101,10 @@ func create_tile_floating_over_grid(index,tile_id):
 	tile.get_node("hexCollider/CollisionShape2").disabled = true
 	move_floating_tile_to(index)
 
+func rotate_floating_tile_clockwise():
+	floating_tile_rotation -= 60
+	floating_tile_rotation = floating_tile_rotation % 360
+	floating_tile_reference.rotation_degrees = Vector3(0,floating_tile_rotation,0)
 
 # REMARK: Requires more logic to not interfer with chain highlighting set by the logic
 func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):

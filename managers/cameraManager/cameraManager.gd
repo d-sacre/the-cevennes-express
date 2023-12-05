@@ -8,8 +8,8 @@ signal raycast_result(current_collision_information)
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
-const CAMERA_FOV_DEFAULTS : Dictionary = {"default": 0, "min": -4, "max": 15} # min: -2
-
+# zoom: min = -3 to prevent clipping with floating tile; old min: -2, -4
+const CAMERA_FOV_DEFAULTS : Dictionary = {"default": 0, "min": -3, "max": 15} # 
 const CAMERA_POSITION_DEFAULT = Vector3(3.6,3,-3)
 const CAMERA_SPEED : Dictionary = {
 	"x": {"slow": 0.1, "fast": 0.5},
