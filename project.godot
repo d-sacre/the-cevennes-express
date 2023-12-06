@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Spatial",
+"class": "fio",
+"language": "GDScript",
+"path": "res://managers/tileManager/utils/tileManager_json_fio_handling.gd"
+} ]
+_global_script_class_icons={
+"fio": ""
+}
+
 [application]
 
 config/name="Godot 3D Hex Grid Tutorial"
