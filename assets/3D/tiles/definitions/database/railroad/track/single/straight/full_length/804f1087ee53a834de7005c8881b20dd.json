@@ -1,0 +1,45 @@
+{
+    "DESCRIPTION": "Straight Piece of Single Track Railroad on a Grassy Meadow",
+    "EDGES": [
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ]
+    ],
+    "CONNECTIONS": [
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4b",
+            "END": "E1b"
+        }
+    ],
+    "GENERATED FROM": "railroad/track/single/straight/full_length/default.xml",
+    "TILE_UUID": "804f1087ee53a834de7005c8881b20dd",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/railroad/track/single/straight/full_length/804f1087ee53a834de7005c8881b20dd.png"
+}
