@@ -58,6 +58,8 @@ func _ready() -> void:
 	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
 	hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index) # set the highlight correctly
 
+	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.tile_definition_database)
+
 	var tile_definition_uuid = cppBridge.request_next_tile_definition_uuid()
 	if tile_definition_uuid != "": 
 		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 

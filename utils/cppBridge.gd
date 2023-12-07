@@ -3,6 +3,7 @@ extends Node
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
+var cppBackend = load("res://lib/tile.gdns").new()
 var rng = RandomNumberGenerator.new()
 
 ################################################################################
@@ -17,6 +18,9 @@ var _blocked_grid_position : Array = [] # just for testing purposes; will later 
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
+
+func pass_tile_definition_database_to_cpp_backend(dict) -> void:
+	cppBackend.SetTileSet(dict)
 
 # RETURNS: 
 #	1) tile_definition_uuid : String 
@@ -35,7 +39,7 @@ func request_next_tile_definition_uuid() -> String:
 	# hardcoded to select from the 3 basic tiles
 	# WARNING: Hashes might change when database is rebuild. So the hardcoded
 	# ones might not work anymore and the game crash!
-	# Order: 0 = grassy meadow, 1 = track stright, 2= track curve
+	# Order: 0 = grassy meadow, 1 = track straight, 2= track curve
 	var _uuid_array : Array = ["7bddebca65fad08b3ee56a152b682109", "804f1087ee53a834de7005c8881b20dd", "ff33f959f76686ede746cf5f534d2e65"] 
 
 	rng.randomize()
