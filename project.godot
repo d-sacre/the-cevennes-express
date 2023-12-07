@@ -20,7 +20,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Godot 3D Hex Grid Tutorial"
+config/name="The Cévennes Express"
 run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
