@@ -79,10 +79,9 @@ func move_floating_tile_to(index):
 		if floating_tile_reference != self:
 			var grid_reference = self.tile_reference[index]["reference"]
 			var grid_position_physical = grid_reference.transform.origin
-			print(grid_position_physical)
 			floating_tile_reference.set_global_translation(Vector3(grid_position_physical.x, FLOATING_TILE_DISTANCE_ABOVE_GRID, grid_position_physical.z)) # translate to above the desired grid position
 
-func create_tile_floating_over_grid(index,tile_id):
+func create_tile_floating_over_grid(index,tile_definition):
 	# create tile and add it to the scene tree
 	var tile = BASE_TILE.instance()
 	add_child(tile)
@@ -90,7 +89,7 @@ func create_tile_floating_over_grid(index,tile_id):
 	floating_tile_reference = tile
 
 	# configure the tile
-	tile.initial_tile_configuration(tile_id)
+	tile.initial_tile_configuration(tile_definition)
 	# collision needs to be switched off on all child elements, otherwise the raycast will falsely detect a hit,
 	# which leads to jumping of the tile; includes all the assets that will be placed on the tile!
 	# TO-DO: Write for loop to obtain all collision objects and disable them
@@ -110,24 +109,25 @@ func place_floating_tile_at_index(index):
 
 	var ft_current_position : Vector3 = ft_starting_position
 
-	# for safety: check whether floating tile is still at the correct position
-	if (ft_starting_position.x == grid_physical_position.x) and (ft_starting_position.z == grid_physical_position.z):
-		# setting the tile_index to the correct value
-		floating_tile_reference.tile_index = index
-		floating_tile_reference.transform.origin = grid_physical_position # set floating tile on grid layer (perhaps some smoothing)
-		
-		# collision needs to be switched on again on all child elements, otherwise the raycast will not detect the placed tile; 
-		# includes all the assets that will be placed on the tile!
-		# TO-DO: Write for loop to obtain all collision objects and re-enable them
-		floating_tile_reference.get_node("hexCollider/CollisionShape2").disabled = false
+	if floating_tile_reference != self: # safety to prevent issues trying to set non-existing values when no floating tile is loaded
+		# for safety: check whether floating tile is still at the correct position
+		if (ft_starting_position.x == grid_physical_position.x) and (ft_starting_position.z == grid_physical_position.z):
+			# setting the tile_index to the correct value
+			floating_tile_reference.tile_index = index
+			floating_tile_reference.transform.origin = grid_physical_position # set floating tile on grid layer (perhaps some smoothing)
+			
+			# collision needs to be switched on again on all child elements, otherwise the raycast will not detect the placed tile; 
+			# includes all the assets that will be placed on the tile!
+			# TO-DO: Write for loop to obtain all collision objects and re-enable them
+			floating_tile_reference.get_node("hexCollider/CollisionShape2").disabled = false
 
-		# add floating tile to the tile reference
-		self.tile_reference[index]["reference"] = floating_tile_reference
-		self.tile_reference[index]["type"] = "tile"
+			# add floating tile to the tile reference
+			self.tile_reference[index]["reference"] = floating_tile_reference
+			self.tile_reference[index]["type"] = "tile"
 
-		# clean up
-		floating_tile_reference = self # clear the floating tile reference
-		grid_element.queue_free()# remove placeholder
+			# clean up
+			floating_tile_reference = self # clear the floating tile reference
+			grid_element.queue_free()# remove placeholder
 		
 
 # REMARK: Requires more logic to not interfer with chain highlighting set by the logic

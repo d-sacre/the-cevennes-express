@@ -34,6 +34,6 @@
     ],
     "CONNECTIONS": [],
     "GENERATED FROM": "nature/meadows/default.xml",
-    "TILE_UUID": "7bddebca65fad08b3ee56a152b682109",
+    "TILE_DEFINITION_UUID": "7bddebca65fad08b3ee56a152b682109",
     "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/7bddebca65fad08b3ee56a152b682109.png"
 }

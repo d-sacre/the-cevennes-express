@@ -24,6 +24,7 @@ var raycast_screenspace_position : Vector2 = Vector2(0,0)
 ################################################################################
 onready var hexGridManager = $hexGridManager
 onready var cameraManager = $cameraManager
+onready var tileDefinitionManager = $tileDefinitionManager
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -56,7 +57,8 @@ func _ready() -> void:
 	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
 	hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index) # set the highlight correctly
 
-	hexGridManager.create_tile_floating_over_grid(_current_tile_index,"default")
+	var tile_definition = tileDefinitionManager.get_tile_definition_database_entry("7bddebca65fad08b3ee56a152b682109") # hardcoded to get the default grassy meadow tile
+	hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 	
 # REMARK: Should be moved to userInputManager (when created)
 func _input(event) -> void:

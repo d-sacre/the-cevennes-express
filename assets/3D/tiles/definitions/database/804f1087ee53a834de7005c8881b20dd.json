@@ -40,6 +40,6 @@
         }
     ],
     "GENERATED FROM": "railroad/track/single/straight/full_length/default.xml",
-    "TILE_UUID": "804f1087ee53a834de7005c8881b20dd",
+    "TILE_DEFINITION_UUID": "804f1087ee53a834de7005c8881b20dd",
     "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/804f1087ee53a834de7005c8881b20dd.png"
 }

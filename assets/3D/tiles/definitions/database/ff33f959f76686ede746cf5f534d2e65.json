@@ -40,6 +40,6 @@
         }
     ],
     "GENERATED FROM": "railroad/track/single/curve/default.xml",
-    "TILE_UUID": "ff33f959f76686ede746cf5f534d2e65",
+    "TILE_DEFINITION_UUID": "ff33f959f76686ede746cf5f534d2e65",
     "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/ff33f959f76686ede746cf5f534d2e65.png"
 }
