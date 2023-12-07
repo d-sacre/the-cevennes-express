@@ -96,6 +96,16 @@ func create_tile_floating_over_grid(index,tile_definition):
 	tile.get_node("hexCollider/CollisionShape2").disabled = true
 	move_floating_tile_to(index)
 
+func get_floating_tile_definition_uuid_and_rotation() -> Dictionary:
+	var _tmp_uuid_and_rotation : Dictionary = {}
+
+	if floating_tile_reference != self: # safety to prevent issues when no floating tile exists
+		_tmp_uuid_and_rotation["TILE_DEFINITION_UUID"] = floating_tile_reference.tile_definition_uuid
+		var _floating_tile_rotation : int = floating_tile_reference.get_rotation_degrees().y
+		_tmp_uuid_and_rotation["rotation"] = _floating_tile_rotation
+	
+	return _tmp_uuid_and_rotation
+
 func rotate_floating_tile_clockwise():
 	if floating_tile_reference != self: # to prevent rotation of the grid when no floating tile available
 		floating_tile_rotation -= 60

@@ -25,6 +25,7 @@ var raycast_screenspace_position : Vector2 = Vector2(0,0)
 onready var hexGridManager = $hexGridManager
 onready var cameraManager = $cameraManager
 onready var tileDefinitionManager = $tileDefinitionManager
+onready var cppBridge = $cppBridge
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -57,8 +58,10 @@ func _ready() -> void:
 	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
 	hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index) # set the highlight correctly
 
-	var tile_definition = tileDefinitionManager.get_tile_definition_database_entry("7bddebca65fad08b3ee56a152b682109") # hardcoded to get the default grassy meadow tile
-	hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
+	var tile_definition_uuid = cppBridge.request_next_tile_definition_uuid()
+	if tile_definition_uuid != "": 
+		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
+		hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 	
 # REMARK: Should be moved to userInputManager (when created)
 func _input(event) -> void:
@@ -73,11 +76,23 @@ func _process(delta):
 		if _current_tile_index != -1:
 			print("place tile at ", _current_tile_index)
 
-			rng.randomize()
-			var _odd_even = rng.randi_range(0, 100) % 2
-			if _odd_even == 0:
+			var floating_tile_status = hexGridManager.get_floating_tile_definition_uuid_and_rotation()
+			
+			var tile_is_placeable = false
+			
+			if floating_tile_status.has("TILE_DEFINITION_UUID"): # required to prevent issues when no floating tile exists
+				tile_is_placeable = cppBridge.can_tile_be_placed_here(_current_tile_index, floating_tile_status["TILE_DEFINITION_UUID"], floating_tile_status["rotation"])
+
+			print("tile is placeable: ", tile_is_placeable)
+
+			if tile_is_placeable:
 				hexGridManager.set_status_placeholder(_current_tile_index,true, false)
 				hexGridManager.place_floating_tile_at_index(_current_tile_index)
+
+				var tile_definition_uuid = cppBridge.request_next_tile_definition_uuid()
+				if tile_definition_uuid != "": 
+					var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
+					hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 			else:
 				hexGridManager.set_status_placeholder(_current_tile_index,false, true)
 			
