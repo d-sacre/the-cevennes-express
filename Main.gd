@@ -110,5 +110,18 @@ func _process(delta):
 			
 	# rotation of the tile
 	if Input.is_action_just_pressed("rotate_tile_clockwise"):
-		hexGridManager.rotate_floating_tile_clockwise()
+		hexGridManager.rotate_floating_tile_clockwise() # rotate tile
+		
+		if _current_tile_index != -1: # safety to absolutely ensure that cursor is not out of grid bounds 
+			var floating_tile_status = hexGridManager.get_floating_tile_definition_uuid_and_rotation()
+			
+			if floating_tile_status.has("TILE_DEFINITION_UUID"): # if a floating tile exists
+				# inquire at C++ Backend whether the tile would fit
+				var is_tile_placeable : bool = cppBridge.check_whether_tile_would_fit(_current_tile_index, floating_tile_status["TILE_DEFINITION_UUID"], floating_tile_status["rotation"])
+				
+				# set the highlight according to the answer by the C++ Backend
+				if is_tile_placeable:
+					hexGridManager.set_status_placeholder(_current_tile_index,true, false)
+				else:
+					hexGridManager.set_status_placeholder(_current_tile_index,false, true)
 

@@ -66,22 +66,6 @@ func _generate_grid():
 		tile.initial_placeholder_configuration()
 		tile.tile_index = tile_index
 
-	# var tile_index : int = 0
-	# for x in range(grid_size):
-	# 	var tile_coordinates := Vector2.ZERO
-	# 	tile_coordinates.x = x * TILE_SIZE * cos(deg2rad(30))
-	# 	tile_coordinates.y = 0 if x % 2 == 0 else TILE_SIZE / 2
-
-	# 	for y in range(grid_size):
-	# 		var tile = PLACEHOLDER_TILE.instance()
-	# 		add_child(tile)
-	# 		tile_reference.append({"type": "placeholder", "reference": tile})
-	# 		tile.translate(Vector3(tile_coordinates.x, 0, tile_coordinates.y))
-	# 		tile_coordinates.y += TILE_SIZE
-	# 		tile.initial_placeholder_configuration()
-	# 		tile.tile_index = tile_index
-	# 		tile_index += 1
-
 func set_single_tile_highlight(index, highlight_status):
 	var _tile = self.tile_reference[index]["reference"]
 	_tile.highlight = highlight_status

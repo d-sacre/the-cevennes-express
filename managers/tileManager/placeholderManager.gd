@@ -57,7 +57,14 @@ func _check_and_set_highlight() -> void:
 		else:
 			base_material.set_shader_param("highlight", false)
 
-		self.change_material = false
+		# Reset placement bools so that if the cursor moves away, no placement information
+		# will be displayed
+		placement_impossible = false
+		placement_possible = false
+
+		self.change_material = false # prevent that the material is changed again
+		
+		
 
 func initial_placeholder_configuration() -> void:
 	var base_material = get_node("hexMesh").get_active_material(0)
