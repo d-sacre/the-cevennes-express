@@ -17,7 +17,11 @@ const FLOATING_TILE_DISTANCE_ABOVE_GRID : float = 1.0
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
+# only temporarily, until logic completely implemented
 export (int, 2, 200) var grid_size : int = 10 # good values: 10, 50
+
+var hex_grid_size_x : int = 10
+var hex_grid_size_y : int = 10
 
 var tile_reference : Array = []
 var floating_tile_reference = self # always needs a reference, even when no floating tile
@@ -43,21 +47,40 @@ var floating_tile_rotation : int = 0 # angle in degree, but only allowing 60° i
 # to a different approach (e.g. calculating all the positions, but 
 # only instancing the tiles which are set from the start)
 func _generate_grid():
-	var tile_index : int = 0
-	for x in range(grid_size):
-		var tile_coordinates := Vector2.ZERO
-		tile_coordinates.x = x * TILE_SIZE * cos(deg2rad(30))
-		tile_coordinates.y = 0 if x % 2 == 0 else TILE_SIZE / 2
+	var is_tile_offset_y : bool = false
 
-		for y in range(grid_size):
-			var tile = PLACEHOLDER_TILE.instance()
-			add_child(tile)
-			tile_reference.append({"type": "placeholder", "reference": tile})
-			tile.translate(Vector3(tile_coordinates.x, 0, tile_coordinates.y))
-			tile_coordinates.y += TILE_SIZE
-			tile.initial_placeholder_configuration()
-			tile.tile_index = tile_index
-			tile_index += 1
+	for tile_index in range(hex_grid_size_x*hex_grid_size_y):
+		var tile_coordinates := Vector2.ZERO
+		tile_coordinates.x = (tile_index % hex_grid_size_x) * TILE_SIZE * cos(deg2rad(30))
+		tile_coordinates.y = (tile_index / hex_grid_size_x) * TILE_SIZE
+
+		if is_tile_offset_y:
+			tile_coordinates.y += TILE_SIZE/2
+
+		is_tile_offset_y = !is_tile_offset_y
+
+		var tile = PLACEHOLDER_TILE.instance()
+		add_child(tile)
+		tile_reference.append({"type": "placeholder", "reference": tile})
+		tile.translate(Vector3(tile_coordinates.x, 0, tile_coordinates.y))
+		tile.initial_placeholder_configuration()
+		tile.tile_index = tile_index
+
+	# var tile_index : int = 0
+	# for x in range(grid_size):
+	# 	var tile_coordinates := Vector2.ZERO
+	# 	tile_coordinates.x = x * TILE_SIZE * cos(deg2rad(30))
+	# 	tile_coordinates.y = 0 if x % 2 == 0 else TILE_SIZE / 2
+
+	# 	for y in range(grid_size):
+	# 		var tile = PLACEHOLDER_TILE.instance()
+	# 		add_child(tile)
+	# 		tile_reference.append({"type": "placeholder", "reference": tile})
+	# 		tile.translate(Vector3(tile_coordinates.x, 0, tile_coordinates.y))
+	# 		tile_coordinates.y += TILE_SIZE
+	# 		tile.initial_placeholder_configuration()
+	# 		tile.tile_index = tile_index
+	# 		tile_index += 1
 
 func set_single_tile_highlight(index, highlight_status):
 	var _tile = self.tile_reference[index]["reference"]
