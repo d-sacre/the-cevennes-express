@@ -60,7 +60,7 @@ func check_whether_tile_would_fit(grid_index, tile_definition_uuid, rotation) ->
 	var _is_placeable : bool = false
 
 	var _index2D = _convert_1D_index_to_2D(grid_index)
-	_is_placeable = cppBackend.OnHover(_index2D.x,_index2D.y)
+	_is_placeable = cppBackend.OnHover(_index2D.x,_index2D.y,rotation)
 
 	return _is_placeable
 
@@ -70,7 +70,7 @@ func can_tile_be_placed_here(grid_index, tile_definition_uuid, rotation) -> bool
 	# convert index from 1D array to 2D array
 	var _index2D = _convert_1D_index_to_2D(grid_index)
 
-	_is_placeable = cppBackend.OnSet(_index2D.x,_index2D.y)
+	_is_placeable = cppBackend.OnSet(_index2D.x,_index2D.y,rotation)
 
 	return _is_placeable
 
