@@ -6,6 +6,12 @@ extends Node
 var rng = RandomNumberGenerator.new()
 
 ################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
+const HEX_GRID_SIZE_X : int = 10
+const HEX_GRID_SIZE_Y : int = 10
+
+################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
 
@@ -58,8 +64,12 @@ func _ready() -> void:
 	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
 	hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index) # set the highlight correctly
 
+	# initialize the C++-Bridge and the C++-Backend
+	cppBridge.initialize_cpp_bridge(HEX_GRID_SIZE_X, HEX_GRID_SIZE_Y)
 	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.tile_definition_database)
+	cppBridge.initialize_grid_in_cpp_backend(0)
 
+	# initialize the floating tile over the grid
 	var tile_definition_uuid = cppBridge.request_next_tile_definition_uuid()
 	if tile_definition_uuid != "": 
 		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 

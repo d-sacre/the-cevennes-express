@@ -5,12 +5,6 @@ extends Spatial
 ################################################################################
 var rng = RandomNumberGenerator.new()
 
-# const TILE_BASE_TEXTURES = {
-# 	"default": preload("res://assets/3D/tiles/base/textures/hexagon_tile_base-material_grass.png"),
-# 	"variant": preload("res://assets/3D/tiles/base/textures/hexagon_tile_texture_track_straight_default.png")
-# }
-
-
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
@@ -24,12 +18,10 @@ var highlight : bool = false
 ################################################################################
 #### Private Member Variables ##################################################
 ################################################################################
-# var _material : Resource 
 
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
-
 func _check_and_set_highlight() -> void:
 	if self.change_material:
 		# get_node("OutlineMesh").visible = self.highlight # outline mesh currently not used
@@ -54,8 +46,6 @@ func initial_tile_configuration(tile_definition) -> void:
 	base_material.set_shader_param("normal_scale",0.5) # has to be adjusted
 	base_material.set_shader_param("texture_emission", load("res://assets/3D/tiles/base/textures/test-tile-texture_highlight-emission.png"))
 	base_material.set_shader_param("emission_energy", 0.2)
-
-	print(self.tile_definition_uuid)
 
 	# if tile_definition == "default":
 	# 	# add station
