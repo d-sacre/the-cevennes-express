@@ -39,7 +39,7 @@ onready var cppBridge = $cppBridge
 func _on_raycast_result(current_collision_information):
 	_last_tile_index = _current_tile_index
 	if current_collision_information[0] != false:
-		var collider_ref = current_collision_information[1]#["collider"]
+		var collider_ref = current_collision_information[1]
 		var collider_parent_object = collider_ref.get_parent()
 		# REMARK: hardcoded for the case of only hitting a hex tile. 
 		# Other collisions like with trains have to be implemented differently!
@@ -62,6 +62,7 @@ func _ready() -> void:
 
 	# setting up the grid
 	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
+	hexGridManager.generate_grid(HEX_GRID_SIZE_X, HEX_GRID_SIZE_Y)
 	hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index) # set the highlight correctly
 
 	# initialize the C++-Bridge and the C++-Backend
@@ -119,7 +120,7 @@ func _process(delta):
 				# inquire at C++ Backend whether the tile would fit
 				var is_tile_placeable : bool = cppBridge.check_whether_tile_would_fit(_current_tile_index, floating_tile_status["TILE_DEFINITION_UUID"], floating_tile_status["rotation"])
 				
-				# set the highlight according to the answer by the C++ Backend
+				# set the highlight according to the answer of the C++ Backend
 				if is_tile_placeable:
 					hexGridManager.set_status_placeholder(_current_tile_index,true, false)
 				else:

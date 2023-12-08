@@ -31,28 +31,22 @@ var floating_tile_rotation : int = 0 # angle in degree, but only allowing 60° i
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
 
-# Conversion single array index to dual array index
-# maxWidth, maxHeight
-# x, y -> c
-# x + y * maxWidth = c
 
-# c -> x,y
-
-# x = c % maxWidth
-# y = c / maxWidth # normal integer division
-# y = c / (maxWidth - c % maxWidth) 
 
 # creates a hexagonal grid and fills it with the placeholder tiles
 # REMARK: For performance reasons, this should be changed in the future
 # to a different approach (e.g. calculating all the positions, but 
 # only instancing the tiles which are set from the start)
-func _generate_grid():
+func generate_grid(x : int, y : int):
+	self.hex_grid_size_x = x 
+	self.hex_grid_size_y = y
+
 	var is_tile_offset_y : bool = false
 
-	for tile_index in range(hex_grid_size_x*hex_grid_size_y):
+	for tile_index in range(self.hex_grid_size_x*self.hex_grid_size_y):
 		var tile_coordinates := Vector2.ZERO
-		tile_coordinates.x = (tile_index % hex_grid_size_x) * TILE_SIZE * cos(deg2rad(30))
-		tile_coordinates.y = (tile_index / hex_grid_size_x) * TILE_SIZE
+		tile_coordinates.x = (tile_index % self.hex_grid_size_x) * TILE_SIZE * cos(deg2rad(30))
+		tile_coordinates.y = (tile_index / self.hex_grid_size_x) * TILE_SIZE
 
 		if is_tile_offset_y:
 			tile_coordinates.y += TILE_SIZE/2
@@ -159,8 +153,8 @@ func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-func _ready() -> void:
-	_generate_grid()
+# func _ready() -> void:
+# 	_generate_grid()
 
 
 

@@ -18,6 +18,17 @@ var hex_grid_size_y : int
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
+# Conversion single array index to dual array index
+# maxWidth, maxHeight
+# x, y -> c
+# x + y * maxWidth = c
+
+# c -> x,y
+
+# x = c % maxWidth
+# y = c / maxWidth # normal integer division
+# y = c / (maxWidth - c % maxWidth) 
+
 func _convert_1D_index_to_2D(index) -> Vector2:
 	var x : int = index % self.hex_grid_size_x
 	var y : int = index / self.hex_grid_size_y
