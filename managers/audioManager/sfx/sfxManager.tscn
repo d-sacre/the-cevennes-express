@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/drop_003.ogg" type="AudioStream" id=1]
+[ext_resource path="res://assets/ding_deep.ogg" type="AudioStream" id=2]
+[ext_resource path="res://managers/audioManager/sfx/sfxManager.gd" type="Script" id=3]
+
+[node name="sfxManager" type="Node"]
+script = ExtResource( 3 )
+
+[node name="ui" type="Node" parent="."]
+
+[node name="button" type="Node" parent="ui"]
+
+[node name="pressed" type="AudioStreamPlayer" parent="ui/button"]
+stream = ExtResource( 2 )
+volume_db = -12.0
+bus = "UI SFX"
+
+[node name="hover" type="AudioStreamPlayer" parent="ui/button"]
+stream = ExtResource( 1 )
+volume_db = -18.0
+bus = "UI SFX"

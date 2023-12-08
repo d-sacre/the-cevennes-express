@@ -1,0 +1,52 @@
+{
+    "ui": {
+            "button": {
+                "pressed": {
+                    "fp": "res://assets/ding_deep.ogg",
+                    "volume_db": -12,
+                    "playing": false,
+                    "autoplay": false,
+                    "bus": "UI SFX"
+                },
+                "hover": {
+                    "fp": "res://assets/drop_003.ogg",
+                    "volume_db": -18,
+                    "playing": false,
+                    "autoplay": false,
+                    "bus": "UI SFX"
+                }
+            }
+        },
+    "game": {
+        "tile": {
+            "move": {
+                "fp": "res://assets/audio/sfx/game/tile/wood_click_pp_1.wav",
+                "volume_db": -18,
+                "playing": false,
+                "autoplay": false,
+                "bus": "Game SFX"
+            },
+            "rotate": {
+                "fp": "res://assets/audio/sfx/game/tile/ratchet1.ogg",
+                "volume_db": 0,
+                "playing": false,
+                "autoplay": false,
+                "bus": "Game SFX"
+            },
+            "success": {
+                "fp": "res://assets/audio/sfx/game/tile/snare3_rimshot_f_1.wav",
+                "volume_db": -6,
+                "playing": false,
+                "autoplay": false,
+                "bus": "Game SFX"
+            },
+            "fail": {
+                "fp": "res://assets/audio/sfx/game/tile/alarm.ogg",
+                "volume_db": -12,
+                "playing": false,
+                "autoplay": false,
+                "bus": "Game SFX"
+            }
+        }
+    }
+}

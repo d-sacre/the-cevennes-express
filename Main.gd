@@ -1,5 +1,7 @@
 extends Node
 
+signal set_audio_volume(settingKeychain, settingValue)
+
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
@@ -32,6 +34,7 @@ onready var hexGridManager = $hexGridManager
 onready var cameraManager = $cameraManager
 onready var tileDefinitionManager = $tileDefinitionManager
 onready var cppBridge = $cppBridge
+onready var audioManager = $audioManager
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -48,6 +51,8 @@ func _on_raycast_result(current_collision_information):
 		_current_tile_index = -1
 
 	if _current_tile_index != _last_tile_index:
+
+		audioManager.play_sfx(["game", "tile", "move"])
 		hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index)
 		hexGridManager.move_floating_tile_to(_current_tile_index)
 
@@ -83,8 +88,6 @@ func _input(event) -> void:
 		cameraManager.initiate_raycast_from_position(raycast_screenspace_position)
 
 func _process(delta):
-	# REMARK: Only temporary test function to check placeholder status functionality
-	# Normally, this would have to call C++ Logic Backend and request placement information
 	if Input.is_action_just_pressed("place_tile"):
 		if _current_tile_index != -1:
 			print("place tile at ", _current_tile_index)
@@ -102,16 +105,22 @@ func _process(delta):
 				hexGridManager.set_status_placeholder(_current_tile_index,true, false)
 				hexGridManager.place_floating_tile_at_index(_current_tile_index)
 
+				# test for sfx
+				audioManager.play_sfx(["game", "tile", "success"])
+
 				var tile_definition_uuid = cppBridge.request_next_tile_definition_uuid()
 				if tile_definition_uuid != "": 
 					var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
 					hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 			else:
 				hexGridManager.set_status_placeholder(_current_tile_index,false, true)
+				# test for sfx
+				audioManager.play_sfx(["game", "tile", "fail"])
 			
 	# rotation of the tile
 	if Input.is_action_just_pressed("rotate_tile_clockwise"):
 		hexGridManager.rotate_floating_tile_clockwise() # rotate tile
+		audioManager.play_sfx(["game", "tile", "rotate"])
 		
 		if _current_tile_index != -1: # safety to absolutely ensure that cursor is not out of grid bounds 
 			var floating_tile_status = hexGridManager.get_floating_tile_definition_uuid_and_rotation()

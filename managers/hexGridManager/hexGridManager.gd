@@ -6,7 +6,6 @@ extends Spatial
 ################################################################################
 const PLACEHOLDER_TILE : Resource = preload("res://assets/3D/tiles/placeholder/hexTile_placeholder.tscn")
 const BASE_TILE : Resource = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
-var rng = RandomNumberGenerator.new()
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
@@ -17,9 +16,6 @@ const FLOATING_TILE_DISTANCE_ABOVE_GRID : float = 1.0
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
-# only temporarily, until logic completely implemented
-export (int, 2, 200) var grid_size : int = 10 # good values: 10, 50
-
 var hex_grid_size_x : int = 10
 var hex_grid_size_y : int = 10
 
@@ -30,9 +26,6 @@ var floating_tile_rotation : int = 0 # angle in degree, but only allowing 60° i
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
-
-
-
 # creates a hexagonal grid and fills it with the placeholder tiles
 # REMARK: For performance reasons, this should be changed in the future
 # to a different approach (e.g. calculating all the positions, but 
@@ -44,7 +37,7 @@ func generate_grid(x : int, y : int):
 	var is_tile_offset_y : bool = false
 
 	for tile_index in range(self.hex_grid_size_x*self.hex_grid_size_y):
-		var tile_coordinates := Vector2.ZERO
+		var tile_coordinates : Vector2 = Vector2.ZERO
 		tile_coordinates.x = (tile_index % self.hex_grid_size_x) * TILE_SIZE * cos(deg2rad(30))
 		tile_coordinates.y = (tile_index / self.hex_grid_size_x) * TILE_SIZE
 

@@ -12,8 +12,9 @@ func _process(delta):
 	var static_memory = "%.2f" % (OS.get_static_memory_usage()/1000000.0)
 	var rendered_vertices = str(Performance.get_monitor(Performance.RENDER_VERTICES_IN_FRAME))
 	
-	var tmp_grid_size = self.get_parent().get_parent().get_node("hexGridManager").grid_size
-	geometry_info_prefix = str(tmp_grid_size*tmp_grid_size) + " Hexagons,\n"
+	var _hgm = self.get_parent().get_parent().get_node("hexGridManager")
+	var tmp_grid_size = _hgm.hex_grid_size_x * _hgm.hex_grid_size_y
+	geometry_info_prefix = str(tmp_grid_size) + " Hexagons,\n"
 	
 	var debug_info_string = "[u]Performance[/u]\n\nFrame Rate: " + fps + " fps,"
 	
