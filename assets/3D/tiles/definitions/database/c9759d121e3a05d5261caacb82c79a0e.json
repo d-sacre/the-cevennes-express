@@ -1,0 +1,39 @@
+{
+    "DESCRIPTION": "A Plain Grassy Meadow",
+    "EDGES": [
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ]
+    ],
+    "CONNECTIONS": [],
+    "GENERATED FROM": "nature/meadows/default.xml",
+    "TILE_DEFINITION_UUID": "c9759d121e3a05d5261caacb82c79a0e",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/c9759d121e3a05d5261caacb82c79a0e.png"
+}

@@ -1,7 +1,23 @@
 {
     "TILE_DEFINITION_RESOURCE_PATHS": [
-        "res://assets/3D/tiles/definitions/database/7bddebca65fad08b3ee56a152b682109.json",
-        "res://assets/3D/tiles/definitions/database/ff33f959f76686ede746cf5f534d2e65.json",
-        "res://assets/3D/tiles/definitions/database/804f1087ee53a834de7005c8881b20dd.json"
+        "res://assets/3D/tiles/definitions/database/df6a9447185edc1717c9e75951e882af.json",
+        "res://assets/3D/tiles/definitions/database/e82e620eca7e58c048c698861aebb49c.json",
+        "res://assets/3D/tiles/definitions/database/c9759d121e3a05d5261caacb82c79a0e.json",
+        "res://assets/3D/tiles/definitions/database/97dc7ac2ba4de9c608d3311eb3722f3b.json",
+        "res://assets/3D/tiles/definitions/database/129fcdd83b25f2e67de8afb15bd4b1fc.json",
+        "res://assets/3D/tiles/definitions/database/ca24943ae1864ba256aa193bd24b80be.json",
+        "res://assets/3D/tiles/definitions/database/7e450b4fdb99786971649822521ed87b.json",
+        "res://assets/3D/tiles/definitions/database/7916674e5cc3c8c9bf986c07996a34a7.json",
+        "res://assets/3D/tiles/definitions/database/335b6198148e9f1cd1011db9228fd79d.json",
+        "res://assets/3D/tiles/definitions/database/3d06a69865827490f79b9f4869da6bb7.json",
+        "res://assets/3D/tiles/definitions/database/57a4648b1373c212bbdb55c97565d975.json",
+        "res://assets/3D/tiles/definitions/database/2c6252f4c90e710e9792ae73585f95ac.json",
+        "res://assets/3D/tiles/definitions/database/45d1630245380012c171856cd54528c8.json",
+        "res://assets/3D/tiles/definitions/database/ca3b4d74dfb67db16c65a0acc8dea547.json",
+        "res://assets/3D/tiles/definitions/database/506d67bec31ba09da6fa5844f2a40470.json",
+        "res://assets/3D/tiles/definitions/database/6938c3bd39eab09f0ab1ddaccb43083b.json",
+        "res://assets/3D/tiles/definitions/database/1e12ca1a654a5d4655cf40a009b4570f.json",
+        "res://assets/3D/tiles/definitions/database/94b25b0ada67e01bab4c5c7f5dbf85c8.json",
+        "res://assets/3D/tiles/definitions/database/dd4f792b2326dfd136adb79e5ea7067b.json"
     ]
 }

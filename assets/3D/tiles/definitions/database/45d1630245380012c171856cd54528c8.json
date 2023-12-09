@@ -1,0 +1,45 @@
+{
+    "DESCRIPTION": "Curved Piece of Single Track Railroad on a Grassy Meadow",
+    "EDGES": [
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ]
+    ],
+    "CONNECTIONS": [
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4b",
+            "END": "E6b"
+        }
+    ],
+    "GENERATED FROM": "railroad/track/single/curve/default.xml",
+    "TILE_DEFINITION_UUID": "45d1630245380012c171856cd54528c8",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/45d1630245380012c171856cd54528c8.png"
+}
