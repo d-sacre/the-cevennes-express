@@ -40,7 +40,9 @@ func _on_set_audio_volume(settingKeychain, settingValue) -> void:
 	var db = linear2db(settingValue/100)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(audio_bus_name), db)
 
+	print("Set volume")
+
 func _ready():
-	var _root = get_node("../")
+	var _root = self.get_parent()#get_node("../")
 	_root.connect("set_audio_volume", self, "_on_set_audio_volume")
 
