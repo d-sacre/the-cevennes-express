@@ -2,7 +2,7 @@
     "ui": {
             "button": {
                 "pressed": {
-                    "fp": "res://assets/ding_deep.ogg",
+                    "fp": "res://assets/audio/sfx/ui/switch_005.ogg",
                     "volume_db": -12,
                     "playing": false,
                     "autoplay": false,

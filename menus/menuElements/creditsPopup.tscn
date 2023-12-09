@@ -1,0 +1,87 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://themes/fonts/lmodern_bold_64px.tres" type="DynamicFont" id=1]
+[ext_resource path="res://themes/creditsPopup_mainMenu.theme" type="Theme" id=2]
+[ext_resource path="res://themes/fonts/lmodern_sans_32px.tres" type="DynamicFont" id=3]
+
+[node name="credits_popup_panel" type="PanelContainer"]
+margin_left = 48.0
+margin_top = 256.0
+margin_right = 688.0
+margin_bottom = 1016.0
+rect_min_size = Vector2( 640, 0 )
+size_flags_vertical = 2
+theme = ExtResource( 2 )
+
+[node name="creditsPopup_VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 24.0
+margin_top = 24.0
+margin_right = 616.0
+margin_bottom = 752.0
+size_flags_vertical = 2
+
+[node name="credits_title_label" type="Label" parent="creditsPopup_VBoxContainer"]
+margin_right = 592.0
+margin_bottom = 56.0
+custom_fonts/font = ExtResource( 1 )
+text = "Credits"
+valign = 1
+
+[node name="Control" type="Control" parent="creditsPopup_VBoxContainer"]
+margin_top = 60.0
+margin_right = 592.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 0, 24 )
+
+[node name="credits_content_richTextLabel" type="RichTextLabel" parent="creditsPopup_VBoxContainer"]
+margin_top = 88.0
+margin_right = 592.0
+margin_bottom = 728.0
+rect_min_size = Vector2( 480, 640 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[u]MS[/u]:
+» Concept
+» Core Game Play Mechanics
+» C++ Architecture and Project
+  Management Lead
+» CMake and Visual Studio 
+   Code Build Pipelines
+» Unit Testing
+» Windows Testing (native, Firefox, 
+   Chrome)
+
+[u]DS[/u]:
+» Concept
+» Core Game Play Mechanics
+» Godot Architecture Lead
+» Python Build Tools
+» UI/UX Design
+» Asset Creation: (LaTeX/TikZ, Blender, 
+  GIMP, Krita, Imagemagick, Audacity)
+» Linux Testing (native, Firefox, 
+  Chromium, Brave)"
+text = "MS:
+» Concept
+» Core Game Play Mechanics
+» C++ Architecture and Project
+  Management Lead
+» CMake and Visual Studio 
+   Code Build Pipelines
+» Unit Testing
+» Windows Testing (native, Firefox, 
+   Chrome)
+
+DS:
+» Concept
+» Core Game Play Mechanics
+» Godot Architecture Lead
+» Python Build Tools
+» UI/UX Design
+» Asset Creation: (LaTeX/TikZ, Blender, 
+  GIMP, Krita, Imagemagick, Audacity)
+» Linux Testing (native, Firefox, 
+  Chromium, Brave)"
