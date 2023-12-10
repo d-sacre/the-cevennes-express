@@ -35,6 +35,8 @@ onready var cameraManager = $cameraManager
 onready var tileDefinitionManager = $tileDefinitionManager
 onready var cppBridge = $cppBridge
 onready var audioManager = $audioManager
+onready var userSettingsManager = $userSettingsManager
+onready var settingsPopout = $CanvasLayer/PopupMenu/settings_popup_panelContainer
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -56,10 +58,20 @@ func _on_raycast_result(current_collision_information):
 		hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index)
 		hexGridManager.move_floating_tile_to(_current_tile_index)
 
+func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
+	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
+	if _audioManagerSignalResult.has("keyChain"):
+		emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
+
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready() -> void:
+	userSettingsManager.initialize_user_settings()
+	settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
+	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
+	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
+
 	# setting up all camera related stuff
 	# TO-DO: Set starting position to the center of the grid
 	cameraManager.connect("raycast_result",self,"_on_raycast_result")

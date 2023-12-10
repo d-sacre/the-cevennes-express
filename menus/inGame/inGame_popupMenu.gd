@@ -3,15 +3,10 @@ extends PanelContainer
 const BUTTON_SOURCES : Array = ["ingameMenu_buttons"]
 const BUTTON_SIGNALS : Array = ["button_pressed", "button_entered_hover", "button_exited_hover"]
 
-var buttonText : Dictionary = {
-	"play": "Return to Game",
-	"settings": "Settings",
-	"credits": "Exit to Main Menu",
-	"exit": "Exit to System"
-} 
-
 func _ready():
 	self.visible = false
+	$VBoxContainer.visible = true
+	$settings_popup_panelContainer.visible = false
 	
 	if OS.has_feature("JavaScript"):
 		$VBoxContainer/exitButtonHBox.visible = false
@@ -24,6 +19,7 @@ func _process(delta):
 
 func _on_resumeButton_pressed():
 	self.visible = false
+	$settings_popup_panelContainer.visible = false
 	get_tree().paused = false
 
 
@@ -34,3 +30,16 @@ func _on_returnToMainMenuButton_pressed():
 
 func _on_exitButton_pressed():
 	get_tree().quit()
+
+
+func _on_settingsButton_pressed():
+	$VBoxContainer.visible = false
+	$settings_popup_panelContainer.visible = true
+
+
+func _on_returnToInGameMenu_pressed():
+	$VBoxContainer.visible = true
+	$settings_popup_panelContainer.visible = false
+	
+func _on_button_hover():
+	pass

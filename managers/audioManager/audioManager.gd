@@ -43,6 +43,6 @@ func _on_set_audio_volume(settingKeychain, settingValue) -> void:
 	print("Set volume")
 
 func _ready():
-	var _root = self.get_parent()#get_node("../")
+	var _root = get_node("../") #self.get_parent()
 	_root.connect("set_audio_volume", self, "_on_set_audio_volume")
 
