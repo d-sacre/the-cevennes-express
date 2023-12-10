@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://managers/hexGridManager/hexGridManager.tscn" type="PackedScene" id=1]
 [ext_resource path="res://debugInfo.gd" type="Script" id=2]
@@ -8,8 +8,10 @@
 [ext_resource path="res://default_env.tres" type="Environment" id=6]
 [ext_resource path="res://utils/cppBridge.tscn" type="PackedScene" id=7]
 [ext_resource path="res://managers/audioManager/audioManager.tscn" type="PackedScene" id=8]
+[ext_resource path="res://themes/main_menu.theme" type="Theme" id=9]
 [ext_resource path="res://menus/inGame/inGame_popupMenu.gd" type="Script" id=10]
 [ext_resource path="res://themes/creditsPopup_mainMenu.theme" type="Theme" id=11]
+[ext_resource path="res://managers/userSettingsManager/userSettingsManager.tscn" type="PackedScene" id=12]
 [ext_resource path="res://themes/fonts/lmodern_bold_96px.tres" type="DynamicFont" id=13]
 
 [sub_resource type="Theme" id=1]
@@ -39,6 +41,8 @@ light_indirect_energy = 2.0
 [node name="audioManager" parent="." instance=ExtResource( 8 )]
 pause_mode = 2
 
+[node name="userSettingsManager" parent="." instance=ExtResource( 12 )]
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 pause_mode = 2
 
@@ -64,18 +68,150 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -446.0
-margin_top = -494.0
+margin_top = -535.0
 margin_right = 446.0
-margin_bottom = 494.0
+margin_bottom = 535.0
 theme = ExtResource( 11 )
 script = ExtResource( 10 )
 
-[node name="menuTitle" type="Label" parent="CanvasLayer/PopupMenu"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PopupMenu"]
 margin_left = 24.0
-margin_top = 425.0
+margin_top = 24.0
 margin_right = 868.0
-margin_bottom = 563.0
+margin_bottom = 1046.0
+theme = ExtResource( 9 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="menuTitle" type="Label" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_right = 844.0
+margin_bottom = 138.0
 custom_fonts/font = ExtResource( 13 )
 text = "Menu"
 align = 1
 valign = 1
+
+[node name="spacer4" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 142.0
+margin_right = 844.0
+margin_bottom = 190.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 0
+
+[node name="playButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 194.0
+margin_right = 844.0
+margin_bottom = 346.0
+
+[node name="hspacer1" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
+visible = false
+margin_right = 160.0
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="resumeButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 0, 120 )
+size_flags_horizontal = 7
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Resume Game"
+
+[node name="spacer1" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 350.0
+margin_right = 844.0
+margin_bottom = 398.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 0
+
+[node name="settingsButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 402.0
+margin_right = 844.0
+margin_bottom = 554.0
+
+[node name="hspacer2" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
+visible = false
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="settingsButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 560, 120 )
+size_flags_horizontal = 7
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Settings"
+
+[node name="spacer2" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_left = 422.0
+margin_top = 558.0
+margin_right = 422.0
+margin_bottom = 606.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="creditsButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 610.0
+margin_right = 844.0
+margin_bottom = 762.0
+
+[node name="hspacer3" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
+visible = false
+margin_right = 158.0
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="returnToMainMenuButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 0, 120 )
+size_flags_horizontal = 7
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Return to Main Menu"
+
+[node name="spacer3" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 766.0
+margin_right = 844.0
+margin_bottom = 814.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 4
+
+[node name="exitButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 818.0
+margin_right = 844.0
+margin_bottom = 970.0
+
+[node name="hspacer4" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
+visible = false
+margin_right = 158.0
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="exitButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 0, 120 )
+size_flags_horizontal = 3
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Exit to System"
+
+[node name="spacer5" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 974.0
+margin_right = 844.0
+margin_bottom = 1022.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 0
+
+[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox/resumeButton" to="CanvasLayer/PopupMenu" method="_on_resumeButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox/returnToMainMenuButton" to="CanvasLayer/PopupMenu" method="_on_returnToMainMenuButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox/exitButton" to="CanvasLayer/PopupMenu" method="_on_exitButton_pressed"]
