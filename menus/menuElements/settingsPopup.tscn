@@ -81,6 +81,7 @@ margin_bottom = 171.0
 margin_right = 196.0
 margin_bottom = 47.0
 size_flags_horizontal = 3
+custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
 text = "Ambience"
 
 [node name="volume_ambienceSFX_slider" type="HSlider" parent="VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
@@ -92,6 +93,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 step = 0.1
+editable = false
 
 [node name="gameSFXHBox" type="HBoxContainer" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 175.0
@@ -123,6 +125,7 @@ margin_bottom = 273.0
 margin_right = 196.0
 margin_bottom = 47.0
 size_flags_horizontal = 3
+custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
 text = "Music"
 
 [node name="volume_music_slider" type="HSlider" parent="VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
@@ -134,6 +137,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 step = 0.1
+editable = false
 
 [node name="masterHBox" type="HBoxContainer" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 277.0

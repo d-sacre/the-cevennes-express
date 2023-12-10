@@ -41,17 +41,9 @@ func _on_button_pressed(buttonContext, buttonId, buttonRef) -> void:
 		"settings":
 			settingsPopout.visible = not settingsPopout.visible
 			creditsPopout.visible = false
-#	if buttonId == "settings": # if the settings button is pressed
-##		creditsPopup.visible = false # hide credits
-#		if not settingsPopout.visible: # if settings popup is currently not visible
-#			settingsPopout.slider_initialize(user_settings) # update the sliders (just to be on the save side)
-#		settingsPopout.visible = not settingsPopout.visible # open/hide settings depending on its state
-#	elif buttonId == "credits":
-#		creditsPopup.visible = not creditsPopup.visible
-#		settingsPopout.visible = false
-#	elif buttonId == "exit":
-#		_fade_out = true
-#		_exit_after_fade = true
+			
+		"exit":
+			get_tree().quit()
 
 func _on_button_entered_hover(buttonContext, buttonId, buttonRef) -> void:
 	var _tmp_user_settings : Dictionary = userSettingsManager.get_user_settings()
@@ -67,19 +59,6 @@ func _on_button_exited_hover(buttonContext, buttonId, buttonRef) -> void:
 		buttonRef.text = buttonText[buttonId]
 		
 func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
-#	# determine the depth in the dictionary to set the value
-#	if len(settingKeychain) == 1:
-#		user_settings[settingKeychain[0]] = settingValue
-#	elif len(settingKeychain) == 2:
-#		user_settings[settingKeychain[0]][settingKeychain[1]] = settingValue
-#	elif len(settingKeychain) == 3:
-#		user_settings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]] = settingValue
-#	elif len(settingKeychain) == 4:
-#		user_settings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]][settingKeychain[3]] = settingValue
-	
-	# save the change to disk
-#	sel.save_settings(USER_SETTINGS_FILEPATH, user_settings)
-
 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
 	if _audioManagerSignalResult.has("keyChain"):
 		emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
