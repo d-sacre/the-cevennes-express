@@ -1,0 +1,50 @@
+{
+    "DESCRIPTION": "Double Track Railroad that splits into Two Single Tracks, of which the Left One is a Curve to the Left and the Right One is a Curve to the Right",
+    "EDGES": [
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "RAILROAD",
+            "GRASS",
+            "RAILROAD"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ]
+    ],
+    "CONNECTIONS": [
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4c",
+            "END": "E6b"
+        },
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4a",
+            "END": "E2b"
+        }
+    ],
+    "GENERATED FROM": "railroad/track/double_to_two_singles/curve_left_and_curve_right/default.xml",
+    "TILE_DEFINITION_UUID": "3d06a69865827490f79b9f4869da6bb7",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/3d06a69865827490f79b9f4869da6bb7.png"
+}

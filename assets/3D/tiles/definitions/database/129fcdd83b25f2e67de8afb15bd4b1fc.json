@@ -1,0 +1,50 @@
+{
+    "DESCRIPTION": "Straight Piece of Double Track Railroad on a Grassy Meadow",
+    "EDGES": [
+        [
+            "RAILROAD",
+            "GRASS",
+            "RAILROAD"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "RAILROAD",
+            "GRASS",
+            "RAILROAD"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ]
+    ],
+    "CONNECTIONS": [
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4c",
+            "END": "E1a"
+        },
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4a",
+            "END": "E1c"
+        }
+    ],
+    "GENERATED FROM": "railroad/track/double/straight/default.xml",
+    "TILE_DEFINITION_UUID": "129fcdd83b25f2e67de8afb15bd4b1fc",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/textures/129fcdd83b25f2e67de8afb15bd4b1fc.png"
+}

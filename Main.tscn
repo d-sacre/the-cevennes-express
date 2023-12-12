@@ -1,0 +1,429 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://managers/hexGridManager/hexGridManager.tscn" type="PackedScene" id=1]
+[ext_resource path="res://debugInfo.gd" type="Script" id=2]
+[ext_resource path="res://managers/cameraManager/cameraManager.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Main.gd" type="Script" id=4]
+[ext_resource path="res://managers/tileManager/tileDefinitionManager.tscn" type="PackedScene" id=5]
+[ext_resource path="res://default_env.tres" type="Environment" id=6]
+[ext_resource path="res://utils/cppBridge.tscn" type="PackedScene" id=7]
+[ext_resource path="res://managers/audioManager/audioManager.tscn" type="PackedScene" id=8]
+[ext_resource path="res://themes/main_menu.theme" type="Theme" id=9]
+[ext_resource path="res://menus/inGame/inGame_popupMenu.gd" type="Script" id=10]
+[ext_resource path="res://themes/creditsPopup_mainMenu.theme" type="Theme" id=11]
+[ext_resource path="res://managers/userSettingsManager/userSettingsManager.tscn" type="PackedScene" id=12]
+[ext_resource path="res://themes/fonts/lmodern_bold_96px.tres" type="DynamicFont" id=13]
+[ext_resource path="res://menus/menuElements/settingsPopOut.gd" type="Script" id=14]
+[ext_resource path="res://themes/fonts/lmodern_bold_48px.tres" type="DynamicFont" id=15]
+[ext_resource path="res://themes/fonts/lmodern_bold_64px.tres" type="DynamicFont" id=16]
+
+[sub_resource type="Theme" id=1]
+RichTextLabel/fonts/bold_font = null
+
+[node name="Main" type="Node"]
+script = ExtResource( 4 )
+
+[node name="cppBridge" parent="." instance=ExtResource( 7 )]
+
+[node name="hexGridManager" parent="." instance=ExtResource( 1 )]
+
+[node name="tileDefinitionManager" parent="." instance=ExtResource( 5 )]
+
+[node name="cameraManager" parent="." instance=ExtResource( 3 )]
+
+[node name="lightingSetup" type="Node" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="lightingSetup"]
+environment = ExtResource( 6 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="lightingSetup"]
+transform = Transform( -1, 6.18173e-08, -6.18173e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 20, 0 )
+light_color = Color( 0.933333, 0.823529, 0.32549, 1 )
+light_indirect_energy = 2.0
+
+[node name="audioManager" parent="." instance=ExtResource( 8 )]
+pause_mode = 2
+
+[node name="userSettingsManager" parent="." instance=ExtResource( 12 )]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+pause_mode = 2
+
+[node name="debugPanelContainer" type="PanelContainer" parent="CanvasLayer"]
+anchor_right = 0.133
+margin_right = 0.639999
+margin_bottom = 256.0
+rect_min_size = Vector2( 128, 384 )
+script = ExtResource( 2 )
+
+[node name="debugInfoRichtText" type="RichTextLabel" parent="CanvasLayer/debugPanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 249.0
+margin_bottom = 377.0
+theme = SubResource( 1 )
+text = "Test"
+
+[node name="PopupMenu" type="PanelContainer" parent="CanvasLayer"]
+pause_mode = 2
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -446.0
+margin_top = -535.0
+margin_right = 446.0
+margin_bottom = 535.0
+theme = ExtResource( 11 )
+script = ExtResource( 10 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PopupMenu"]
+margin_left = 24.0
+margin_top = 24.0
+margin_right = 868.0
+margin_bottom = 1046.0
+theme = ExtResource( 9 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="menuTitle" type="Label" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_right = 844.0
+margin_bottom = 138.0
+custom_fonts/font = ExtResource( 13 )
+text = "Menu"
+align = 1
+valign = 1
+
+[node name="spacer4" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 142.0
+margin_right = 844.0
+margin_bottom = 190.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 0
+
+[node name="playButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 194.0
+margin_right = 844.0
+margin_bottom = 346.0
+
+[node name="hspacer1" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
+visible = false
+margin_right = 160.0
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="resumeButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 0, 120 )
+size_flags_horizontal = 7
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Resume Game"
+
+[node name="spacer1" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 350.0
+margin_right = 844.0
+margin_bottom = 398.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 0
+
+[node name="settingsButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 402.0
+margin_right = 844.0
+margin_bottom = 554.0
+
+[node name="hspacer2" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
+visible = false
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="settingsButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 560, 120 )
+size_flags_horizontal = 7
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Settings"
+
+[node name="spacer2" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_left = 422.0
+margin_top = 558.0
+margin_right = 422.0
+margin_bottom = 606.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_horizontal = 6
+size_flags_vertical = 4
+
+[node name="creditsButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 610.0
+margin_right = 844.0
+margin_bottom = 762.0
+
+[node name="hspacer3" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
+visible = false
+margin_right = 158.0
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="returnToMainMenuButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 0, 120 )
+size_flags_horizontal = 7
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Return to Main Menu"
+
+[node name="spacer3" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 766.0
+margin_right = 844.0
+margin_bottom = 814.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 4
+
+[node name="exitButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 818.0
+margin_right = 844.0
+margin_bottom = 970.0
+
+[node name="hspacer4" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
+visible = false
+margin_right = 158.0
+margin_bottom = 152.0
+size_flags_horizontal = 7
+size_flags_stretch_ratio = 2.0
+
+[node name="exitButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
+margin_right = 844.0
+margin_bottom = 152.0
+rect_min_size = Vector2( 0, 120 )
+size_flags_horizontal = 3
+size_flags_vertical = 6
+size_flags_stretch_ratio = 5.0
+text = "Exit to System"
+
+[node name="spacer5" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+margin_top = 974.0
+margin_right = 844.0
+margin_bottom = 1022.0
+rect_min_size = Vector2( 0, 48 )
+size_flags_vertical = 0
+
+[node name="settings_popup_panelContainer" type="PanelContainer" parent="CanvasLayer/PopupMenu"]
+margin_left = 24.0
+margin_top = 125.0
+margin_right = 868.0
+margin_bottom = 945.0
+rect_min_size = Vector2( 640, 0 )
+size_flags_vertical = 6
+theme = ExtResource( 11 )
+script = ExtResource( 14 )
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer"]
+margin_left = 24.0
+margin_top = 24.0
+margin_right = 820.0
+margin_bottom = 796.0
+size_flags_vertical = 2
+
+[node name="settingsPopup_Title_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+margin_right = 796.0
+margin_bottom = 56.0
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 16 )
+text = "Settings"
+
+[node name="spacer" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+margin_top = 60.0
+margin_right = 796.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 6
+
+[node name="audioSubmenu_vboxContainer" type="VBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+margin_top = 88.0
+margin_right = 796.0
+margin_bottom = 440.0
+size_flags_vertical = 6
+
+[node name="audioSubmenu_title_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_right = 796.0
+margin_bottom = 69.0
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 15 )
+text = "Audio"
+
+[node name="uiSFXHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 73.0
+margin_right = 796.0
+margin_bottom = 120.0
+size_flags_vertical = 5
+size_flags_stretch_ratio = 4.0
+
+[node name="volume_uiSFX_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
+margin_right = 264.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+text = "UI SFX"
+
+[node name="volume_uiSFX_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
+margin_left = 268.0
+margin_right = 796.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+
+[node name="ambienceSFXHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 124.0
+margin_right = 796.0
+margin_bottom = 171.0
+
+[node name="volume_ambienceSFX_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
+margin_right = 264.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
+text = "Ambience"
+
+[node name="volume_ambienceSFX_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
+margin_left = 268.0
+margin_right = 796.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+editable = false
+
+[node name="gameSFXHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 175.0
+margin_right = 796.0
+margin_bottom = 222.0
+
+[node name="volume_gameSFX_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
+margin_right = 264.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+text = "Game SFX"
+
+[node name="volume_gameSFX_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
+margin_left = 268.0
+margin_right = 796.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+
+[node name="musicHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 226.0
+margin_right = 796.0
+margin_bottom = 273.0
+
+[node name="volume_music_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
+margin_right = 264.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
+text = "Music"
+
+[node name="volume_music_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
+margin_left = 268.0
+margin_right = 796.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+editable = false
+
+[node name="masterHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 277.0
+margin_right = 796.0
+margin_bottom = 324.0
+
+[node name="volume_master_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
+margin_right = 264.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+text = "MASTER"
+
+[node name="volume_master_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
+margin_left = 268.0
+margin_right = 796.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+
+[node name="spacer7" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 328.0
+margin_right = 796.0
+margin_bottom = 352.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 6
+
+[node name="visualSubmenu_vboxContainer" type="VBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+margin_top = 444.0
+margin_right = 796.0
+margin_bottom = 588.0
+size_flags_vertical = 2
+
+[node name="visualSubmenu_title_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
+margin_right = 796.0
+margin_bottom = 69.0
+size_flags_vertical = 6
+custom_fonts/font = ExtResource( 15 )
+text = "Visual"
+
+[node name="spacer8" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
+margin_top = 73.0
+margin_right = 796.0
+margin_bottom = 85.0
+rect_min_size = Vector2( 0, 12 )
+size_flags_vertical = 6
+
+[node name="fullscreen_toggle" type="CheckButton" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
+margin_top = 89.0
+margin_right = 796.0
+margin_bottom = 144.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 6
+size_flags_stretch_ratio = 2.0
+text = "Fullscreen"
+
+[node name="spacer2" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+margin_top = 592.0
+margin_right = 796.0
+margin_bottom = 616.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 6
+
+[node name="returnToInGameMenu" type="Button" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+margin_top = 620.0
+margin_right = 796.0
+margin_bottom = 772.0
+theme = ExtResource( 9 )
+text = "Return to Menu"
+
+[connection signal="mouse_entered" from="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox/resumeButton" to="CanvasLayer/PopupMenu" method="_on_button_hover"]
+[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox/resumeButton" to="CanvasLayer/PopupMenu" method="_on_resumeButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox/settingsButton" to="CanvasLayer/PopupMenu" method="_on_settingsButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox/returnToMainMenuButton" to="CanvasLayer/PopupMenu" method="_on_returnToMainMenuButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox/exitButton" to="CanvasLayer/PopupMenu" method="_on_exitButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/returnToInGameMenu" to="CanvasLayer/PopupMenu" method="_on_returnToInGameMenu_pressed"]

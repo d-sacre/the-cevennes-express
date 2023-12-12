@@ -1,0 +1,198 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://themes/fonts/lmodern_bold_64px.tres" type="DynamicFont" id=1]
+[ext_resource path="res://themes/creditsPopup_mainMenu.theme" type="Theme" id=2]
+[ext_resource path="res://menus/menuElements/settingsPopOut.gd" type="Script" id=3]
+[ext_resource path="res://themes/fonts/lmodern_bold_48px.tres" type="DynamicFont" id=4]
+
+[node name="settings_popup_panelContainer" type="PanelContainer"]
+margin_left = 48.0
+margin_top = 256.0
+margin_right = 688.0
+margin_bottom = 1032.0
+rect_min_size = Vector2( 640, 0 )
+size_flags_vertical = 6
+theme = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+margin_left = 24.0
+margin_top = 24.0
+margin_right = 616.0
+margin_bottom = 612.0
+size_flags_vertical = 2
+
+[node name="settingsPopup_Title_label" type="Label" parent="VBoxContainer2"]
+margin_right = 592.0
+margin_bottom = 56.0
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 1 )
+text = "Settings"
+
+[node name="spacer" type="Control" parent="VBoxContainer2"]
+margin_top = 60.0
+margin_right = 592.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 6
+
+[node name="audioSubmenu_vboxContainer" type="VBoxContainer" parent="VBoxContainer2"]
+margin_top = 88.0
+margin_right = 592.0
+margin_bottom = 440.0
+size_flags_vertical = 6
+
+[node name="audioSubmenu_title_label" type="Label" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_right = 592.0
+margin_bottom = 69.0
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 4 )
+text = "Audio"
+
+[node name="uiSFXHBox" type="HBoxContainer" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 73.0
+margin_right = 592.0
+margin_bottom = 120.0
+size_flags_vertical = 5
+size_flags_stretch_ratio = 4.0
+
+[node name="volume_uiSFX_label" type="Label" parent="VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
+margin_right = 196.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+text = "UI SFX"
+
+[node name="volume_uiSFX_slider" type="HSlider" parent="VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
+margin_left = 200.0
+margin_right = 592.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+
+[node name="ambienceSFXHBox" type="HBoxContainer" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 124.0
+margin_right = 592.0
+margin_bottom = 171.0
+
+[node name="volume_ambienceSFX_label" type="Label" parent="VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
+margin_right = 196.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
+text = "Ambience"
+
+[node name="volume_ambienceSFX_slider" type="HSlider" parent="VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
+margin_left = 200.0
+margin_right = 592.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+editable = false
+
+[node name="gameSFXHBox" type="HBoxContainer" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 175.0
+margin_right = 592.0
+margin_bottom = 222.0
+
+[node name="volume_gameSFX_label" type="Label" parent="VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
+margin_right = 196.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+text = "Game SFX"
+
+[node name="volume_gameSFX_slider" type="HSlider" parent="VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
+margin_left = 200.0
+margin_right = 592.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+
+[node name="musicHBox" type="HBoxContainer" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 226.0
+margin_right = 592.0
+margin_bottom = 273.0
+
+[node name="volume_music_label" type="Label" parent="VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
+margin_right = 196.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
+text = "Music"
+
+[node name="volume_music_slider" type="HSlider" parent="VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
+margin_left = 200.0
+margin_right = 592.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+editable = false
+
+[node name="masterHBox" type="HBoxContainer" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 277.0
+margin_right = 592.0
+margin_bottom = 324.0
+
+[node name="volume_master_label" type="Label" parent="VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
+margin_right = 196.0
+margin_bottom = 47.0
+size_flags_horizontal = 3
+text = "MASTER"
+
+[node name="volume_master_slider" type="HSlider" parent="VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
+margin_left = 200.0
+margin_right = 592.0
+margin_bottom = 47.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+step = 0.1
+
+[node name="spacer7" type="Control" parent="VBoxContainer2/audioSubmenu_vboxContainer"]
+margin_top = 328.0
+margin_right = 592.0
+margin_bottom = 352.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 6
+
+[node name="visualSubmenu_vboxContainer" type="VBoxContainer" parent="VBoxContainer2"]
+margin_top = 444.0
+margin_right = 592.0
+margin_bottom = 588.0
+size_flags_vertical = 2
+
+[node name="visualSubmenu_title_label" type="Label" parent="VBoxContainer2/visualSubmenu_vboxContainer"]
+margin_right = 592.0
+margin_bottom = 69.0
+size_flags_vertical = 6
+custom_fonts/font = ExtResource( 4 )
+text = "Visual"
+
+[node name="spacer8" type="Control" parent="VBoxContainer2/visualSubmenu_vboxContainer"]
+margin_top = 73.0
+margin_right = 592.0
+margin_bottom = 85.0
+rect_min_size = Vector2( 0, 12 )
+size_flags_vertical = 6
+
+[node name="fullscreen_toggle" type="CheckButton" parent="VBoxContainer2/visualSubmenu_vboxContainer"]
+margin_top = 89.0
+margin_right = 592.0
+margin_bottom = 144.0
+rect_min_size = Vector2( 128, 32 )
+size_flags_horizontal = 3
+size_flags_vertical = 6
+size_flags_stretch_ratio = 2.0
+text = "Fullscreen"
