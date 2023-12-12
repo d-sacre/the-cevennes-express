@@ -1,0 +1,1 @@
+godot3 --verbose --no-window --script testing-script.gd 
