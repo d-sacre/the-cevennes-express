@@ -1,14 +1,14 @@
 tool
 extends Node
 
-var DICTUTILS = load("res://managers/audioManager/utils/audioManager_dict_utils.gd")
-var dictutils = DICTUTILS.new()
+# var DICTUTILS = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd")
+# var dictutils = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd").new() #DICTUTILS.new()
 
-var JSONUTILS = load("res://managers/audioManager/utils/audioManager_json_fio_handling.gd")
-var jsonutils = JSONUTILS.new()
+# var JSONUTILS = preload("res://managers/audioManager/utils/audioManager_json_fio_handling.gd")
+# var JsonFio = preload("res://managers/audioManager/utils/audioManager_json_fio_handling.gd").new() #JSONUTILS.new()
 
-var NODEUTILS = load("res://managers/audioManager/utils/audioManager_node-handling.gd")
-var nodeutils = NODEUTILS.new()
+# var NODEUTILS = preload("res://managers/audioManager/utils/audioManager_node-handling.gd")
+# var nodeutils = preload("res://managers/audioManager/utils/audioManager_node-handling.gd").new() #NODEUTILS.new()
 
 var permission_to_play : bool = false
 var playing_mode : String = "none"
@@ -62,9 +62,21 @@ func _on_song_finished() -> void:
 				playlist["last"] = 0
 				get_node(songs[song_to_play]["nodePath"]).play()
 
+# func _on_tree_exiting() -> void:
+# 	print("Music Manager is about to exit")
+	# self.dictutils = null
+	# self.dictutils.free()
+#	JsonFio = null
+	# self.nodeutils = null
+	# DICTUTILS = null
+	# JSONUTILS = null
+	# NODEUTILS = null
+	# queue_free()
+
+
 func _ready():
 	# load all the song information from the json file
-	songs = jsonutils.load_json("res://managers/audioManager/music/music.json")
+	songs = JsonFio.load_json("res://managers/audioManager/music/music.json")
 	var song_objects = songs.keys()
 
 	for object in song_objects:
@@ -75,14 +87,16 @@ func _ready():
 			var song_object_node_path = object # create the node path
 			songs[object]["nodePath"] = song_object_node_path # add the node path to the dictionary entry
 
-			nodeutils.add_and_configure_AudioStreamPlayer(self,songs[object], "SELF", song_object_name)
+			self.nodeutils.add_and_configure_AudioStreamPlayer(self,songs[object], "SELF", song_object_name)
 
 	# connect all finished signals of the songs to common routine
 	for song in songs:
 		get_node(songs[song]["nodePath"]).connect("finished", self, "_on_song_finished")
 
 	# connect to the signal emitted when the playlist has been updated
-	self.get_parent().connect("music_playlist_updated", self, "_on_music_playlist_updated")
+	# audioManager.connect("music_playlist_updated", self, "_on_music_playlist_updated")
+
+	# self.connect("tree_exiting", self, "_on_tree_exiting")
 
 	
 

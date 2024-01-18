@@ -34,8 +34,8 @@ onready var hexGridManager = $hexGridManager
 onready var cameraManager = $cameraManager
 onready var tileDefinitionManager = $tileDefinitionManager
 onready var cppBridge = $cppBridge
-onready var audioManager = $audioManager
-onready var userSettingsManager = $userSettingsManager
+# onready var audioManager = $audioManager
+# onready var userSettingsManager = $userSettingsManager
 onready var settingsPopout = $CanvasLayer/PopupMenu/settings_popup_panelContainer
 
 ################################################################################

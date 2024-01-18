@@ -3,8 +3,8 @@ extends Node
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
-var FIO : Resource = load("res://managers/tileManager/utils/tileManager_json_fio_handling.gd")
-var fio = FIO.new()
+# var FIO : Resource = preload("res://managers/tileManager/utils/tileManager_json_fio_handling.gd")
+# var fio = FIO.new()
 
 const TILE_DEFINITION_DATABASE_INDEX_RESOURCE_PATH = "res://assets/3D/tiles/definitions/tile_database_index.json"
 
@@ -23,7 +23,7 @@ var tile_definition_database : Dictionary = {}
 ################################################################################
 
 func _initialize_tile_definition_database(db_index_fp) -> Dictionary:
-	var _tile_definition_database_index : Dictionary = fio.load_json(db_index_fp)
+	var _tile_definition_database_index : Dictionary = JsonFio.load_json(db_index_fp)
 	var _tile_definition_db_file_list : Array = _tile_definition_database_index["TILE_DEFINITION_RESOURCE_PATHS"]
 
 	var _tmp_tile_definition_db : Dictionary = {}
@@ -31,7 +31,7 @@ func _initialize_tile_definition_database(db_index_fp) -> Dictionary:
 	# load all the tile definition files specified in the database index 
 	# and store the information in the tile definition database
 	for fp in _tile_definition_db_file_list:
-		var _tmp_file_content = fio.load_json(fp)
+		var _tmp_file_content = JsonFio.load_json(fp)
 		var _tmp_tddb_entry : Dictionary = {}
 		var _keys = _tmp_file_content.keys()
 

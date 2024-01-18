@@ -1,4 +1,4 @@
-extends Spatial
+extends Node
 
 # json loading
 func load_json(fp) -> Dictionary:

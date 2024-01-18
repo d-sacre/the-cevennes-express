@@ -1,7 +1,7 @@
 extends Node
 
-const FIO = preload("res://managers/userSettingsManager/utils/userSettingsManager_json_fio_handling.gd")
-var fio = FIO.new()
+#const FIO = preload("res://managers/userSettingsManager/utils/userSettingsManager_json_fio_handling.gd")
+#var fio = FIO.new()
 
 # user settings
 # user:// under Linux/MacOS: ~/.local/share/godot/app_userdata/Name, Windows: %APPDATA%/Name
@@ -24,22 +24,21 @@ func initialize_user_settings() -> void:
 	
 	if not file.file_exists(self.USER_SETTINGS_FILEPATH):
 		print("User settings file @ ", self.USER_SETTINGS_FILEPATH, " does NOT already exist. Copying defaults from ", self.FALLBACK_USER_SETTINGS_FILEPATH, ".")
-		var _default_data = fio.load_json(self.FALLBACK_USER_SETTINGS_FILEPATH)
-		fio.save_json(self.USER_SETTINGS_FILEPATH, _default_data)
+		var _default_data = JsonFio.load_json(self.FALLBACK_USER_SETTINGS_FILEPATH)
+		JsonFio.save_json(self.USER_SETTINGS_FILEPATH, _default_data)
 	else:
 		print("User settings file @ ", self.USER_SETTINGS_FILEPATH, " does already exist.")
 
 	file.close()
 	
 	# loading user settings file
-	self.userSettings = fio.load_json(self.USER_SETTINGS_FILEPATH)
+	self.userSettings = JsonFio.load_json(self.USER_SETTINGS_FILEPATH)
 
 	self._update()
 
 	
-	
 func save_user_settings() -> void:
-	fio.save_json(self.USER_SETTINGS_FILEPATH, self.userSettings)
+	JsonFio.save_json(self.USER_SETTINGS_FILEPATH, self.userSettings)
 
 
 func update_user_settings(settingKeychain, setterType, settingValue) -> Dictionary:
@@ -71,3 +70,11 @@ func update_user_settings(settingKeychain, setterType, settingValue) -> Dictiona
 
 func get_user_settings() -> Dictionary:
 	return self.userSettings
+
+# func _on_tree_exiting() -> void:
+# 	print("userSettingsManager is about to exit")
+# 	queue_free()
+# #	free()
+
+# func _ready():
+# 	self.connect("tree_exiting", self, "_on_tree_exiting")

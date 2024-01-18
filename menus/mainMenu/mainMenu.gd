@@ -12,8 +12,8 @@ var buttonText : Dictionary = {
 	"exit": "Exit"
 } 
 
-onready var audioManager : Node = $audioManager
-onready var userSettingsManager : Node = $userSettingsManager
+#onready var audioManager : Node = $audioManager
+#onready var userSettingsManager : Node = $userSettingsManager
 onready var settingsPopout : Node = $settingsPopout
 onready var creditsPopout : Node = $creditsPopout
 
@@ -65,7 +65,11 @@ func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> voi
 	
 			
 func _ready():
+	# initialize audio manager singleton correctly
+	self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
+	
 	userSettingsManager.initialize_user_settings()
+	
 	
 #	# ensure that popups are hidden
 #	settingsPopout.visible = false

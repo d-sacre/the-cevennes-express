@@ -15,5 +15,3 @@ func save_json(fp,file_data) -> void:
     file.open(fp, File.WRITE)
     file.store_line(to_json(file_data))
     file.close()
-
-
