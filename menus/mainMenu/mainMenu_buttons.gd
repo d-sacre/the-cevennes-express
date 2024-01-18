@@ -1,9 +1,15 @@
 extends PanelContainer
 
+################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
 signal button_pressed(buttonContext, buttonId, buttonRef)
 signal button_entered_hover(buttonContext, buttonId, buttonRef)
 signal button_exited_hover(buttonContext, buttonId, buttonRef)
 
+################################################################################
+#### ONREADY MEMBER VARIABLES ##################################################
+################################################################################
 onready var button_references : Dictionary = {
 	"default": {
 		"include": {
@@ -16,6 +22,9 @@ onready var button_references : Dictionary = {
 	"web": {"exclude": ["exit"]}
 }
 
+################################################################################
+#### SIGNAL HANDLING ###########################################################
+################################################################################
 func _on_button_pressed_play() -> void:
 	emit_signal("button_pressed", "mainMenu", "play", button_references["default"]["include"]["play"])
 	
@@ -52,7 +61,9 @@ func _on_button_exited_hover_credits() -> void:
 func _on_button_exited_hover_exit() -> void:
 	emit_signal("button_exited_hover", "mainMenu", "exit", button_references["default"]["include"]["exit"])
 
-# Called when the node enters the scene tree for the first time.
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################	
 func _ready():
 	var _list_of_buttons = button_references["default"]["include"].keys()
 	

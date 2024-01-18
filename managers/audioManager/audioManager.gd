@@ -1,10 +1,25 @@
 extends Node
 
+################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# The scene this script is attached to is autoloaded as "audioManager".
+# The scene and this script require the following other scenes/scripts to be 
+# autoloaded in the following order before this scene can be autoloaded:
+# "JsonFio": res://utils/fileHandling/json_fio.gd
+# "DictionaryParsing": res://utils/dataHandling/dictionaryParsing.gd
+# "AudioManagerNodeHandling": res://managers/audioManager/utils/audioManager_node-handling.gd
+# "sfxManager": res://managers/audioManager/sfx/sfxManager.tscn
+# "musicManager": res://managers/audioManager/music/musicManager.tscn
+
+################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
 signal music_playlist_updated
 
-# var DICTUTILS = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd")
-# var AudioManagerDictUtils = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd").new() #DICTUTILS.new()
-
+################################################################################
+#### VARIABLE DEFINITIONS ######################################################
+################################################################################
 var audio_bus_aliases : Dictionary = {
 	"master":  "Master",
 	"sfx": {
@@ -15,9 +30,9 @@ var audio_bus_aliases : Dictionary = {
 	"music":  "Music"
 }
 
-#onready var musicManager : Node = $musicManager
-#onready var sfxManager : Node = $sfxManager
-
+################################################################################
+#### FUNCTION DEFINITIONS ######################################################
+################################################################################
 func play_sfx(keyChain) -> void:
 	sfxManager.play_sound(keyChain)
 	
@@ -35,6 +50,9 @@ func set_predefined_playlist(playlistId, _start_playback = true) -> void:
 	var _tmp_playlist = _tmp_playlist_dict["songs"]
 	set_playlist(_tmp_playlist, _tmp_playlist_dict["loop"], _start_playback)
 
+################################################################################
+#### SIGNAL HANDLING ###########################################################
+################################################################################
 func _on_set_audio_volume(settingKeychain, settingValue) -> void:
 	var audio_bus_name = DictionaryParsing.get_dict_element_via_keychain(audio_bus_aliases,settingKeychain)
 	var db = linear2db(settingValue/100)
@@ -42,15 +60,9 @@ func _on_set_audio_volume(settingKeychain, settingValue) -> void:
 
 	print("Set volume")
 
-# func _on_tree_exiting() -> void:
-# 	print("Audio Manager is about to exit")
-# 	# AudioManagerDictUtils = null
-# 	# DICTUTILS = null
-# 	queue_free()
-
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
 func _ready():
-#	var _root = get_tree().get_root()#get_node("/")#get_node("../") #self.get_parent()
-#	get_node().connect("set_audio_volume", self, "_on_set_audio_volume")
-	# self.connect("tree_exiting", self, "_on_tree_exiting")
 	self.connect("music_playlist_updated", musicManager, "_on_music_playlist_updated") # required, since musicManager is loaded as singleton BEFORE audioManager
 

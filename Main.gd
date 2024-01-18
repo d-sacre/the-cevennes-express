@@ -1,5 +1,21 @@
 extends Node
 
+################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "userSettingsManager": res://managers/userSettingsManager/userSettingsManager.tscn
+# "audioManager": res://managers/audioManager/audioManager.tscn
+# Other autoloads that are indirectly required:
+# "JsonFio": res://utils/fileHandling/json_fio.gd
+# "DictionaryParsing": res://utils/dataHandling/dictionaryParsing.gd
+# "AudioManagerNodeHandling": res://managers/audioManager/utils/audioManager_node-handling.gd
+# "sfxManager": res://managers/audioManager/sfx/sfxManager.tscn
+# "musicManager": res://managers/audioManager/music/musicManager.tscn
+
+################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
 signal set_audio_volume(settingKeychain, settingValue)
 
 ################################################################################
@@ -18,7 +34,7 @@ const HEX_GRID_SIZE_Y : int = 10
 ################################################################################
 
 ################################################################################
-#### Private Member Variables ##################################################
+#### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 var _last_collison_object 
 var _current_collision_object 
@@ -28,14 +44,12 @@ var _current_tile_index : int = -1
 var raycast_screenspace_position : Vector2 = Vector2(0,0)
 
 ################################################################################
-#### Onready Member Variables ##################################################
+#### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
 onready var hexGridManager = $hexGridManager
 onready var cameraManager = $cameraManager
 onready var tileDefinitionManager = $tileDefinitionManager
 onready var cppBridge = $cppBridge
-# onready var audioManager = $audioManager
-# onready var userSettingsManager = $userSettingsManager
 onready var settingsPopout = $CanvasLayer/PopupMenu/settings_popup_panelContainer
 
 ################################################################################

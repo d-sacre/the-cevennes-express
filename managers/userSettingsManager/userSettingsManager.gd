@@ -1,15 +1,29 @@
 extends Node
 
-#const FIO = preload("res://managers/userSettingsManager/utils/userSettingsManager_json_fio_handling.gd")
-#var fio = FIO.new()
+################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# The scene this script is attached to is autoloaded as "userSettingsManager".
+# The scene and this script require the following other scenes/scripts to be 
+# autoloaded in the following order before this scene can be autoloaded:
+# "JsonFio": res://utils/fileHandling/json_fio.gd
 
+################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
 # user settings
 # user:// under Linux/MacOS: ~/.local/share/godot/app_userdata/Name, Windows: %APPDATA%/Name
 const USER_SETTINGS_FILEPATH : String = "user://the-cevennes-express_user-settings_honest-jam-6.json"
 const FALLBACK_USER_SETTINGS_FILEPATH : String = "res://managers/userSettingsManager/the-cevennes-express_user-settings_honest-jam-6_default.json"
 
+################################################################################
+#### VARIABLE DEFINITIONS ######################################################
+################################################################################
 var userSettings : Dictionary = {}
 
+################################################################################
+#### FUNCTION DEFINITIONS ######################################################
+################################################################################
 func _update():
 	self.save_user_settings() # to make sure no settings get lost
 
@@ -71,10 +85,4 @@ func update_user_settings(settingKeychain, setterType, settingValue) -> Dictiona
 func get_user_settings() -> Dictionary:
 	return self.userSettings
 
-# func _on_tree_exiting() -> void:
-# 	print("userSettingsManager is about to exit")
-# 	queue_free()
-# #	free()
 
-# func _ready():
-# 	self.connect("tree_exiting", self, "_on_tree_exiting")

@@ -1,15 +1,20 @@
 tool
 extends Node
 
-# var DICTUTILS = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd")
-# var dictutils = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd").new() #DICTUTILS.new()
+################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# The scene this script is attached to is autoloaded as "musicManager".
+# The scene and this script require the following other scenes/scripts to be 
+# autoloaded in the following order before this scene can be autoloaded:
+# "JsonFio": res://utils/fileHandling/json_fio.gd
+# "DictionaryParsing": res://utils/dataHandling/dictionaryParsing.gd
+# "AudioManagerNodeHandling": res://managers/audioManager/utils/audioManager_node-handling.gd
+# "musicManager": res://managers/audioManager/music/musicManager.tscn
 
-# var JSONUTILS = preload("res://managers/audioManager/utils/audioManager_json_fio_handling.gd")
-# var JsonFio = preload("res://managers/audioManager/utils/audioManager_json_fio_handling.gd").new() #JSONUTILS.new()
-
-# var NODEUTILS = preload("res://managers/audioManager/utils/audioManager_node-handling.gd")
-# var nodeutils = preload("res://managers/audioManager/utils/audioManager_node-handling.gd").new() #NODEUTILS.new()
-
+################################################################################
+#### VARIABLE DEFINITIONS ######################################################
+################################################################################
 var permission_to_play : bool = false
 var playing_mode : String = "none"
 var playlist : Dictionary = {}
@@ -18,10 +23,11 @@ var song_requests : Array = []
 
 var songs : Dictionary = {}
 
-var predefined_playlists : Dictionary = {
-	#"Main Menu": {"songs": ["Misty & Blue"], "loop": true}
-}
+var predefined_playlists : Dictionary = {}
 
+################################################################################
+#### FUNCTION DEFINITIONS ######################################################
+################################################################################
 func request_song(song, loop = false) -> void:
 	song_requests.append({"title": song, "loop": loop})
 
@@ -30,6 +36,9 @@ func _play_first_song_of_playlist() -> void:
 	playlist["last"] = 0
 	get_node(songs[song_to_play]["nodePath"]).play()
 
+################################################################################
+#### SIGNAL HANDLING ###########################################################
+################################################################################
 func _on_music_playlist_updated() -> void:
 	var currently_playing_checksum = 0
 
@@ -62,18 +71,9 @@ func _on_song_finished() -> void:
 				playlist["last"] = 0
 				get_node(songs[song_to_play]["nodePath"]).play()
 
-# func _on_tree_exiting() -> void:
-# 	print("Music Manager is about to exit")
-	# self.dictutils = null
-	# self.dictutils.free()
-#	JsonFio = null
-	# self.nodeutils = null
-	# DICTUTILS = null
-	# JSONUTILS = null
-	# NODEUTILS = null
-	# queue_free()
-
-
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
 func _ready():
 	# load all the song information from the json file
 	songs = JsonFio.load_json("res://managers/audioManager/music/music.json")
@@ -96,7 +96,6 @@ func _ready():
 	# connect to the signal emitted when the playlist has been updated
 	# audioManager.connect("music_playlist_updated", self, "_on_music_playlist_updated")
 
-	# self.connect("tree_exiting", self, "_on_tree_exiting")
 
 	
 

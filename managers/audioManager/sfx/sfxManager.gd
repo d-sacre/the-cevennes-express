@@ -1,36 +1,34 @@
 #tool
 extends Node
 
-# var AudioManagerDictUtils = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd")
-# var AudioManagerDictUtils = preload("res://managers/audioManager/utils/audioManager_dict_utils.gd").new() #AudioManagerDictUtils.new()
+################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# The scene this script is attached to is autoloaded as "sfxManager".
+# The scene and this script require the following other scenes/scripts to be 
+# autoloaded in the following order before this scene can be autoloaded:
+# "JsonFio": res://utils/fileHandling/json_fio.gd
+# "DictionaryParsing": res://utils/dataHandling/dictionaryParsing.gd
+# "AudioManagerNodeHandling": res://managers/audioManager/utils/audioManager_node-handling.gd
+# "sfxManager": res://managers/audioManager/sfx/sfxManager.tscn
 
-# var JSONUTILS = preload("res://managers/audioManager/utils/audioManager_json_fio_handling.gd")
-# var JsonFio = preload("res://managers/audioManager/utils/audioManager_json_fio_handling.gd").new() #JSONUTILS.new()
-
-# var NODEUTILS = preload("res://managers/audioManager/utils/audioManager_node-handling.gd")
-# var nodeutils = preload("res://managers/audioManager/utils/audioManager_node-handling.gd").new() #NODEUTILS.new()
-
+################################################################################
+#### VARIABLE DEFINITIONS ######################################################
+################################################################################
 var sfx : Dictionary = {}
-	
+
+################################################################################
+#### FUNCTION DEFINITIONS ######################################################
+################################################################################
 func play_sound(keyChain):
 	var tmp_keyChain = keyChain
 	tmp_keyChain.append("nodePath")
 	var tmp_node_path = DictionaryParsing.get_dict_element_via_keychain(sfx, keyChain)
 	get_node(tmp_node_path).play()
 
-
-# func _on_tree_exiting() -> void:
-# 	print("sfxManager exiting")
-	# self.AudioManagerDictUtils = null
-	# self.JsonFio = null
-	# AudioManagerNodeHandling = null
-	# AudioManagerDictUtils = null
-	# JSONUTILS = null
-	# NODEUTILS = null
-	# queue_free()
-
-
-# Called when the node enters the scene tree for the first time.
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
 func _ready():
 	# loading all the sounds from the json file
 	sfx = JsonFio.load_json("res://managers/audioManager/sfx/sfx.json")
@@ -67,8 +65,6 @@ func _ready():
 						AudioManagerNodeHandling.add_and_configure_AudioStreamPlayer(self,sfx[object][subobject][subsubobject], object+"/"+subobject, sfx_object_name)
 					else:
 						pass
-
-	# self.connect("tree_exiting", self, "_on_tree_exiting")
 
 
 

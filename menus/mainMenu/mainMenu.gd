@@ -1,10 +1,32 @@
 extends CanvasLayer
 
+################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "userSettingsManager": res://managers/userSettingsManager/userSettingsManager.tscn
+# "audioManager": res://managers/audioManager/audioManager.tscn
+# Other autoloads that are indirectly required:
+# "JsonFio": res://utils/fileHandling/json_fio.gd
+# "DictionaryParsing": res://utils/dataHandling/dictionaryParsing.gd
+# "AudioManagerNodeHandling": res://managers/audioManager/utils/audioManager_node-handling.gd
+# "sfxManager": res://managers/audioManager/sfx/sfxManager.tscn
+# "musicManager": res://managers/audioManager/music/musicManager.tscn
+
+################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
 signal set_audio_volume(settingKeychain, settingValue)
 
+################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
 const BUTTON_SOURCES : Array = ["mainMenu_buttons"]
 const BUTTON_SIGNALS : Array = ["button_pressed", "button_entered_hover", "button_exited_hover"]
 
+################################################################################
+#### VARIABLE DEFINITIONS ######################################################
+################################################################################
 var buttonText : Dictionary = {
 	"play": "Play",
 	"settings": "Settings",
@@ -12,12 +34,15 @@ var buttonText : Dictionary = {
 	"exit": "Exit"
 } 
 
-#onready var audioManager : Node = $audioManager
-#onready var userSettingsManager : Node = $userSettingsManager
+################################################################################
+#### ONREADY MEMBER VARIABLES ##################################################
+################################################################################
 onready var settingsPopout : Node = $settingsPopout
 onready var creditsPopout : Node = $creditsPopout
 
-
+################################################################################
+#### SIGNAL HANDLING ###########################################################
+################################################################################
 func _on_button_pressed(buttonContext, buttonId, buttonRef) -> void:
 	# play button sound only if corresponding bus audio level is above 0:
 	var _tmp_user_settings : Dictionary = userSettingsManager.get_user_settings()
@@ -63,14 +88,15 @@ func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> voi
 	if _audioManagerSignalResult.has("keyChain"):
 		emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
 	
-			
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################			
 func _ready():
 	# initialize audio manager singleton correctly
 	self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
 	
 	userSettingsManager.initialize_user_settings()
-	
-	
+
 #	# ensure that popups are hidden
 #	settingsPopout.visible = false
 	creditsPopout.visible = false
