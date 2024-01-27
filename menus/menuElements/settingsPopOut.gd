@@ -2,9 +2,6 @@ extends PanelContainer
 
 signal user_settings_changed(settingKeychain, setterType, settingValue)
 
-var UTILS = load("res://menus/menuElements/dict_utils.gd")
-var utils = UTILS.new()
-
 onready var slider_reference : Dictionary = {
 	"volume": {
 		"sfx": {
@@ -32,13 +29,15 @@ func slider_initialize(user_settings) -> void:
 					for subsubcategory in _subobject:
 						var _subsubobject = _subobject[subsubcategory]
 						var slider_keychain = [category, subcategory, subsubcategory]
-						_subsubobject.value = utils.get_dict_element_via_keychain(user_settings,slider_keychain)
+						_subsubobject.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
 				else:
+					print(category,subcategory)
 					var slider_keychain = [category, subcategory]
-					_subobject.value = utils.get_dict_element_via_keychain(user_settings,slider_keychain)
+					_subobject.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
 		else:
+			print(category, "no dict")
 			var slider_keychain = [category]
-			_object.value = utils.get_dict_element_via_keychain(user_settings,slider_keychain)
+			_object.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
 
 func button_initialize(user_settings) -> void:
 	for category in button_reference:

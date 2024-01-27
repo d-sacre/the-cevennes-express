@@ -33,6 +33,47 @@ var audio_bus_aliases : Dictionary = {
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
+func initialize_volume_levels(_userSettings) -> void:
+	var userSettingsVolume = _userSettings["volume"]
+	
+	var volumesToInitialize : Array = []
+	var _keys = userSettingsVolume.keys()
+
+	for _key in _keys:
+		var element = userSettingsVolume[_key]
+		var _tmp_array_entry : Dictionary = {"keychain": [], "value": 0}
+		
+		_tmp_array_entry["keychain"].append(_key)
+
+		if element is Dictionary:
+			var _subkeys = element.keys()
+			var _subkeyIndex = 0
+
+			for _subkey in _subkeys:
+				var subelement = element[_subkey]
+
+				if subelement is Dictionary:
+					pass
+				else:
+					var _tmp_tmp_array_entry = _tmp_array_entry.duplicate(true)
+					_tmp_tmp_array_entry["keychain"].append(_subkey)
+					_tmp_tmp_array_entry["value"] = subelement
+					volumesToInitialize.append(_tmp_tmp_array_entry)
+		else:
+			_tmp_array_entry["value"] = element
+			volumesToInitialize.append(_tmp_array_entry)
+
+	# print(volumesToInitialize)
+
+	# {"keychain": ["master"], "value": userSettingsVolume["master"]}
+
+	print("Master Volume before: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
+
+	for element in volumesToInitialize:
+		_on_set_audio_volume(element["keychain"], element["value"])
+
+	print("Master Volume after: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
+
 func play_sfx(keyChain) -> void:
 	sfxManager.play_sound(keyChain)
 	
@@ -58,7 +99,7 @@ func _on_set_audio_volume(settingKeychain, settingValue) -> void:
 	var db = linear2db(settingValue/100)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(audio_bus_name), db)
 
-	print("Set volume")
+	print("Set volume of ", audio_bus_name)
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################

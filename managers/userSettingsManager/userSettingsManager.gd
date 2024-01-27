@@ -76,7 +76,7 @@ func update_user_settings(settingKeychain, setterType, settingValue) -> Dictiona
 		
 		_returnSignal = {"keyChain": _tmp_settingKeychain, "value": settingValue}
 	
-	print(_returnSignal)
+	print("update user settings signal information: ",_returnSignal)
 	
 	self._update()
 

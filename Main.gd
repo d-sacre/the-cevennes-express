@@ -86,6 +86,10 @@ func _ready() -> void:
 	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
 	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
+	# initialize audio manager singleton correctly and set the user sepcific volume levels
+	self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
+	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
+
 	# setting up all camera related stuff
 	# TO-DO: Set starting position to the center of the grid
 	cameraManager.connect("raycast_result",self,"_on_raycast_result")

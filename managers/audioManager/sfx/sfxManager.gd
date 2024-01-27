@@ -24,6 +24,7 @@ func play_sound(keyChain):
 	var tmp_keyChain = keyChain
 	tmp_keyChain.append("nodePath")
 	var tmp_node_path = DictionaryParsing.get_dict_element_via_keychain(sfx, keyChain)
+	print("Playing ", keyChain, ", Bus: ", get_node(tmp_node_path).get_bus())
 	get_node(tmp_node_path).play()
 
 ################################################################################

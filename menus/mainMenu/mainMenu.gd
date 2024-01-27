@@ -46,8 +46,11 @@ onready var creditsPopout : Node = $creditsPopout
 func _on_button_pressed(buttonContext, buttonId, buttonRef) -> void:
 	# play button sound only if corresponding bus audio level is above 0:
 	var _tmp_user_settings : Dictionary = userSettingsManager.get_user_settings()
-	if _tmp_user_settings["volume"]["sfx"]["ui"] > 0:
-		audioManager.play_sfx(["ui", "button", "pressed"]) # play the button pressed sound
+	# if _tmp_user_settings["volume"]["master"] > 0: # to fix issue that until first change of master slider, the audio is played nevertheless
+	# 	if _tmp_user_settings["volume"]["sfx"]["ui"] > 0:
+	# 		audioManager.play_sfx(["ui", "button", "pressed"]) # play the button pressed sound
+
+	audioManager.play_sfx(["ui", "button", "pressed"]) # play the button pressed sound
 	
 #	# button pressed FSM
 	match buttonId:
@@ -72,9 +75,12 @@ func _on_button_pressed(buttonContext, buttonId, buttonRef) -> void:
 
 func _on_button_entered_hover(buttonContext, buttonId, buttonRef) -> void:
 	var _tmp_user_settings : Dictionary = userSettingsManager.get_user_settings()
-	print(_tmp_user_settings["volume"]["sfx"]["ui"])
-	if _tmp_user_settings["volume"]["sfx"]["ui"] > 0:
-		audioManager.play_sfx(["ui", "button", "hover"])
+	# print("Master: ", _tmp_user_settings["volume"]["master"], ", SFX UI: ", _tmp_user_settings["volume"]["sfx"]["ui"])
+	# if _tmp_user_settings["volume"]["master"] > 0: # to fix issue that until first change of master slider, the audio is played nevertheless
+	# 	if _tmp_user_settings["volume"]["sfx"]["ui"] > 0:
+	# 		audioManager.play_sfx(["ui", "button", "hover"])
+
+	audioManager.play_sfx(["ui", "button", "hover"])
 
 	if not buttonRef.disabled:
 		buttonRef.text = "«" + buttonText[buttonId] + "»"
@@ -92,10 +98,16 @@ func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> voi
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################			
 func _ready():
+	
+	
+	# load the user settings
+	userSettingsManager.initialize_user_settings()
+
 	# initialize audio manager singleton correctly
 	self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
-	
-	userSettingsManager.initialize_user_settings()
+
+	# set the default values
+	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
 
 #	# ensure that popups are hidden
 #	settingsPopout.visible = false
@@ -115,3 +127,6 @@ func _ready():
 	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
 	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
+	
+
+	
