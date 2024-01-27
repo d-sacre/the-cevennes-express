@@ -43,5 +43,5 @@ func add_category_node(context, parent, name):
 	_tmp_node.name = name
 	_parent_ref.add_child(_tmp_node)
 	var _tmp_root_ref = context#.get_parent()#.get_parent()
-	print("tmp_root: ", _tmp_root_ref)
+	# print("tmp_root: ", _tmp_root_ref)
 	_tmp_node.set_owner(_tmp_root_ref.get_tree().get_edited_scene_root())

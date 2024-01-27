@@ -35,18 +35,19 @@ func _update():
 func initialize_user_settings() -> void:
 	# checking if user settings file already exists
 	var file = File.new()
-	
+	print("\t-> Initialize UserSettingsManager...")
 	if not file.file_exists(self.USER_SETTINGS_FILEPATH):
-		print("User settings file @ ", self.USER_SETTINGS_FILEPATH, " does NOT already exist. Copying defaults from ", self.FALLBACK_USER_SETTINGS_FILEPATH, ".")
+		print("\t\t-> User Settings File @ ", self.USER_SETTINGS_FILEPATH, " does NOT already exist. Copying defaults from ", self.FALLBACK_USER_SETTINGS_FILEPATH, ".")
 		var _default_data = JsonFio.load_json(self.FALLBACK_USER_SETTINGS_FILEPATH)
 		JsonFio.save_json(self.USER_SETTINGS_FILEPATH, _default_data)
 	else:
-		print("User settings file @ ", self.USER_SETTINGS_FILEPATH, " does already exist.")
+		print("\t\t-> User Settings File @ ", self.USER_SETTINGS_FILEPATH, " does already exist.")
 
 	file.close()
 	
 	# loading user settings file
 	self.userSettings = JsonFio.load_json(self.USER_SETTINGS_FILEPATH)
+	print("\t\t-> Loading User Settings from File @ ", self.USER_SETTINGS_FILEPATH,"...")
 
 	self._update()
 
@@ -76,7 +77,7 @@ func update_user_settings(settingKeychain, setterType, settingValue) -> Dictiona
 		
 		_returnSignal = {"keyChain": _tmp_settingKeychain, "value": settingValue}
 	
-	print("update user settings signal information: ",_returnSignal)
+	# print("update user settings signal information: ",_returnSignal)
 	
 	self._update()
 

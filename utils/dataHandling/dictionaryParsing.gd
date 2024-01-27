@@ -8,6 +8,9 @@ extends Node
 ################################################################################
 #### FUNCTION DEFINITIONS ######################################################
 ################################################################################
+func _init():
+	print("\t-> Initialize Dictionary Parsing Utility...")
+
 func get_dict_element_via_keychain(dict,keychain):
 	var _dict_element = dict
 

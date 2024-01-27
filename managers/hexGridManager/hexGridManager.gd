@@ -136,7 +136,7 @@ func place_floating_tile_at_index(index):
 
 # REMARK: Requires more logic to not interfer with chain highlighting set by the logic
 func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):
-	print("current tile: ", _current_tile_index, ", last tile: ", _last_tile_index)
+	# print("current tile: ", _current_tile_index, ", last tile: ", _last_tile_index)
 	if _current_tile_index != -1:
 		self.set_single_tile_highlight(_current_tile_index, true)
 
@@ -146,8 +146,7 @@ func manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index):
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-# func _ready() -> void:
-# 	_generate_grid()
+
 
 
 

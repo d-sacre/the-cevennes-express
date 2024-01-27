@@ -63,16 +63,12 @@ func initialize_volume_levels(_userSettings) -> void:
 			_tmp_array_entry["value"] = element
 			volumesToInitialize.append(_tmp_array_entry)
 
-	# print(volumesToInitialize)
-
-	# {"keychain": ["master"], "value": userSettingsVolume["master"]}
-
-	print("Master Volume before: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
+	# print("Master Volume before: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
 
 	for element in volumesToInitialize:
 		self.set_volume_level(element["keychain"], element["value"])
 
-	print("Master Volume after: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
+	# print("Master Volume after: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
 
 func set_volume_level(settingKeychain, settingValue) -> void:
 	var audio_bus_name = DictionaryParsing.get_dict_element_via_keychain(audio_bus_aliases,settingKeychain)
@@ -97,14 +93,9 @@ func set_predefined_playlist(playlistId, _start_playback = true) -> void:
 	set_playlist(_tmp_playlist, _tmp_playlist_dict["loop"], _start_playback)
 
 ################################################################################
-#### SIGNAL HANDLING ###########################################################
-################################################################################
-func _on_set_audio_volume(settingKeychain, settingValue) -> void:
-	self.set_volume_level(settingKeychain, settingValue)
-
-################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready():
+	print("\t-> Initialize AudioManager...")
 	self.connect("music_playlist_updated", musicManager, "_on_music_playlist_updated") # required, since musicManager is loaded as singleton BEFORE audioManager
 

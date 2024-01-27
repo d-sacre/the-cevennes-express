@@ -41,7 +41,7 @@ func initialize_cpp_bridge(x : int, y : int):
 
 func pass_tile_definition_database_to_cpp_backend(dict) -> void:
 	var result : Dictionary = cppBackend.SetTileSet(dict)
-	print("Print from Godot:", result)
+	# print("Print from Godot:", result)
 
 func initialize_grid_in_cpp_backend(creator : int) -> void:
 	cppBackend.CreateGame(self.hex_grid_size_x, self.hex_grid_size_y, creator)

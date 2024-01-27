@@ -14,11 +14,6 @@ extends CanvasLayer
 # "musicManager": res://managers/audioManager/music/musicManager.tscn
 
 ################################################################################
-#### CUSTOM SIGNAL DEFINITIONS #################################################
-################################################################################
-# signal set_audio_volume(settingKeychain, settingValue)
-
-################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const BUTTON_SOURCES : Array = ["mainMenu_buttons"]
@@ -92,7 +87,6 @@ func _on_button_exited_hover(buttonContext, buttonId, buttonRef) -> void:
 func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
 	if _audioManagerSignalResult.has("keyChain"):
-		# emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
 ################################################################################
@@ -104,10 +98,7 @@ func _ready():
 	# load the user settings
 	userSettingsManager.initialize_user_settings()
 
-	# initialize audio manager singleton correctly
-	# self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
-
-	# set the default values
+	# initialize audio manager singleton correctly and set the default values
 	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
 
 #	# ensure that popups are hidden

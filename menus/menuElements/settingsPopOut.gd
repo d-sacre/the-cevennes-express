@@ -31,11 +31,9 @@ func slider_initialize(user_settings) -> void:
 						var slider_keychain = [category, subcategory, subsubcategory]
 						_subsubobject.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
 				else:
-					print(category,subcategory)
 					var slider_keychain = [category, subcategory]
 					_subobject.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
 		else:
-			print(category, "no dict")
 			var slider_keychain = [category]
 			_object.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
 
@@ -51,7 +49,6 @@ func button_initialize(user_settings) -> void:
 				_button_type = _object["type"]
 
 				if _button_type == "toggle":
-					print(user_settings[category])
 					if user_settings[category] == false:
 						_button.pressed = false
 					elif user_settings[category] == true:

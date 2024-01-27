@@ -24,13 +24,15 @@ func play_sound(keyChain):
 	var tmp_keyChain = keyChain
 	tmp_keyChain.append("nodePath")
 	var tmp_node_path = DictionaryParsing.get_dict_element_via_keychain(sfx, keyChain)
-	print("Playing ", keyChain, ", Bus: ", get_node(tmp_node_path).get_bus())
+	# print("Playing ", keyChain, ", Bus: ", get_node(tmp_node_path).get_bus())
 	get_node(tmp_node_path).play()
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready():
+	print("=> AutoLoading Managers...")
+	print("\t-> Initialize sfxManager...")
 	# loading all the sounds from the json file
 	sfx = JsonFio.load_json("res://managers/audioManager/sfx/sfx.json")
 	var sfx_objects = sfx.keys()

@@ -14,11 +14,6 @@ extends Node
 # "musicManager": res://managers/audioManager/music/musicManager.tscn
 
 ################################################################################
-#### CUSTOM SIGNAL DEFINITIONS #################################################
-################################################################################
-# signal set_audio_volume(settingKeychain, settingValue)
-
-################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
 var rng = RandomNumberGenerator.new()
@@ -75,7 +70,6 @@ func _on_raycast_result(current_collision_information):
 func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
 	if _audioManagerSignalResult.has("keyChain"):
-		# emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
 ################################################################################
@@ -88,7 +82,6 @@ func _ready() -> void:
 	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
 	# initialize audio manager singleton correctly and set the user sepcific volume levels
-	# self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
 	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
 
 	# setting up all camera related stuff
@@ -121,7 +114,7 @@ func _input(event) -> void:
 func _process(delta):
 	if Input.is_action_just_pressed("place_tile"):
 		if _current_tile_index != -1:
-			print("place tile at ", _current_tile_index)
+			# print("place tile at ", _current_tile_index)
 
 			var floating_tile_status = hexGridManager.get_floating_tile_definition_uuid_and_rotation()
 			
@@ -130,7 +123,7 @@ func _process(delta):
 			if floating_tile_status.has("TILE_DEFINITION_UUID"): # required to prevent issues when no floating tile exists
 				tile_is_placeable = cppBridge.can_tile_be_placed_here(_current_tile_index, floating_tile_status["TILE_DEFINITION_UUID"], floating_tile_status["rotation"])
 
-			print("tile is placeable: ", tile_is_placeable)
+			# print("tile is placeable: ", tile_is_placeable)
 
 			if tile_is_placeable:
 				hexGridManager.set_status_placeholder(_current_tile_index,true, false)
