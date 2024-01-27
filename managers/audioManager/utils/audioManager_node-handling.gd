@@ -17,13 +17,7 @@ func add_and_configure_AudioStreamPlayer(context, dict, parent, name):
 		_audioplayerCreator.name = name # set the node name
 		_parent_ref.add_child(_audioplayerCreator) # add it to the parent
 
-		var _tmp_root_ref
-		if parent == "SELF":
-			_tmp_root_ref = context.get_parent()
-		else:
-			_tmp_root_ref = context.get_parent().get_parent()
-
-		_audioplayerCreator.set_owner(_tmp_root_ref.get_tree().get_edited_scene_root()) # make sure that it also displays in the editor
+		_audioplayerCreator.set_owner(sfxManager) # make sure that it also displays in the editor
 
 	# set or update the settings of the audio player
 	var _audioplayer = _parent_ref.get_node(name)
@@ -36,12 +30,15 @@ func add_category_node(context, parent, name):
 	var _parent_ref 
 	if parent == "SELF":
 		_parent_ref = context
+	elif parent == "ROOT":
+		_parent_ref = sfxManager
 	else:
 		_parent_ref = context.get_node(parent)
 		
 	var _tmp_node = Node.new()
 	_tmp_node.name = name
 	_parent_ref.add_child(_tmp_node)
+
+	# Perhaps could simplified due to AutoLoad of SfxManager?
 	var _tmp_root_ref = context#.get_parent()#.get_parent()
-	# print("tmp_root: ", _tmp_root_ref)
 	_tmp_node.set_owner(_tmp_root_ref.get_tree().get_edited_scene_root())

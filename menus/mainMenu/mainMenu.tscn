@@ -4,7 +4,7 @@
 [ext_resource path="res://menus/mainMenu/mainMenu_buttons.tscn" type="PackedScene" id=2]
 [ext_resource path="res://menus/mainMenu/mainMenu.gd" type="Script" id=3]
 [ext_resource path="res://menus/menuElements/creditsPopup.tscn" type="PackedScene" id=5]
-[ext_resource path="res://assets/billard_cut_color-fix_stage2.png" type="Texture" id=7]
+[ext_resource path="res://assets/2D/billard_cut_color-fix_stage2.png" type="Texture" id=7]
 [ext_resource path="res://menus/menuElements/settingsPopup.tscn" type="PackedScene" id=8]
 
 [node name="mainMenu" type="CanvasLayer"]

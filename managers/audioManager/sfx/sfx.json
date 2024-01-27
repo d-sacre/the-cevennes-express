@@ -9,7 +9,7 @@
                     "bus": "UI SFX"
                 },
                 "hover": {
-                    "fp": "res://assets/drop_003.ogg",
+                    "fp": "res://assets/audio/sfx/ui/drop_003.ogg",
                     "volume_db": -18,
                     "playing": false,
                     "autoplay": false,

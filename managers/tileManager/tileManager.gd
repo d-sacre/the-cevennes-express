@@ -47,16 +47,6 @@ func initial_tile_configuration(tile_definition) -> void:
 	base_material.set_shader_param("texture_emission", load("res://assets/3D/tiles/base/textures/test-tile-texture_highlight-emission.png"))
 	base_material.set_shader_param("emission_energy", 0.2)
 
-	# if tile_definition == "default":
-	# 	# add station
-	# 	var stationLOAD = load("res://assets/gare_medium.tscn")
-	# 	var station = stationLOAD.instance()
-	# 	self.add_child(station)
-
-	# 	rng.randomize()
-	# 	var rotation_y = rng.randf_range(0.0, 180.0)
-	# 	station.rotation_degrees = Vector3(0,rotation_y,0)
-
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################

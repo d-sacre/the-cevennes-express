@@ -34,17 +34,20 @@ func _ready():
 	print("=> AutoLoading Managers...")
 	print("\t-> Initialize sfxManager...")
 	# loading all the sounds from the json file
+	print("\t\t-> Loading SFX Database...\n\t\t-> Creating SFX Categories and AudioStreamPlayers...")
 	sfx = JsonFio.load_json("res://managers/audioManager/sfx/sfx.json")
 	var sfx_objects = sfx.keys()
 	
+	# TO-DO: Has to be refined to cover more general cases! Currently hardcoded for a very specific tree structure
 	for object in sfx_objects:
 		var sfx_subobject_key_list = sfx[object].keys()
 
+		# create categories
 		if not sfx[object].has("fp"): # if the entry is not a data entry but a true category
 			if self.has_node(object): # category already exists
 				pass
 			else: # category does not already exist
-				AudioManagerNodeHandling.add_category_node(self, "SELF", object)
+				AudioManagerNodeHandling.add_category_node(self, "ROOT", object)
 
 		for subobject in sfx_subobject_key_list:
 			if sfx[object][subobject].has("fp"): # if it is not a sub subobject, but settings data
@@ -53,6 +56,7 @@ func _ready():
 
 				var sfx_subsubobject_key_list = sfx[object][subobject].keys()
 
+				# Create subcategories
 				if not sfx[object][subobject].has("fp"): # if the entry is not a data entry but a true subcategory
 					if self.has_node(subobject): # subcategory already exists
 						pass
@@ -64,10 +68,12 @@ func _ready():
 						var sfx_object_name = subsubobject # create the subobject name ; old: subobject + "_" +
 						var sfx_object_node_path = object + "/" + subobject + "/" + sfx_object_name # create the node path
 						sfx[object][subobject][subsubobject]["nodePath"] = sfx_object_node_path # add the node path to the dictionary entry
-
 						AudioManagerNodeHandling.add_and_configure_AudioStreamPlayer(self,sfx[object][subobject][subsubobject], object+"/"+subobject, sfx_object_name)
 					else:
-						pass
+						if self.has_node(subsubobject): # subcategory already exists
+							pass
+						else: # subcategory does not already exist
+							AudioManagerNodeHandling.add_category_node(self, subobject, subsubobject)
 
 
 
