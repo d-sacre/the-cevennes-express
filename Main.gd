@@ -16,7 +16,7 @@ extends Node
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal set_audio_volume(settingKeychain, settingValue)
+# signal set_audio_volume(settingKeychain, settingValue)
 
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
@@ -75,7 +75,8 @@ func _on_raycast_result(current_collision_information):
 func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
 	if _audioManagerSignalResult.has("keyChain"):
-		emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
+		# emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
+		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
@@ -87,7 +88,7 @@ func _ready() -> void:
 	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
 	# initialize audio manager singleton correctly and set the user sepcific volume levels
-	self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
+	# self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
 	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
 
 	# setting up all camera related stuff

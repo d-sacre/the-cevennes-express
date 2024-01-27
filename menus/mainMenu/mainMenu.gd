@@ -16,7 +16,7 @@ extends CanvasLayer
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal set_audio_volume(settingKeychain, settingValue)
+# signal set_audio_volume(settingKeychain, settingValue)
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
@@ -92,8 +92,9 @@ func _on_button_exited_hover(buttonContext, buttonId, buttonRef) -> void:
 func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
 	if _audioManagerSignalResult.has("keyChain"):
-		emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
-	
+		# emit_signal("set_audio_volume", _audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"]) # send the volume change signal
+		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
+
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################			
@@ -104,7 +105,7 @@ func _ready():
 	userSettingsManager.initialize_user_settings()
 
 	# initialize audio manager singleton correctly
-	self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
+	# self.connect("set_audio_volume", audioManager, "_on_set_audio_volume")
 
 	# set the default values
 	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
