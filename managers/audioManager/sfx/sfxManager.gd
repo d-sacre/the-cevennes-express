@@ -47,7 +47,7 @@ func _ready():
 			if self.has_node(object): # category already exists
 				pass
 			else: # category does not already exist
-				AudioManagerNodeHandling.add_category_node(self, "ROOT", object)
+				AudioManagerNodeHandling.add_category_node(self, sfxManager, object)
 
 		for subobject in sfx_subobject_key_list:
 			if sfx[object][subobject].has("fp"): # if it is not a sub subobject, but settings data
