@@ -1,0 +1,39 @@
+{
+    "DESCRIPTION": "A Town or Village Center with a Fountain ",
+    "EDGES": [
+        [
+            "SETTLEMENT",
+            "SETTLEMENT",
+            "SETTLEMENT"
+        ],
+        [
+            "SETTLEMENT",
+            "SETTLEMENT",
+            "SETTLEMENT"
+        ],
+        [
+            "SETTLEMENT",
+            "SETTLEMENT",
+            "SETTLEMENT"
+        ],
+        [
+            "SETTLEMENT",
+            "SETTLEMENT",
+            "SETTLEMENT"
+        ],
+        [
+            "SETTLEMENT",
+            "SETTLEMENT",
+            "SETTLEMENT"
+        ],
+        [
+            "SETTLEMENT",
+            "SETTLEMENT",
+            "SETTLEMENT"
+        ]
+    ],
+    "CONNECTIONS": [],
+    "GENERATED FROM": "settlement/default.xml",
+    "TILE_DEFINITION_UUID": "dd4f792b2326dfd136adb79e5ea7067b",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/placeable/textures/dd4f792b2326dfd136adb79e5ea7067b.png"
+}

@@ -23,7 +23,7 @@ func load_json(fp) -> Dictionary:
 
 # json saving
 func save_json(fp,file_data) -> void:
-    var file = File.new()
-    file.open(fp, File.WRITE)
-    file.store_line(to_json(file_data))
-    file.close()
+	var file = File.new()
+	file.open(fp, File.WRITE)
+	file.store_line(to_json(file_data))
+	file.close()

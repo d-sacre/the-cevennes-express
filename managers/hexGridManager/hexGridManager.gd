@@ -5,7 +5,7 @@ extends Spatial
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
 const PLACEHOLDER_TILE : Resource = preload("res://assets/3D/tiles/placeholder/hexTile_placeholder.tscn")
-const BASE_TILE : Resource = preload("res://assets/3D/tiles/base/hexTile_base.tscn")
+const BASE_TILE : Resource = preload("res://assets/3D/tiles/placeable/base/hexTile_base.tscn")
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################

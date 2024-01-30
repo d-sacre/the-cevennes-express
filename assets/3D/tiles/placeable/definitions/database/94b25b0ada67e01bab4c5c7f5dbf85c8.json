@@ -1,0 +1,55 @@
+{
+    "DESCRIPTION": "A Single Track Switch to the Right",
+    "EDGES": [
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ]
+    ],
+    "CONNECTIONS": [
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4b",
+            "END": "-1"
+        },
+        {
+            "TYPE": "RAILROAD",
+            "START": "E2b",
+            "END": "-1"
+        },
+        {
+            "TYPE": "RAILROAD",
+            "START": "E1b",
+            "END": "-1"
+        }
+    ],
+    "GENERATED FROM": "railroad/track/single_to_two_singles/switch/right/default.xml",
+    "TILE_DEFINITION_UUID": "94b25b0ada67e01bab4c5c7f5dbf85c8",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/placeable/textures/94b25b0ada67e01bab4c5c7f5dbf85c8.png"
+}

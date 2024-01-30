@@ -1,0 +1,50 @@
+{
+    "DESCRIPTION": "Straight Piece of Double Track Railroad that terminates the Right Track into One Buffer and continues the Left Track as a Single Track",
+    "EDGES": [
+        [
+            "GRASS",
+            "RAILROAD",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "RAILROAD",
+            "GRASS",
+            "RAILROAD"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ],
+        [
+            "GRASS",
+            "GRASS",
+            "GRASS"
+        ]
+    ],
+    "CONNECTIONS": [
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4c",
+            "END": "E1b"
+        },
+        {
+            "TYPE": "RAILROAD",
+            "START": "E4a",
+            "END": "-1"
+        }
+    ],
+    "GENERATED FROM": "railroad/track/double_to_single/dead_end/right/default.xml",
+    "TILE_DEFINITION_UUID": "7916674e5cc3c8c9bf986c07996a34a7",
+    "TEXTURE_RESOURCE_PATH": "res://assets/3D/tiles/placeable/textures/7916674e5cc3c8c9bf986c07996a34a7.png"
+}

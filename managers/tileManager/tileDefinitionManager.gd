@@ -3,10 +3,7 @@ extends Node
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
-# var FIO : Resource = preload("res://managers/tileManager/utils/tileManager_json_fio_handling.gd")
-# var fio = FIO.new()
-
-const TILE_DEFINITION_DATABASE_INDEX_RESOURCE_PATH = "res://assets/3D/tiles/definitions/tile_database_index.json"
+const TILE_DEFINITION_DATABASE_INDEX_RESOURCE_PATH = "res://assets/3D/tiles/placeable/definitions/tile_database_index.json"
 
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
@@ -49,10 +46,10 @@ func _initialize_tile_definition_database(db_index_fp) -> Dictionary:
 	return _tmp_tile_definition_db
 
 func get_tile_definition_database_entry(tile_definition_uuid) -> Dictionary:
-    var _tmp_tddb_entry = self.tile_definition_database[tile_definition_uuid]
-    _tmp_tddb_entry["TILE_DEFINITION_UUID"] = tile_definition_uuid
+	var _tmp_tddb_entry = self.tile_definition_database[tile_definition_uuid]
+	_tmp_tddb_entry["TILE_DEFINITION_UUID"] = tile_definition_uuid
 
-    return _tmp_tddb_entry
+	return _tmp_tddb_entry
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
