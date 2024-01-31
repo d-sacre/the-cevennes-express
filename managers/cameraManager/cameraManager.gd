@@ -20,11 +20,12 @@ const CAMERA_SPEED : Dictionary = {
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
-var zoom_current = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
-var zoom_requested = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
-var position_current = CAMERA_POSITION_DEFAULT
-var position_requested = CAMERA_POSITION_DEFAULT
-var current_camera_speed_mode = "slow"
+var zoom_current : Vector2 = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
+var zoom_requested : Vector2 = Vector2(CAMERA_FOV_DEFAULTS["default"],0)
+var position_current : Vector3 = CAMERA_POSITION_DEFAULT
+var position_requested : Vector3 = CAMERA_POSITION_DEFAULT
+var current_camera_speed_mode : String = "slow"
+var zooming_permitted : bool = true
 
 ################################################################################
 #### Onready Member Variables ##################################################
@@ -39,6 +40,12 @@ func enable_raycasting() -> void:
 
 func disable_raycasting() -> void:
 	_camera.raycasting_permitted = false
+
+func enable_zooming() -> void:
+	self.zooming_permitted = true
+
+func disable_zooming() -> void:
+	self.zooming_permitted = false
 
 func initiate_raycast_from_position(screenspace_position) -> void:
 	_camera.initiate_raycast_from_position(screenspace_position)
@@ -61,14 +68,16 @@ func _input(event) -> void:
 	# https://docs.godotengine.org/en/3.5/tutorials/inputs/input_examples.html
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_WHEEL_UP and event.pressed:
-			zoom_requested += Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
-			if zoom_requested.x > CAMERA_FOV_DEFAULTS["max"]:
-				zoom_requested.x =  CAMERA_FOV_DEFAULTS["max"]
+			if zooming_permitted:
+				zoom_requested += Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
+				if zoom_requested.x > CAMERA_FOV_DEFAULTS["max"]:
+					zoom_requested.x =  CAMERA_FOV_DEFAULTS["max"]
 			
 		if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
-			zoom_requested -= Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
-			if zoom_requested.x < CAMERA_FOV_DEFAULTS["min"]:
-				zoom_requested.x =  CAMERA_FOV_DEFAULTS["min"]
+			if zooming_permitted:
+				zoom_requested -= Vector2(CAMERA_SPEED["zoom"][current_camera_speed_mode],0)
+				if zoom_requested.x < CAMERA_FOV_DEFAULTS["min"]:
+					zoom_requested.x =  CAMERA_FOV_DEFAULTS["min"]
 				
 	if event is InputEventKey and event.pressed:
 		if event.shift:
