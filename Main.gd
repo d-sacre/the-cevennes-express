@@ -39,6 +39,7 @@ var _current_tile_index : int = -1
 var raycast_screenspace_position : Vector2 = Vector2(0,0)
 
 var _creativeMode : Object
+var _tileSelector : Object
 var _currentGuiMouseContext : String = "grid"
 
 ################################################################################
@@ -91,6 +92,15 @@ func _on_gui_mouse_context_changed(context, status):
 				_currentGuiMouseContext = "grid"
 				cameraManager.enable_zooming()
 				cameraManager.enable_raycasting()
+		"actionSelector":
+			if status == "entered":
+				_currentGuiMouseContext = context
+				cameraManager.disable_zooming()
+				cameraManager.disable_raycasting()
+			else:
+				_currentGuiMouseContext = "grid"
+				cameraManager.enable_zooming()
+				cameraManager.enable_raycasting()
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
@@ -120,15 +130,17 @@ func _ready() -> void:
 	cppBridge.initialize_grid_in_cpp_backend(0)
 
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
-	var scene = load("res://gui/overlays/creativeMode/tileSelector/tileSelector.tscn")
+	var scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
 	var instance = scene.instance()
 	add_child(instance)
-	_creativeMode = get_node("tileSelector")
-	_creativeMode.connect("new_selection", self, "_on_new_tile_selected") # to get information of newly selected tile
-	_creativeMode.connect("gui_mouse_context", self, "_on_gui_mouse_context_changed")
+	_creativeMode = get_node("creativeModeOverlay")
+	_tileSelector = get_node("creativeModeOverlay/tileSelector")
+	_creativeMode.connect("new_tile_selected", self, "_on_new_tile_selected") # to get information of newly selected tile
+	_creativeMode.connect("gui_mouse_context_changed", self, "_on_gui_mouse_context_changed")
+	_creativeMode.initialize_creative_mode_gui(tileDefinitionManager)
 
 	# initialize the floating tile over the grid
-	var tile_definition_uuid = _creativeMode.selectedTile # cppBridge.request_next_tile_definition_uuid() # for testing the creative mode
+	var tile_definition_uuid = _tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # for testing the creative mode
 	if tile_definition_uuid != "": 
 		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
 		hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
@@ -161,7 +173,7 @@ func _process(delta):
 					# test for sfx
 					audioManager.play_sfx(["game", "tile", "success"])
 
-					var tile_definition_uuid = _creativeMode.selectedTile # cppBridge.request_next_tile_definition_uuid() # not required for creative mode
+					var tile_definition_uuid = _tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # not required for creative mode
 					if tile_definition_uuid != "": 
 						var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
 						hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)

@@ -23,9 +23,9 @@ script = ExtResource( 4 )
 
 [node name="cppBridge" parent="." instance=ExtResource( 7 )]
 
-[node name="hexGridManager" parent="." instance=ExtResource( 1 )]
-
 [node name="tileDefinitionManager" parent="." instance=ExtResource( 5 )]
+
+[node name="hexGridManager" parent="." instance=ExtResource( 1 )]
 
 [node name="cameraManager" parent="." instance=ExtResource( 3 )]
 

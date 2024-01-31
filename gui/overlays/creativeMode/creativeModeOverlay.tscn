@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://gui/overlays/creativeMode/tileSelector/tileSelector.tscn" type="PackedScene" id=1]
+[ext_resource path="res://gui/overlays/creativeMode/actionSelector/actionSelector.tscn" type="PackedScene" id=2]
+[ext_resource path="res://gui/overlays/creativeMode/creativeModeOverlay.gd" type="Script" id=3]
+
+[node name="creativeModeOverlay" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+
+[node name="actionSelector" parent="." instance=ExtResource( 2 )]
+
+[node name="tileSelector" parent="." instance=ExtResource( 1 )]
