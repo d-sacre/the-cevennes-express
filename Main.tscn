@@ -39,6 +39,10 @@ transform = Transform( -1, 6.18173e-08, -6.18173e-08, 0, 0.707107, 0.707107, 8.7
 light_color = Color( 0.933333, 0.823529, 0.32549, 1 )
 light_indirect_energy = 2.0
 
+[node name="screenshotCanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="guiOverlayCanvasLayer" type="CanvasLayer" parent="."]
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 pause_mode = 2
 

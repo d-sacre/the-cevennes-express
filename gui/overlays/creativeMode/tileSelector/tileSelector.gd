@@ -39,10 +39,35 @@ func initialize_tile_list():
 		var _tileTexturePath = _tileDatabase[_key]["TEXTURE_RESOURCE_PATH"]
 		var _tileDefinitionUUID = _key
 
+		# creating the icon
 		# adapted from: https://forum.godotengine.org/t/load-texture-from-file-and-assign-to-texture/22655/2
-		# load the original tile texture as image
-		var _image : Image = Image.new()
-		_image.load(_tileTexturePath)
+		# REMARK: In theory, one could load an image directly
+		# var _image : Image = Image.new()
+		# _image.load(_tileTexturePath)
+		# However, there occurs the warning message
+		# W 0:00:00.528   load: Loaded resource as image file, this will not work on export: <FILENAME>. 
+		# Instead, import the image file as an Image resource and load it normally as a resource.
+		# The result is a black image in the exported game
+		# Workaround required for Godot 3: Load as texture and than copy to image
+		# However, this simple approach breaks the clipping to the content logic, because the tile base texture
+		# will be imported without alpha channel, so that the cropping to content via alpha clipping will result
+		# in a black border instead of transparency. To fix this, one needs to convert the image to contain alpha
+		# information; the easiest way to do so is to copy the format of the mask
+		var texture = load(_tileTexturePath)
+		var _image = Image.new()
+		_image = texture.get_data()
+
+
+		var mask = load("res://gui/overlays/creativeMode/tileSelector/hexagonTile_mask.png")
+
+		var _imageIconContentOnly: Image = Image.new()
+		var _imageIconContentMask : Image = Image.new()
+		_imageIconContentMask = mask.get_data()
+		# _imageIconContentMask.load("res://gui/overlays/creativeMode/tileSelector/hexagonTile_mask.png")
+		var _contentMaskFormat = _imageIconContentMask.get_format()
+		_imageIconContentOnly.create(1024,1024,true, _contentMaskFormat)
+		_image.convert(_contentMaskFormat) # convert tile texture to format with transparency
+		_imageIconContentOnly.blit_rect_mask(_image, _imageIconContentMask, Rect2(Vector2(0,0), Vector2(1024,1024)), Vector2(0,0))
 		
 		# create a new image with the correct size and format as well as a suiting crop rectangle
 		# REMARK: MAGIC NUMBERS SHOULD NOT BE HARDCODED, BUT DEFINED AS CONSTANTS
@@ -51,7 +76,7 @@ func initialize_tile_list():
 		var _imageCropRectangle = Rect2(Vector2(0,430),Vector2(512,1024-430))
 		
 		# crop the original tile texture to rectangle and copy clipped data to upper left corner of new image
-		_imageCropped.blit_rect(_image, _imageCropRectangle, Vector2(0,0))
+		_imageCropped.blit_rect(_imageIconContentOnly, _imageCropRectangle, Vector2(0,0))
 
 		# REMARK: GODOT 3 DOES NOT NATIVELY SUPPORT ROTATION OF IMAGES OR TEXTURES; HAS TO BE
 		# HACKED INTO IT WITH A THUMBNAIL CREATION AT LOADTIME VIA SHADER AND IMAGE SAVING 

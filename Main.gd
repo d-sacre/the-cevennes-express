@@ -120,7 +120,7 @@ func _ready() -> void:
 	cppBridge.initialize_grid_in_cpp_backend(0)
 
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
-	var scene = load("res://gui/overlays/tileSelector/tileSelector.tscn")
+	var scene = load("res://gui/overlays/creativeMode/tileSelector/tileSelector.tscn")
 	var instance = scene.instance()
 	add_child(instance)
 	_creativeMode = get_node("tileSelector")
