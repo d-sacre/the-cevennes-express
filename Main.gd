@@ -27,6 +27,7 @@ const HEX_GRID_SIZE_Y : int = 10
 ################################################################################
 #### VARIABLE DEFINITIONS ######################################################
 ################################################################################
+var gameMode : String = "creativeMode"
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -102,6 +103,60 @@ func _on_gui_mouse_context_changed(context, status):
 				cameraManager.enable_zooming()
 				cameraManager.enable_raycasting()
 
+	print("Mouse Context: ", _currentGuiMouseContext)
+
+func _on_action_mode_changed(mode):
+	# Select Mode specific behavior
+	if mode.match("creativeMode::*"): # creative mode
+		mode = mode.trim_prefix("creativeMode::")
+
+		if mode.match("selector::*"):
+			mode = mode.trim_prefix("selector::")
+
+			if mode.match("tile::*"):
+				mode = mode.trim_prefix("tile::")
+
+				if mode.match("action::*"):
+					mode = mode.trim_prefix("action::")
+
+					match mode:
+						"place":
+							print("place")
+						"replace":
+							pass
+						"pick":
+							pass
+						"delete":
+							pass
+
+			elif mode.match("gui::*"):
+				mode = mode.trim_prefix("gui::")
+				match mode:
+					"hide":
+						_on_hide_gui_changed(true) # to make it neater, this should be a clean function call
+
+						
+# BUG: Breaks the selectability of a different tile definition after unhiding				
+func _on_hide_gui_changed(status):
+	# TO-DO: should be outsourced into function
+	if self.gameMode == "creativeMode":
+		$guiOverlayCanvasLayer.visible = not status
+
+	if status:
+		_currentGuiMouseContext = "grid"
+		cameraManager.enable_zooming()
+		cameraManager.enable_raycasting()
+
+		var scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
+		var instance = scene.instance()
+		get_node("CanvasLayer").add_child(instance)
+		var _hiddenGUI = get_node("CanvasLayer/hiddenGUI")
+		_hiddenGUI.connect("hide_gui", self, "_on_hide_gui_changed")
+
+	else:
+		_creativeMode.set_creative_mode_gui_to_default()
+		# logic to set action still required; either here or directly in actionSelector when hiding
+
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
@@ -132,11 +187,12 @@ func _ready() -> void:
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
 	var scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
 	var instance = scene.instance()
-	add_child(instance)
-	_creativeMode = get_node("creativeModeOverlay")
-	_tileSelector = get_node("creativeModeOverlay/tileSelector")
+	get_node("guiOverlayCanvasLayer").add_child(instance)
+	_creativeMode = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
+	_tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
 	_creativeMode.connect("new_tile_selected", self, "_on_new_tile_selected") # to get information of newly selected tile
 	_creativeMode.connect("gui_mouse_context_changed", self, "_on_gui_mouse_context_changed")
+	_creativeMode.connect("action_mode_changed", self, "_on_action_mode_changed")
 	_creativeMode.initialize_creative_mode_gui(tileDefinitionManager)
 
 	# initialize the floating tile over the grid

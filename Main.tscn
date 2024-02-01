@@ -43,23 +43,23 @@ light_indirect_energy = 2.0
 
 [node name="guiOverlayCanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-pause_mode = 2
-
-[node name="debugPanelContainer" type="PanelContainer" parent="CanvasLayer"]
+[node name="debugPanelContainer" type="PanelContainer" parent="guiOverlayCanvasLayer"]
 anchor_right = 0.133
 margin_right = 0.639999
-margin_bottom = 256.0
+margin_bottom = 384.0
 rect_min_size = Vector2( 128, 384 )
 script = ExtResource( 2 )
 
-[node name="debugInfoRichtText" type="RichTextLabel" parent="CanvasLayer/debugPanelContainer"]
+[node name="debugInfoRichtText" type="RichTextLabel" parent="guiOverlayCanvasLayer/debugPanelContainer"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 249.0
 margin_bottom = 377.0
 theme = SubResource( 1 )
 text = "Test"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+pause_mode = 2
 
 [node name="PopupMenu" type="PanelContainer" parent="CanvasLayer"]
 pause_mode = 2

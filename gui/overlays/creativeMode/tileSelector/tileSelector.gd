@@ -107,7 +107,6 @@ func _on_item_selected(index):
 
 func _on_mouse_entered():
 	emit_signal("gui_mouse_context", "tileSelector", "entered")
-	print("entered")
 
 func _on_mouse_exited():
 	emit_signal("gui_mouse_context", "tileSelector", "exited")
@@ -120,8 +119,6 @@ func _ready():
 
 	# initialize signal handling
 	tileList.connect("item_selected", self, "_on_item_selected")
-	# self.connect("mouse_entered", self, "_on_mouse_entered")
-	# self.connect("mouse_exited", self, "_on_mouse_exited")
 	tileList.connect("mouse_entered", self, "_on_mouse_entered")
 	tileList.connect("mouse_exited", self, "_on_mouse_exited")
 
@@ -132,7 +129,6 @@ func _ready():
 
 	tileListIconSize = Vector2(tileListIconWidth,tileListIconWidth)
 	tileList.set_fixed_icon_size(tileListIconSize)
-	# tileList.ensure_current_is_visible() # not working
 	
 
 
