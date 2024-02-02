@@ -15,48 +15,42 @@ extends Node
 # "UserInputManager": res://managers/userInputManager/userInputManager.tscn
 
 ################################################################################
-#### RESOURCE AND CLASS LOADING ################################################
-################################################################################
-var rng = RandomNumberGenerator.new()
-
-################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const HEX_GRID_SIZE_X : int = 10
 const HEX_GRID_SIZE_Y : int = 10
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
+#### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
 var gameMode : String = "creativeMode"
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-var _last_collison_object 
-var _current_collision_object 
+var _last_collison_object : Object
+var _current_collision_object : Object
 var _last_tile_index : int = -1
 var _current_tile_index : int = -1
 
 var raycast_screenspace_position : Vector2 = Vector2(0,0)
 
-var _creativeMode : Object
 var _tileSelector : Object
 var _currentGuiMouseContext : String = "grid"
 
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
-onready var hexGridManager = $hexGridManager
-onready var cameraManager = $cameraManager
-onready var tileDefinitionManager = $tileDefinitionManager
-onready var cppBridge = $cppBridge
-onready var settingsPopout = $CanvasLayer/PopupMenu/settings_popup_panelContainer
+onready var hexGridManager : Object = $hexGridManager
+onready var cameraManager : Object = $cameraManager
+onready var tileDefinitionManager : Object = $tileDefinitionManager
+onready var cppBridge : Object = $cppBridge
+onready var settingsPopout : Object = $CanvasLayer/PopupMenu/settings_popup_panelContainer
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
-func _on_raycast_result(current_collision_information):
+func _on_raycast_result(current_collision_information : Array) -> void:
 	_last_tile_index = _current_tile_index
 	if current_collision_information[0] != false:
 		var collider_ref = current_collision_information[1]
@@ -72,93 +66,16 @@ func _on_raycast_result(current_collision_information):
 		hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index)
 		hexGridManager.move_floating_tile_to(_current_tile_index)
 
-func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
+func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue) -> void:
 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
 	if _audioManagerSignalResult.has("keyChain"):
 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
-func _on_new_tile_selected(_tile_definition_uuid):
+func _on_new_tile_selected(_tile_definition_uuid : String) -> void:
 	hexGridManager.floating_tile_reference.queue_free()
 	hexGridManager.floating_tile_reference = hexGridManager
 	var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
 	hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
-
-# func _on_gui_mouse_context_changed(context, status):
-# 	match context:
-# 		"tileSelector":
-# 			if status == "entered":
-# 				_currentGuiMouseContext = context
-# 				cameraManager.disable_zooming()
-# 				cameraManager.disable_raycasting()
-# 			else:
-# 				_currentGuiMouseContext = "grid"
-# 				cameraManager.enable_zooming()
-# 				cameraManager.enable_raycasting()
-# 		"actionSelector":
-# 			if status == "entered":
-# 				_currentGuiMouseContext = context
-# 				cameraManager.disable_zooming()
-# 				cameraManager.disable_raycasting()
-# 			else:
-# 				_currentGuiMouseContext = "grid"
-# 				cameraManager.enable_zooming()
-# 				cameraManager.enable_raycasting()
-
-# 	print("Mouse Context: ", _currentGuiMouseContext)
-
-# func _on_action_mode_changed(mode):
-# 	# Select Mode specific behavior
-# 	if mode.match("creativeMode::*"): # creative mode
-# 		mode = mode.trim_prefix("creativeMode::")
-
-# 		if mode.match("selector::*"):
-# 			mode = mode.trim_prefix("selector::")
-
-# 			if mode.match("tile::*"):
-# 				mode = mode.trim_prefix("tile::")
-
-# 				if mode.match("action::*"):
-# 					mode = mode.trim_prefix("action::")
-
-# 					match mode:
-# 						"place":
-# 							print("place")
-# 						"replace":
-# 							pass
-# 						"pick":
-# 							pass
-# 						"delete":
-# 							pass
-
-# 			elif mode.match("gui::*"):
-# 				mode = mode.trim_prefix("gui::")
-# 				match mode:
-# 					"hide":
-# 						_on_hide_gui_changed(true) # to make it neater, this should be a clean function call
-
-						
-# # BUG: Breaks the selectability of a different tile definition after unhiding				
-# func _on_hide_gui_changed(status):
-# 	# TO-DO: should be outsourced into function
-# 	match self.gameMode:
-# 		"creativeMode":
-# 			$guiOverlayCanvasLayer.visible = not status
-
-# 	if status:
-# 		_currentGuiMouseContext = "grid"
-# 		cameraManager.enable_zooming()
-# 		cameraManager.enable_raycasting()
-
-# 		var scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
-# 		var instance = scene.instance()
-# 		get_node("CanvasLayer").add_child(instance)
-# 		var _hiddenGUI = get_node("CanvasLayer/hiddenGUI")
-# 		_hiddenGUI.connect("hide_gui", self, "_on_hide_gui_changed")
-
-# 	else:
-# 		match self.gameMode:
-# 			"creativeMode":
-# 				_creativeMode.set_creative_mode_gui_to_default()
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
@@ -184,11 +101,11 @@ func _ready() -> void:
 
 	# initialize the C++-Bridge and the C++-Backend
 	cppBridge.initialize_cpp_bridge(HEX_GRID_SIZE_X, HEX_GRID_SIZE_Y)
-	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.tile_definition_database)
+	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.get_tile_definition_database())
 	cppBridge.initialize_grid_in_cpp_backend(0)
 
 	# initialize UserInputManager
-	UserInputManager.initialize("creativeMode", cameraManager, tileDefinitionManager, hexGridManager, get_node("guiOverlayCanvasLayer"), get_node("CanvasLayer"))
+	UserInputManager.initialize(self.gameMode, cameraManager, tileDefinitionManager, hexGridManager, get_node("guiOverlayCanvasLayer"), get_node("CanvasLayer"))
 	UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
 
 
@@ -196,11 +113,8 @@ func _ready() -> void:
 	var scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
 	var instance = scene.instance()
 	get_node("guiOverlayCanvasLayer").add_child(instance)
-	_creativeMode = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
+	var _creativeMode : Object = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
 	_tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
-	# _creativeMode.connect("new_tile_selected", self, "_on_new_tile_selected") # to get information of newly selected tile
-	# _creativeMode.connect("gui_mouse_context_changed", self, "_on_gui_mouse_context_changed")
-	# _creativeMode.connect("action_mode_changed", self, "_on_action_mode_changed")
 	_creativeMode.initialize_creative_mode_gui(tileDefinitionManager)
 
 	# initialize the floating tile over the grid

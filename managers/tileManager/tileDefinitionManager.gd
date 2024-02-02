@@ -1,24 +1,18 @@
 extends Node
 
 ################################################################################
-#### RESOURCE AND CLASS LOADING ################################################
+#### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const TILE_DEFINITION_DATABASE_INDEX_RESOURCE_PATH = "res://assets/3D/tiles/placeable/definitions/tile_database_index.json"
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
+#### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-# public members
-var tile_definition_database : Dictionary = {}
+var _tile_definition_database : Dictionary = {}
 
 ################################################################################
-#### Private Member Variables ##################################################
+#### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
-
-################################################################################
-#### FUNCTION DEFINITIONS ######################################################
-################################################################################
-
 func _initialize_tile_definition_database(db_index_fp) -> Dictionary:
 	var _tile_definition_database_index : Dictionary = JsonFio.load_json(db_index_fp)
 	var _tile_definition_db_file_list : Array = _tile_definition_database_index["TILE_DEFINITION_RESOURCE_PATHS"]
@@ -45,14 +39,20 @@ func _initialize_tile_definition_database(db_index_fp) -> Dictionary:
 
 	return _tmp_tile_definition_db
 
-func get_tile_definition_database_entry(tile_definition_uuid) -> Dictionary:
-	var _tmp_tddb_entry = self.tile_definition_database[tile_definition_uuid]
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
+################################################################################
+func get_tile_definition_database_entry(tile_definition_uuid : String) -> Dictionary:
+	var _tmp_tddb_entry = self._tile_definition_database[tile_definition_uuid]
 	_tmp_tddb_entry["TILE_DEFINITION_UUID"] = tile_definition_uuid
 
 	return _tmp_tddb_entry
+
+func get_tile_definition_database() -> Dictionary:
+	return _tile_definition_database
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready() -> void:
-	tile_definition_database = _initialize_tile_definition_database(TILE_DEFINITION_DATABASE_INDEX_RESOURCE_PATH)
+	_tile_definition_database = _initialize_tile_definition_database(TILE_DEFINITION_DATABASE_INDEX_RESOURCE_PATH)

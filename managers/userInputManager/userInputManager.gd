@@ -12,12 +12,14 @@ extends Node
 signal new_tile_selected(_tile_definition_uuid)
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
+#### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
-
 var mode : String
 var currentGuiMouseContext : String 
 
+################################################################################
+#### PRIVATE MEMBER VARIABLES ##################################################
+################################################################################
 var _managerReferences : Dictionary = {
 	"cameraManager": null,
 	"tileDefinitionManager": null,
@@ -30,38 +32,41 @@ var _guiLayerReferences : Dictionary = {
 }
 
 ################################################################################
-#### FUNCTION DEFINITIONS ######################################################
+#### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
-func initialize(_mode : String, cm : Object, tdm : Object, hgm : Object, gocl : Object, gpucl : Object) -> void:
-	_managerReferences["cameraManager"] = cm
-	_managerReferences["tileDefinitionManager"] = tdm
-	_managerReferences["hexGridManager"] = hgm
-	_guiLayerReferences["overlay"] = gocl
-	_guiLayerReferences["popup"] = gpucl
-
-	self.mode = _mode
-
-	print(_managerReferences)
-	print(_guiLayerReferences)
-
-func hide_gui(status : bool) -> void:
+func _hide_gui(status : bool) -> void:
 	match self.mode:
 		"creativeMode":
-			_guiLayerReferences["overlay"].visible = not status
+			self._guiLayerReferences["overlay"].visible = not status
 
 	if status:
-		currentGuiMouseContext = "grid"
-		_managerReferences["cameraManager"].enable_zooming()
-		_managerReferences["cameraManager"].enable_raycasting()
+		self.currentGuiMouseContext = "grid"
+		self._managerReferences["cameraManager"].enable_zooming()
+		self._managerReferences["cameraManager"].enable_raycasting()
 
 		var scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
 		var instance = scene.instance()
-		_guiLayerReferences["popup"].add_child(instance)
+		self._guiLayerReferences["popup"].add_child(instance)
 
 	else:
 		match self.mode:
 			"creativeMode":
-				_guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
+				self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
+################################################################################
+func initialize(_mode : String, cm : Object, tdm : Object, hgm : Object, gocl : Object, gpucl : Object) -> void:
+	self._managerReferences["cameraManager"] = cm
+	self._managerReferences["tileDefinitionManager"] = tdm
+	self._managerReferences["hexGridManager"] = hgm
+	self._guiLayerReferences["overlay"] = gocl
+	self._guiLayerReferences["popup"] = gpucl
+
+	self.mode = _mode
+
+	if self.mode == "creativeMode":
+		self.currentGuiMouseContext = "grid"
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -117,11 +122,11 @@ func _on_action_mode_changed(action_mode : String) -> void:
 				match action_mode:
 					"hide":
 						print("Hide GUI: ", true)
-						hide_gui(true) # to make it neater, this should be a clean function call
+						_hide_gui(true) # to make it neater, this should be a clean function call
 
 func _on_hide_gui_changed(status : bool) -> void:
 	print("User Input Manager received: Hide GUI = ", status)
-	hide_gui(status)
+	_hide_gui(status)
 
 func _on_new_tile_selected(_tile_definition_uuid : String) -> void:
 	# TO-DO: logic to process whether new tile selection is allowed at all

@@ -3,15 +3,13 @@ extends Spatial
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
-var rng = RandomNumberGenerator.new()
-
 const TILE_SPECIAL_TEXTURES : Dictionary = {
 	"normal": preload("res://assets/3D/tiles/placeable/base/textures/hexagonTile_placeable_texture_normal_impasso.png"),
 	"highlight": preload("res://assets/3D/tiles/placeable/base/textures/hexagonTile_placeable_texture_highlight_emission.png")
 }
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
+#### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
 var tile_index : int 
 var tile_definition_uuid : String
@@ -20,7 +18,7 @@ var change_material : bool = false
 var highlight : bool = false
 
 ################################################################################
-#### FUNCTION DEFINITIONS ######################################################
+#### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
 func _check_and_set_highlight() -> void:
 	if self.change_material:
@@ -34,9 +32,12 @@ func _check_and_set_highlight() -> void:
 			
 		self.change_material = false
 
-func initial_tile_configuration(tile_definition) -> void:
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
+################################################################################
+func initial_tile_configuration(tile_definition : Dictionary) -> void:
 	self.tile_definition_uuid = tile_definition["TILE_DEFINITION_UUID"]
-	var base_albedo_texture = load(tile_definition["TEXTURE_RESOURCE_PATH"]) #load("res://assets/3D/tiles/base/textures/hexagon_tile_base-material_grass.png")
+	var base_albedo_texture = load(tile_definition["TEXTURE_RESOURCE_PATH"])
 
 	var base_material = get_node("hexMesh").get_active_material(0)
 
@@ -50,6 +51,6 @@ func initial_tile_configuration(tile_definition) -> void:
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-func _process(delta) -> void:
+func _process(_delta) -> void:
 	_check_and_set_highlight()
 

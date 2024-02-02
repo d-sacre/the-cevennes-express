@@ -5,12 +5,12 @@ extends Node
 ################################################################################
 # This script is autoloaded as "DictionaryParsing".
 
-################################################################################
-#### FUNCTION DEFINITIONS ######################################################
-################################################################################
 func _init():
 	print("\t-> Initialize Dictionary Parsing Utility...")
 
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
+################################################################################
 func get_dict_element_via_keychain(dict,keychain):
 	var _dict_element = dict
 
@@ -18,7 +18,5 @@ func get_dict_element_via_keychain(dict,keychain):
 		_dict_element = _dict_element[key]
 
 	return _dict_element
-
-# print_stray_nodes()
 
 

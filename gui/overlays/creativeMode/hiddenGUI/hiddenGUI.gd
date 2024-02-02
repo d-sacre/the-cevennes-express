@@ -12,13 +12,9 @@ extends Control
 signal hide_gui(status)
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
-################################################################################
-
-################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
-onready var unhideGUIButton : Object = $PanelContainer/unhideGUIButton
+onready var _unhideGUIButton : Object = $PanelContainer/unhideGUIButton
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -31,7 +27,7 @@ func _on_unhideGUIButton_pressed():
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready():
-	unhideGUIButton.connect("pressed", self, "_on_unhideGUIButton_pressed")
+	_unhideGUIButton.connect("pressed", self, "_on_unhideGUIButton_pressed")
 	self.connect("hide_gui", UserInputManager, "_on_hide_gui_changed")
 
 

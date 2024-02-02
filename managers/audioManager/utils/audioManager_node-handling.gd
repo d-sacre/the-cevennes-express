@@ -1,6 +1,11 @@
 extends Node
 
-func add_and_configure_AudioStreamPlayer(context, dict, parent, name):
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
+################################################################################
+
+# TO-DO: parent does not have typesafety yet!
+func add_and_configure_AudioStreamPlayer(context : Object, dict : Dictionary, parent, name : String) -> void:
 	var _parent_ref
 	
 	if parent == "SELF":
@@ -30,7 +35,8 @@ func add_and_configure_AudioStreamPlayer(context, dict, parent, name):
 	_audioplayer.volume_db = dict["volume_db"]
 	_audioplayer.set_bus(dict["bus"])
 
-func add_category_node(context, parent, name):
+# TO-DO: parent does not have typesafety yet!
+func add_category_node(context : Object, parent, name : String) -> void:
 	var _parent_ref
 	if parent is String: 
 		if parent == "SELF":

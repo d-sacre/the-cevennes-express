@@ -17,21 +17,24 @@ const USER_SETTINGS_FILEPATH : String = "user://the-cevennes-express_user-settin
 const FALLBACK_USER_SETTINGS_FILEPATH : String = "res://managers/userSettingsManager/the-cevennes-express_user-settings_honest-jam-6_default.json"
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
+#### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-var userSettings : Dictionary = {}
+var _userSettings : Dictionary = {}
 
 ################################################################################
-#### FUNCTION DEFINITIONS ######################################################
+#### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
-func _update():
+func _update() -> void:
 	self.save_user_settings() # to make sure no settings get lost
 
-	if userSettings["fullscreen"]:
+	if _userSettings["fullscreen"]:
 		OS.set_window_fullscreen(true)
 	else:
 		OS.set_window_fullscreen(false)
 
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
+################################################################################
 func initialize_user_settings() -> void:
 	# checking if user settings file already exists
 	var file = File.new()
@@ -46,28 +49,28 @@ func initialize_user_settings() -> void:
 	file.close()
 	
 	# loading user settings file
-	self.userSettings = JsonFio.load_json(self.USER_SETTINGS_FILEPATH)
+	self._userSettings = JsonFio.load_json(self.USER_SETTINGS_FILEPATH)
 	print("\t\t-> Loading User Settings from File @ ", self.USER_SETTINGS_FILEPATH,"...")
 
 	self._update()
 
 	
 func save_user_settings() -> void:
-	JsonFio.save_json(self.USER_SETTINGS_FILEPATH, self.userSettings)
+	JsonFio.save_json(self.USER_SETTINGS_FILEPATH, self._userSettings)
 
 
-func update_user_settings(settingKeychain, setterType, settingValue) -> Dictionary:
+func update_user_settings(settingKeychain : Array, setterType, settingValue) -> Dictionary:
 	var _returnSignal : Dictionary = {}
 
 	# determine the depth in the dictionary to set the value
 	if len(settingKeychain) == 1:
-		userSettings[settingKeychain[0]] = settingValue
+		_userSettings[settingKeychain[0]] = settingValue
 	elif len(settingKeychain) == 2:
-		userSettings[settingKeychain[0]][settingKeychain[1]] = settingValue
+		_userSettings[settingKeychain[0]][settingKeychain[1]] = settingValue
 	elif len(settingKeychain) == 3:
-		userSettings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]] = settingValue
+		_userSettings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]] = settingValue
 	elif len(settingKeychain) == 4:
-		userSettings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]][settingKeychain[3]] = settingValue
+		_userSettings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]][settingKeychain[3]] = settingValue
 
 	if settingKeychain[0] == "volume": # if volume setting changed
 		var _tmp_settingKeychain = []
@@ -84,6 +87,6 @@ func update_user_settings(settingKeychain, setterType, settingValue) -> Dictiona
 	return _returnSignal
 
 func get_user_settings() -> Dictionary:
-	return self.userSettings
+	return self._userSettings
 
 

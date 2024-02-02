@@ -18,9 +18,9 @@ extends Node
 signal music_playlist_updated
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
+#### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-var audio_bus_aliases : Dictionary = {
+var _audio_bus_aliases : Dictionary = {
 	"master":  "Master",
 	"sfx": {
 		"ui":  "UI SFX",
@@ -31,71 +31,71 @@ var audio_bus_aliases : Dictionary = {
 }
 
 ################################################################################
-#### FUNCTION DEFINITIONS ######################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
-func initialize_volume_levels(_userSettings) -> void:
+func initialize_volume_levels(_userSettings : Dictionary) -> void:
 	var userSettingsVolume = _userSettings["volume"]
 	
-	var volumesToInitialize : Array = []
+	var _volumesToInitialize : Array = []
 	var _keys = userSettingsVolume.keys()
 
 	for _key in _keys:
-		var element = userSettingsVolume[_key]
+		var _element = userSettingsVolume[_key]
 		var _tmp_array_entry : Dictionary = {"keychain": [], "value": 0}
 		
 		_tmp_array_entry["keychain"].append(_key)
 
-		if element is Dictionary:
-			var _subkeys = element.keys()
+		if _element is Dictionary:
+			var _subkeys = _element.keys()
 			var _subkeyIndex = 0
 
 			for _subkey in _subkeys:
-				var subelement = element[_subkey]
+				var _subelement = _element[_subkey]
 
-				if subelement is Dictionary:
+				if _subelement is Dictionary:
 					pass
 				else:
 					var _tmp_tmp_array_entry = _tmp_array_entry.duplicate(true)
 					_tmp_tmp_array_entry["keychain"].append(_subkey)
-					_tmp_tmp_array_entry["value"] = subelement
-					volumesToInitialize.append(_tmp_tmp_array_entry)
+					_tmp_tmp_array_entry["value"] = _subelement
+					_volumesToInitialize.append(_tmp_tmp_array_entry)
 		else:
-			_tmp_array_entry["value"] = element
-			volumesToInitialize.append(_tmp_array_entry)
+			_tmp_array_entry["value"] = _element
+			_volumesToInitialize.append(_tmp_array_entry)
 
 	# print("Master Volume before: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
 
-	for element in volumesToInitialize:
-		self.set_volume_level(element["keychain"], element["value"])
+	for _element in _volumesToInitialize:
+		self.set_volume_level(_element["keychain"], _element["value"])
 
 	# print("Master Volume after: ", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Master")))
 
-func set_volume_level(settingKeychain, settingValue) -> void:
-	var audio_bus_name = DictionaryParsing.get_dict_element_via_keychain(audio_bus_aliases,settingKeychain)
-	var db = linear2db(settingValue/100)
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(audio_bus_name), db)
+func set_volume_level(settingKeychain : Array, settingValue : float) -> void:
+	var _audio_bus_name = DictionaryParsing.get_dict_element_via_keychain(self._audio_bus_aliases,settingKeychain)
+	var _db = linear2db(settingValue/100)
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(_audio_bus_name), _db)
 
-func play_sfx(keyChain) -> void:
+func play_sfx(keyChain : Array) -> void:
 	sfxManager.play_sound(keyChain)
 	
-func play_music_by_song_name(song) -> void:
+func play_music_by_song_name(song : String) -> void:
 	musicManager.request_song(song)
 	
-func set_playlist(_playlist, loop = false, start_playback = true) -> void:
+func set_playlist(_playlist : Dictionary, loop : bool = false, start_playback : bool = true) -> void:
 	musicManager.playlist = {"songs": _playlist, "loop": loop}
 	musicManager.playing_mode = "playlist"
 	musicManager.permission_to_play = start_playback
 	emit_signal("music_playlist_updated")
 
-func set_predefined_playlist(playlistId, _start_playback = true) -> void:
+func set_predefined_playlist(playlistId : String, _start_playback : bool = true) -> void:
 	var _tmp_playlist_dict = musicManager.predefined_playlists[playlistId]
 	var _tmp_playlist = _tmp_playlist_dict["songs"]
-	set_playlist(_tmp_playlist, _tmp_playlist_dict["loop"], _start_playback)
+	self.set_playlist(_tmp_playlist, _tmp_playlist_dict["loop"], _start_playback)
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-func _ready():
+func _ready() -> void:
 	print("\t-> Initialize AudioManager...")
 	self.connect("music_playlist_updated", musicManager, "_on_music_playlist_updated") # required, since musicManager is loaded as singleton BEFORE audioManager
 

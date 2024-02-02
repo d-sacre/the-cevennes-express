@@ -12,7 +12,7 @@ signal gui_mouse_context(context, status)
 const TILE_LIST_ICON_SIZE_DEFAULT : Vector2 = Vector2(128,128)
 
 ################################################################################
-#### VARIABLE DEFINITIONS ######################################################
+#### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
 var selectedTile : String = ""
 var tileListIconSize : Vector2 = TILE_LIST_ICON_SIZE_DEFAULT
@@ -21,14 +21,13 @@ var tileListIconSize : Vector2 = TILE_LIST_ICON_SIZE_DEFAULT
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 # var tileDefinitionManager : Object  # only in the testing setup; later has to be inherited from main.gd
-var tileList : ItemList
-
+var _tileList : ItemList
 var _tileDatabase : Dictionary = {}
 
 ################################################################################
-#### FUNCTION DEFINITIONS ######################################################
+#### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
-func _create_icon_texture(fp) -> ImageTexture:
+func _create_icon_texture(fp : String) -> ImageTexture:
 	# adapted from: https://forum.godotengine.org/t/load-texture-from-file-and-assign-to-texture/22655/2
 	# REMARK: In theory, one could load an image directly
 	# var _image : Image = Image.new()
@@ -79,10 +78,13 @@ func _create_icon_texture(fp) -> ImageTexture:
 
 	return _iconTexture
 
-func initialize_tile_list(_tileDefinitionManager):
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS ###################################################
+################################################################################
+func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 	print("Initializing Tile List...")
 
-	_tileDatabase = _tileDefinitionManager.tile_definition_database
+	self._tileDatabase = _tileDefinitionManager.get_tile_definition_database()
 	var _keys = _tileDatabase.keys()
 
 	var _counter = 0
@@ -91,44 +93,44 @@ func initialize_tile_list(_tileDefinitionManager):
 		var _tileDefinitionUUID = _key
 
 		var _iconTexture = _create_icon_texture(_tileTexturePath)
-		tileList.add_item("Tile "+str(_counter), _iconTexture, true)
-		tileList.set_item_metadata(_counter, _tileDefinitionUUID)
+		self._tileList.add_item("Tile "+str(_counter), _iconTexture, true)
+		self._tileList.set_item_metadata(_counter, _tileDefinitionUUID)
 		_counter += 1
 	
-	tileList.select(0,true)
-	selectedTile = tileList.get_item_metadata(0)
+	self._tileList.select(0,true)
+	self.selectedTile = _tileList.get_item_metadata(0)
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
-func _on_item_selected(index):
-	self.selectedTile = tileList.get_item_metadata(index)
+func _on_item_selected(index : int) -> void:
+	self.selectedTile = self._tileList.get_item_metadata(index)
 	emit_signal("new_selection", self.selectedTile)
 
-func _on_mouse_entered():
+func _on_mouse_entered() -> void:
 	emit_signal("gui_mouse_context", "tileSelector", "entered")
 
-func _on_mouse_exited():
+func _on_mouse_exited() -> void:
 	emit_signal("gui_mouse_context", "tileSelector", "exited")
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-func _ready():
-	tileList = $PanelContainer/GridContainer/tileList
+func _ready() -> void:
+	self._tileList = $PanelContainer/GridContainer/tileList
 
 	# initialize signal handling
-	tileList.connect("item_selected", self, "_on_item_selected")
-	tileList.connect("mouse_entered", self, "_on_mouse_entered")
-	tileList.connect("mouse_exited", self, "_on_mouse_exited")
+	self._tileList.connect("item_selected", self, "_on_item_selected")
+	self._tileList.connect("mouse_entered", self, "_on_mouse_entered")
+	self._tileList.connect("mouse_exited", self, "_on_mouse_exited")
 
 	# set icon size accordingly to amount of columns
-	var tileListWidth = tileList.get_size().x
-	var tileListMaxColumns = tileList.get_max_columns()
-	var tileListIconWidth = 0.925*(tileListWidth/tileListMaxColumns)
+	var _tileListWidth = _tileList.get_size().x
+	var _tileListMaxColumns = _tileList.get_max_columns()
+	var _tileListIconWidth = 0.925*(_tileListWidth/_tileListMaxColumns)
 
-	tileListIconSize = Vector2(tileListIconWidth,tileListIconWidth)
-	tileList.set_fixed_icon_size(tileListIconSize)
+	self.tileListIconSize = Vector2(_tileListIconWidth,_tileListIconWidth)
+	self._tileList.set_fixed_icon_size(self.tileListIconSize)
 	
 
 
