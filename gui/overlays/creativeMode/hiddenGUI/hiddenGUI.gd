@@ -1,6 +1,12 @@
 extends Control
 
 ################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
+
+################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
 signal hide_gui(status)
@@ -26,5 +32,6 @@ func _on_unhideGUIButton_pressed():
 ################################################################################
 func _ready():
 	unhideGUIButton.connect("pressed", self, "_on_unhideGUIButton_pressed")
+	self.connect("hide_gui", UserInputManager, "_on_hide_gui_changed")
 
 

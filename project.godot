@@ -24,6 +24,7 @@ AudioManagerNodeHandling="*res://managers/audioManager/utils/audioManager_node-h
 sfxManager="*res://managers/audioManager/sfx/sfxManager.tscn"
 musicManager="*res://managers/audioManager/music/musicManager.tscn"
 audioManager="*res://managers/audioManager/audioManager.tscn"
+UserInputManager="*res://managers/userInputManager/userInputManager.tscn"
 
 [display]
 

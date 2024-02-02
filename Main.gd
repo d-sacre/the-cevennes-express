@@ -12,6 +12,7 @@ extends Node
 # "AudioManagerNodeHandling": res://managers/audioManager/utils/audioManager_node-handling.gd
 # "sfxManager": res://managers/audioManager/sfx/sfxManager.tscn
 # "musicManager": res://managers/audioManager/music/musicManager.tscn
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
 
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
@@ -82,80 +83,82 @@ func _on_new_tile_selected(_tile_definition_uuid):
 	var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
 	hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 
-func _on_gui_mouse_context_changed(context, status):
-	match context:
-		"tileSelector":
-			if status == "entered":
-				_currentGuiMouseContext = context
-				cameraManager.disable_zooming()
-				cameraManager.disable_raycasting()
-			else:
-				_currentGuiMouseContext = "grid"
-				cameraManager.enable_zooming()
-				cameraManager.enable_raycasting()
-		"actionSelector":
-			if status == "entered":
-				_currentGuiMouseContext = context
-				cameraManager.disable_zooming()
-				cameraManager.disable_raycasting()
-			else:
-				_currentGuiMouseContext = "grid"
-				cameraManager.enable_zooming()
-				cameraManager.enable_raycasting()
+# func _on_gui_mouse_context_changed(context, status):
+# 	match context:
+# 		"tileSelector":
+# 			if status == "entered":
+# 				_currentGuiMouseContext = context
+# 				cameraManager.disable_zooming()
+# 				cameraManager.disable_raycasting()
+# 			else:
+# 				_currentGuiMouseContext = "grid"
+# 				cameraManager.enable_zooming()
+# 				cameraManager.enable_raycasting()
+# 		"actionSelector":
+# 			if status == "entered":
+# 				_currentGuiMouseContext = context
+# 				cameraManager.disable_zooming()
+# 				cameraManager.disable_raycasting()
+# 			else:
+# 				_currentGuiMouseContext = "grid"
+# 				cameraManager.enable_zooming()
+# 				cameraManager.enable_raycasting()
 
-	print("Mouse Context: ", _currentGuiMouseContext)
+# 	print("Mouse Context: ", _currentGuiMouseContext)
 
-func _on_action_mode_changed(mode):
-	# Select Mode specific behavior
-	if mode.match("creativeMode::*"): # creative mode
-		mode = mode.trim_prefix("creativeMode::")
+# func _on_action_mode_changed(mode):
+# 	# Select Mode specific behavior
+# 	if mode.match("creativeMode::*"): # creative mode
+# 		mode = mode.trim_prefix("creativeMode::")
 
-		if mode.match("selector::*"):
-			mode = mode.trim_prefix("selector::")
+# 		if mode.match("selector::*"):
+# 			mode = mode.trim_prefix("selector::")
 
-			if mode.match("tile::*"):
-				mode = mode.trim_prefix("tile::")
+# 			if mode.match("tile::*"):
+# 				mode = mode.trim_prefix("tile::")
 
-				if mode.match("action::*"):
-					mode = mode.trim_prefix("action::")
+# 				if mode.match("action::*"):
+# 					mode = mode.trim_prefix("action::")
 
-					match mode:
-						"place":
-							print("place")
-						"replace":
-							pass
-						"pick":
-							pass
-						"delete":
-							pass
+# 					match mode:
+# 						"place":
+# 							print("place")
+# 						"replace":
+# 							pass
+# 						"pick":
+# 							pass
+# 						"delete":
+# 							pass
 
-			elif mode.match("gui::*"):
-				mode = mode.trim_prefix("gui::")
-				match mode:
-					"hide":
-						_on_hide_gui_changed(true) # to make it neater, this should be a clean function call
+# 			elif mode.match("gui::*"):
+# 				mode = mode.trim_prefix("gui::")
+# 				match mode:
+# 					"hide":
+# 						_on_hide_gui_changed(true) # to make it neater, this should be a clean function call
 
 						
-# BUG: Breaks the selectability of a different tile definition after unhiding				
-func _on_hide_gui_changed(status):
-	# TO-DO: should be outsourced into function
-	if self.gameMode == "creativeMode":
-		$guiOverlayCanvasLayer.visible = not status
+# # BUG: Breaks the selectability of a different tile definition after unhiding				
+# func _on_hide_gui_changed(status):
+# 	# TO-DO: should be outsourced into function
+# 	match self.gameMode:
+# 		"creativeMode":
+# 			$guiOverlayCanvasLayer.visible = not status
 
-	if status:
-		_currentGuiMouseContext = "grid"
-		cameraManager.enable_zooming()
-		cameraManager.enable_raycasting()
+# 	if status:
+# 		_currentGuiMouseContext = "grid"
+# 		cameraManager.enable_zooming()
+# 		cameraManager.enable_raycasting()
 
-		var scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
-		var instance = scene.instance()
-		get_node("CanvasLayer").add_child(instance)
-		var _hiddenGUI = get_node("CanvasLayer/hiddenGUI")
-		_hiddenGUI.connect("hide_gui", self, "_on_hide_gui_changed")
+# 		var scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
+# 		var instance = scene.instance()
+# 		get_node("CanvasLayer").add_child(instance)
+# 		var _hiddenGUI = get_node("CanvasLayer/hiddenGUI")
+# 		_hiddenGUI.connect("hide_gui", self, "_on_hide_gui_changed")
 
-	else:
-		_creativeMode.set_creative_mode_gui_to_default()
-		# logic to set action still required; either here or directly in actionSelector when hiding
+# 	else:
+# 		match self.gameMode:
+# 			"creativeMode":
+# 				_creativeMode.set_creative_mode_gui_to_default()
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
@@ -184,30 +187,37 @@ func _ready() -> void:
 	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.tile_definition_database)
 	cppBridge.initialize_grid_in_cpp_backend(0)
 
+	# initialize UserInputManager
+	UserInputManager.initialize("creativeMode", cameraManager, tileDefinitionManager, hexGridManager, get_node("guiOverlayCanvasLayer"), get_node("CanvasLayer"))
+	UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
+
+
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
 	var scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
 	var instance = scene.instance()
 	get_node("guiOverlayCanvasLayer").add_child(instance)
 	_creativeMode = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
 	_tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
-	_creativeMode.connect("new_tile_selected", self, "_on_new_tile_selected") # to get information of newly selected tile
-	_creativeMode.connect("gui_mouse_context_changed", self, "_on_gui_mouse_context_changed")
-	_creativeMode.connect("action_mode_changed", self, "_on_action_mode_changed")
+	# _creativeMode.connect("new_tile_selected", self, "_on_new_tile_selected") # to get information of newly selected tile
+	# _creativeMode.connect("gui_mouse_context_changed", self, "_on_gui_mouse_context_changed")
+	# _creativeMode.connect("action_mode_changed", self, "_on_action_mode_changed")
 	_creativeMode.initialize_creative_mode_gui(tileDefinitionManager)
 
 	# initialize the floating tile over the grid
+	# Depends on the Mode
 	var tile_definition_uuid = _tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # for testing the creative mode
 	if tile_definition_uuid != "": 
 		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
 		hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 	
 # REMARK: Should be moved to userInputManager (when created)
-func _input(event) -> void:
+func _input(event : InputEvent) -> void:
 	if event is InputEventMouse:
 		raycast_screenspace_position = event.position
 		cameraManager.initiate_raycast_from_position(raycast_screenspace_position)
 
-func _process(delta):
+func _process(_delta : float) -> void:
+	_currentGuiMouseContext = UserInputManager.currentGuiMouseContext
 	if Input.is_action_just_pressed("place_tile"):
 		if _currentGuiMouseContext == "grid":
 			if _current_tile_index != -1:

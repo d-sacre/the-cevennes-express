@@ -34,7 +34,7 @@ func _create_icon_texture(fp) -> ImageTexture:
 	# var _image : Image = Image.new()
 	# _image.load(_tileTexturePath)
 	# However, there occurs the warning message
-	# W 0:00:00.528   load: Loaded resource as image file, this will not work on export: <FILENAME>. 
+	# load: Loaded resource as image file, this will not work on export: <FILENAME>. 
 	# Instead, import the image file as an Image resource and load it normally as a resource.
 	# The result is a black image in the exported game
 	# Workaround required for Godot 3: Load as texture and than copy to image

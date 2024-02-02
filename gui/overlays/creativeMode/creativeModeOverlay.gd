@@ -4,6 +4,12 @@ extends Control
 # Otherwise, the tiles are not selectable
 
 ################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
+
+################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
 signal gui_mouse_context_changed(context, status)
@@ -51,3 +57,8 @@ func _ready():
 	_tileSelector.connect("gui_mouse_context", self, "_on_gui_mouse_context_changed")
 	_actionSelector.connect("gui_mouse_context", self, "_on_gui_mouse_context_changed")
 	_actionSelector.connect("action_mode", self, "_on_action_mode_changed")
+
+	# connect signals to UserInputManager
+	self.connect("gui_mouse_context_changed", UserInputManager, "_on_gui_mouse_context_changed")
+	self.connect("action_mode_changed", UserInputManager, "_on_action_mode_changed")
+	self.connect("new_tile_selected", UserInputManager, "_on_new_tile_selected")
