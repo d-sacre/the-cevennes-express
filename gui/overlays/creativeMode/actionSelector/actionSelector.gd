@@ -6,22 +6,31 @@ extends Control
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
 signal gui_mouse_context(context, status)
-signal action_mode(mode)
+signal action_mode(tce_signaling_uuid, value)
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const ACTION_ITEM_LIST_DEFAULT : Array = [
-	{"text": "Place", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/place_icon.png"},"default": true, "selectable": true, "disabled": false, "metadata": "selector::tile::action::place"},
-	{"text": "Replace", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/replace_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "selector::tile::action::replace"},
-	{"text": "Pick", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/pick_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "selector::tile::action::pick"},
-	{"text": "Delete", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/delete_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "selector::tile::action::delete"},
-	{"text": "Hide GUI", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/hide-gui_icon.png"},"default": false, "selectable": true, "disabled": false, "metadata": "selector::gui::hide"}
+	{"text": "Place", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/place_icon.png"},"default": true, "selectable": true, "disabled": false, "metadata": "user::selected::tile::action::place"},
+	{"text": "Replace", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/replace_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "user::selected::tile::action::replace"},
+	{"text": "Pick", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/pick_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "user::selected::tile::action::pick"},
+	{"text": "Delete", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/delete_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "user::selected::tile::action::delete"},
+	{"text": "Hide GUI", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/hide-gui_icon.png"},"default": false, "selectable": true, "disabled": false, "metadata": "user::selected::gui::hide"}
 ]
+
+################################################################################
+#### PUBLIC MEMBER VARIABLES ###################################################
+################################################################################
+var tce_signaling_uuid : Dictionary = {
+	"gui": ""
+}
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
+
+var _context : String
 var mode : String
 
 ################################################################################
@@ -38,11 +47,15 @@ func _item_selected(index : int) -> void:
 	if _is_selectable:
 		var _actionMode = self._actionItemList.get_item_metadata(index)
 		self.mode = _actionMode
-		emit_signal("action_mode", _actionMode)
+		emit_signal("action_mode", self._context +"::"+_actionMode, "NONE")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+func initialize(context : String) -> void:
+	self._context = context
+	self.tce_signaling_uuid["gui"] = self._context +"::gui::hud::selector::action"
+
 func initialize_selection_to_default() -> void:
 	var _index = 0 # TO-DO: Add logic to find the default
 	self._actionItemList.select(_index, true)
@@ -52,10 +65,10 @@ func initialize_selection_to_default() -> void:
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_mouse_entered() -> void:
-	emit_signal("gui_mouse_context", "actionSelector", "entered")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("gui_mouse_context", "actionSelector", "exited")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"], "exited")
 
 func _on_item_selected(index : int) -> void:
 	self._item_selected(index)

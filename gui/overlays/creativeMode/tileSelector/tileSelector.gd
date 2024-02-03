@@ -3,7 +3,7 @@ extends Control
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal new_selection(tile_definition_uuid)
+signal new_tile_definition_selected(tce_signaling_uuid, tile_definition_uuid)
 signal gui_mouse_context(context, status)
 
 ################################################################################
@@ -16,6 +16,12 @@ const TILE_LIST_ICON_SIZE_DEFAULT : Vector2 = Vector2(128,128)
 ################################################################################
 var selectedTile : String = ""
 var tileListIconSize : Vector2 = TILE_LIST_ICON_SIZE_DEFAULT
+var tce_signaling_uuid : Dictionary = {
+	"gui": "",
+	"actions" : {
+		"new_tile_definition_selected": ""
+	}
+}
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -23,6 +29,7 @@ var tileListIconSize : Vector2 = TILE_LIST_ICON_SIZE_DEFAULT
 # var tileDefinitionManager : Object  # only in the testing setup; later has to be inherited from main.gd
 var _tileList : ItemList
 var _tileDatabase : Dictionary = {}
+var _context : String 
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -100,18 +107,24 @@ func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 	self._tileList.select(0,true)
 	self.selectedTile = _tileList.get_item_metadata(0)
 
+func initialize(context : String, tdm : Object) -> void:
+	self.initialize_tile_list(tdm)
+	self._context = context
+	self.tce_signaling_uuid["gui"] = self._context + "::gui::sidepanel::right::selector::tile::definition"
+	self.tce_signaling_uuid["actions"]["new_tile_definition_selected"] = self._context + "::user::selected::tile::definition"
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_item_selected(index : int) -> void:
 	self.selectedTile = self._tileList.get_item_metadata(index)
-	emit_signal("new_selection", self.selectedTile)
+	emit_signal("new_tile_definition_selected", tce_signaling_uuid["actions"]["new_tile_definition_selected"], self.selectedTile)
 
 func _on_mouse_entered() -> void:
-	emit_signal("gui_mouse_context", "tileSelector", "entered")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("gui_mouse_context", "tileSelector", "exited")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"], "exited")
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################

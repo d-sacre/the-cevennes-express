@@ -23,11 +23,14 @@ const HEX_GRID_SIZE_Y : int = 10
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
-var gameMode : String = "creativeMode"
+var base_context : String = "game::creative"
+
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
+var _gameMode : String = (self.base_context.split("::"))[1]
+
 var _last_collison_object : Object
 var _current_collision_object : Object
 var _last_tile_index : int = -1
@@ -105,7 +108,7 @@ func _ready() -> void:
 	cppBridge.initialize_grid_in_cpp_backend(0)
 
 	# initialize UserInputManager
-	UserInputManager.initialize(self.gameMode, cameraManager, tileDefinitionManager, hexGridManager, get_node("guiOverlayCanvasLayer"), get_node("CanvasLayer"))
+	UserInputManager.initialize(self.base_context, cameraManager, tileDefinitionManager, hexGridManager, get_node("guiOverlayCanvasLayer"), get_node("CanvasLayer"))
 	UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
 
 
@@ -115,7 +118,7 @@ func _ready() -> void:
 	get_node("guiOverlayCanvasLayer").add_child(instance)
 	var _creativeMode : Object = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
 	_tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
-	_creativeMode.initialize_creative_mode_gui(tileDefinitionManager)
+	_creativeMode.initialize_creative_mode_gui(self.base_context, self.tileDefinitionManager)
 
 	# initialize the floating tile over the grid
 	# Depends on the Mode
