@@ -25,7 +25,6 @@ const HEX_GRID_SIZE_Y : int = 10
 ################################################################################
 var base_context : String = "game::creative"
 
-
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
@@ -81,7 +80,7 @@ func _on_new_tile_selected(_tile_definition_uuid : String) -> void:
 	hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 
 ################################################################################
-#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+#### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready() -> void:
 	userSettingsManager.initialize_user_settings()
@@ -111,7 +110,6 @@ func _ready() -> void:
 	UserInputManager.initialize(self.base_context, cameraManager, tileDefinitionManager, hexGridManager, get_node("guiOverlayCanvasLayer"), get_node("CanvasLayer"))
 	UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
 
-
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
 	var scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
 	var instance = scene.instance()
@@ -126,16 +124,19 @@ func _ready() -> void:
 	if tile_definition_uuid != "": 
 		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
 		hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
-	
-# REMARK: Should be moved to userInputManager (when created)
-func _input(event : InputEvent) -> void:
-	if event is InputEventMouse:
-		raycast_screenspace_position = event.position
-		cameraManager.initiate_raycast_from_position(raycast_screenspace_position)
+
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
+# # REMARK: Should be moved to userInputManager (when created)
+# func _input(event : InputEvent) -> void:
+# 	if event is InputEventMouse:
+# 		raycast_screenspace_position = event.position
+# 		cameraManager.initiate_raycast_from_position(raycast_screenspace_position)
 
 func _process(_delta : float) -> void:
 	_currentGuiMouseContext = UserInputManager.currentGuiMouseContext
-	
+
 	if Input.is_action_just_pressed("place_tile"):
 		if _currentGuiMouseContext == "grid":
 			if _current_tile_index != -1:

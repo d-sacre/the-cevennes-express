@@ -47,6 +47,8 @@ var _guiLayerReferences : Dictionary = {
 	"popup": null
 }
 
+var _lastCameraMovementRequest : Vector2 = Vector2(0,0)
+
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
@@ -99,7 +101,7 @@ func create_tce_signaling_uuid(ctxt : String, keyChain : Array) -> String:
 		_tmpString += keyChain[i]
 		if i != _keyChainLength - 1:
 			_tmpString +=  self.TCE_SIGNALING_UUID_SEPERATOR
-	print("Created TCE SIGNALING UUID: ", _tmpString)
+
 	return _tmpString
 
 ################################################################################
@@ -172,3 +174,41 @@ func _on_user_selected(tce_signaling_uuid : String, value : String) -> void:
 ################################################################################
 func _ready() -> void:
 	print("\t-> Initialize UserInputManager...")
+
+################################################################################
+#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
+# TO-DO: Needs to be outsourced into gameHandler 
+func _input(event : InputEvent) -> void:
+	# mouse position (floating (tile) position)
+	if event is InputEventMouse:
+		if self.base == "game":
+			self._managerReferences["cameraManager"].initiate_raycast_from_position(event.position)
+	
+	# mouse scroll (camera zooming)
+	if event is InputEventMouseButton:
+		if self.base == "game":
+			if event.button_index == BUTTON_WHEEL_UP and event.pressed:
+				_managerReferences["cameraManager"].request_zoom_out()
+			if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
+				_managerReferences["cameraManager"].request_zoom_in()
+	
+	# camera movement speed modifier
+	if event is InputEventKey and event.pressed:
+		if event.shift:
+			_managerReferences["cameraManager"].set_movement_speed_mode("fast")
+		else:
+			_managerReferences["cameraManager"].set_movement_speed_mode("slow")
+
+func _process(_delta : float) -> void:
+	if self.base == "game":
+		# checking for camera movement request
+		var _cameraMovementRequest : Vector2 = Vector2(
+			Input.get_action_strength("camera_move_left") - Input.get_action_strength("camera_move_right"),
+				Input.get_action_strength("camera_move_forward") - Input.get_action_strength("camera_move_backward")
+		)
+
+		# to reduce the amount of unnecessary function calls when no camera movement is requested
+		if _lastCameraMovementRequest != _cameraMovementRequest:
+			_managerReferences["cameraManager"].request_movement(_cameraMovementRequest)
+			_lastCameraMovementRequest = _cameraMovementRequest
