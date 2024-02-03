@@ -23,7 +23,7 @@ signal new_tile_selected(_tile_definition_uuid)
 ################################################################################
 # TO-DO: should be moved into another autoload, so that other parts can access
 # it in a more logical/orderly manner
-const TCE_OBJECT_UUID_SEPERATOR : String = "::" 
+const TCE_SIGNALING_UUID_SEPERATOR : String = "::" 
 
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
@@ -82,7 +82,7 @@ func initialize(_base_context : String, cm : Object, tdm : Object, hgm : Object,
 
 	self.context = _base_context
 
-	var _base_context_list : Array = self.context.split(self.TCE_OBJECT_UUID_SEPERATOR)
+	var _base_context_list : Array = self.context.split(self.TCE_SIGNALING_UUID_SEPERATOR)
 	self.base = _base_context_list[0]
 
 	if self.base == "game":
@@ -91,32 +91,22 @@ func initialize(_base_context : String, cm : Object, tdm : Object, hgm : Object,
 	if self.variant == "creative":
 		self.currentGuiMouseContext = "grid"
 
+func create_tce_signaling_uuid(ctxt : String, keyChain : Array) -> String:
+	var _tmpString : String =  ctxt + self.TCE_SIGNALING_UUID_SEPERATOR
+	var _keyChainLength : int = len(keyChain)
+
+	for i in range(_keyChainLength):
+		_tmpString += keyChain[i]
+		if i != _keyChainLength - 1:
+			_tmpString +=  self.TCE_SIGNALING_UUID_SEPERATOR
+	print("Created TCE SIGNALING UUID: ", _tmpString)
+	return _tmpString
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
-# func _on_gui_mouse_context_changed(context : String, status : String) -> void:
-	# match context:
-	# 	"tileSelector":
-	# 		if status == "entered":
-	# 			currentGuiMouseContext = context
-	# 			_managerReferences["cameraManager"].disable_zooming()
-	# 			_managerReferences["cameraManager"].disable_raycasting()
-	# 		else:
-	# 			currentGuiMouseContext = "grid"
-	# 			_managerReferences["cameraManager"].enable_zooming()
-	# 			_managerReferences["cameraManager"].enable_raycasting()
-	# 	"actionSelector":
-	# 		if status == "entered":
-	# 			currentGuiMouseContext = context
-	# 			_managerReferences["cameraManager"].disable_zooming()
-	# 			_managerReferences["cameraManager"].disable_raycasting()
-	# 		else:
-	# 			currentGuiMouseContext = "grid"
-	# 			_managerReferences["cameraManager"].enable_zooming()
-	# 			_managerReferences["cameraManager"].enable_raycasting()
-
 func _on_gui_selector_context_changed(tce_signaling_uuid : String, interaction : String) -> void:
-	print("<User Input Manager :: gui> received ", tce_signaling_uuid, " with status ", interaction)
+	# print("<User Input Manager :: gui> received ", tce_signaling_uuid, " with status ", interaction)
 	if tce_signaling_uuid.match("game::creative::gui::*"):
 		var _subuuid : String = tce_signaling_uuid.trim_prefix("game::creative::gui::")
 		if _subuuid.match("sidepanel::right::selector::tile::definition"):
@@ -142,7 +132,7 @@ func _on_gui_selector_context_changed(tce_signaling_uuid : String, interaction :
 	
 
 func _on_user_selected(tce_signaling_uuid : String, value : String) -> void:
-	print("<User Input Manager :: user selected> received ", tce_signaling_uuid, " with value: ", value)
+	# print("<User Input Manager :: user selected> received ", tce_signaling_uuid, " with value: ", value)
 	
 	# REMARK: very simplified code hardcoded for game::creative only;
 	# Needs to be generalized and modularized!
@@ -176,47 +166,9 @@ func _on_user_selected(tce_signaling_uuid : String, value : String) -> void:
 			_hide_gui(false)
 	else:
 		print("Error: <tce_signaling_uuid> ",tce_signaling_uuid, " could not be processed!")
-	# # Select Mode specific behavior
-	# if action_mode.match("creativeMode::*"): # creative mode
-	# 	action_mode = action_mode.trim_prefix("creativeMode::")
-
-	# 	if action_mode.match("selector::*"):
-	# 		action_mode = action_mode.trim_prefix("selector::")
-
-	# 		if action_mode.match("tile::*"):
-	# 			action_mode = action_mode.trim_prefix("tile::")
-
-	# 			if action_mode.match("action::*"):
-	# 				action_mode = action_mode.trim_prefix("action::")
-
-	# 				match action_mode:
-	# 					"place":
-	# 						print("place")
-	# 					"replace":
-	# 						pass
-	# 					"pick":
-	# 						pass
-	# 					"delete":
-	# 						pass
-
-	# 		elif action_mode.match("gui::*"):
-	# 			action_mode = action_mode.trim_prefix("gui::")
-	# 			match action_mode:
-	# 				"hide":
-	# 					print("Hide GUI: ", true)
-	# 					_hide_gui(true) # to make it neater, this should be a clean function call
-
-# func _on_hide_gui_changed(status : bool) -> void:
-# 	print("User Input Manager received: Hide GUI = ", status)
-# 	_hide_gui(status)
-
-# func _on_new_tile_selected(tce_signaling_uuid : String, _tile_definition_uuid : String) -> void:
-# 	print("User Input Manager received ", tce_signaling_uuid, " with ", _tile_definition_uuid)
-# 	# TO-DO: logic to process whether new tile selection is allowed at all
-# 	emit_signal("new_tile_selected", _tile_definition_uuid)
 
 ################################################################################
-#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+#### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready() -> void:
 	print("\t-> Initialize UserInputManager...")

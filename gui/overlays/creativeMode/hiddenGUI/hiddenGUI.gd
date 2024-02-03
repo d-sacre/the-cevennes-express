@@ -11,10 +11,16 @@ extends Control
 ################################################################################
 signal hide_gui(tce_signaling_uuid, status)
 
+################################################################################
+#### PUBLIC MEMBER VARIABLES ###################################################
+################################################################################
 var tce_signaling_uuid : Dictionary = {
 	"gui": "",
 	"actions" : {
-		"show_gui": ""
+		"show_gui": {
+			"list": ["user", "selected", "gui", "show"],
+			"string": ""
+		}
 	}
 }
 
@@ -26,18 +32,18 @@ onready var _unhideGUIButton : Object = $PanelContainer/unhideGUIButton
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
-func initialize(context : String):
-	self.tce_signaling_uuid["actions"]["show_gui"] = context + "::user::selected::gui::show"
+func initialize(ctxt : String):
+	self.tce_signaling_uuid["actions"]["show_gui"]["string"] = UserInputManager.create_tce_signaling_uuid(ctxt, self.tce_signaling_uuid["actions"]["show_gui"]["list"])
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_unhideGUIButton_pressed():
-	emit_signal("hide_gui", self.tce_signaling_uuid["actions"]["show_gui"], "NONE")
+	emit_signal("hide_gui", self.tce_signaling_uuid["actions"]["show_gui"]["string"], "NONE")
 	self.queue_free()
 
 ################################################################################
-#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+#### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready():
 	_unhideGUIButton.connect("pressed", self, "_on_unhideGUIButton_pressed")

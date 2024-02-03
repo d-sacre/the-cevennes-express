@@ -1,6 +1,12 @@
 extends Control
 
 ################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
+
+################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
 signal new_tile_definition_selected(tce_signaling_uuid, tile_definition_uuid)
@@ -17,9 +23,15 @@ const TILE_LIST_ICON_SIZE_DEFAULT : Vector2 = Vector2(128,128)
 var selectedTile : String = ""
 var tileListIconSize : Vector2 = TILE_LIST_ICON_SIZE_DEFAULT
 var tce_signaling_uuid : Dictionary = {
-	"gui": "",
+	"gui": {
+		"list": ["gui", "sidepanel", "right", "selector", "tile", "definition"],
+		"string": ""
+	},
 	"actions" : {
-		"new_tile_definition_selected": ""
+		"new_tile_definition_selected": {
+			"list": ["user", "selected", "tile", "definition"],
+			"string": ""
+		}
 	}
 }
 
@@ -110,21 +122,21 @@ func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 func initialize(context : String, tdm : Object) -> void:
 	self.initialize_tile_list(tdm)
 	self._context = context
-	self.tce_signaling_uuid["gui"] = self._context + "::gui::sidepanel::right::selector::tile::definition"
-	self.tce_signaling_uuid["actions"]["new_tile_definition_selected"] = self._context + "::user::selected::tile::definition"
+	self.tce_signaling_uuid["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid["gui"]["list"])
+	self.tce_signaling_uuid["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid["actions"]["new_tile_definition_selected"]["list"])
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_item_selected(index : int) -> void:
 	self.selectedTile = self._tileList.get_item_metadata(index)
-	emit_signal("new_tile_definition_selected", tce_signaling_uuid["actions"]["new_tile_definition_selected"], self.selectedTile)
+	emit_signal("new_tile_definition_selected", tce_signaling_uuid["actions"]["new_tile_definition_selected"]["string"], self.selectedTile)
 
 func _on_mouse_entered() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"], "entered")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"]["string"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"], "exited")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"]["string"], "exited")
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
@@ -132,10 +144,14 @@ func _on_mouse_exited() -> void:
 func _ready() -> void:
 	self._tileList = $PanelContainer/GridContainer/tileList
 
-	# initialize signal handling
+	# initialize internal signal handling
 	self._tileList.connect("item_selected", self, "_on_item_selected")
 	self._tileList.connect("mouse_entered", self, "_on_mouse_entered")
 	self._tileList.connect("mouse_exited", self, "_on_mouse_exited")
+
+	# initialize signaling to User Input Manager
+	self.connect("new_tile_definition_selected", UserInputManager, "_on_user_selected")
+	self.connect("gui_mouse_context", UserInputManager, "_on_gui_selector_context_changed")
 
 	# set icon size accordingly to amount of columns
 	var _tileListWidth = _tileList.get_size().x
