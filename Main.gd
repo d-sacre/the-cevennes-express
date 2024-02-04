@@ -28,14 +28,10 @@ var base_context : String = "game::creative"
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-var _gameMode : String = (self.base_context.split("::"))[1]
-
 var _last_collison_object : Object
 var _current_collision_object : Object
 var _last_tile_index : int = -1
 var _current_tile_index : int = -1
-
-var raycast_screenspace_position : Vector2 = Vector2(0,0)
 
 var _tileSelector : Object
 var _currentGuiMouseContext : String = "grid"
@@ -47,7 +43,7 @@ onready var hexGridManager : Object = $hexGridManager
 onready var cameraManager : Object = $cameraManager
 onready var tileDefinitionManager : Object = $tileDefinitionManager
 onready var cppBridge : Object = $cppBridge
-onready var settingsPopout : Object = $CanvasLayer/PopupMenu/settings_popup_panelContainer
+onready var settingsPopout : Object = $popupCanvasLayer/PopupMenu/settings_popup_panelContainer
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -94,7 +90,7 @@ func _ready() -> void:
 	# setting up all camera related stuff
 	# TO-DO: Set starting position to the center of the grid
 	cameraManager.connect("raycast_result",self,"_on_raycast_result")
-	cameraManager.enable_raycasting()
+	# cameraManager.enable_raycasting()
 
 	# setting up the grid
 	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
@@ -107,13 +103,25 @@ func _ready() -> void:
 	cppBridge.initialize_grid_in_cpp_backend(0)
 
 	# initialize UserInputManager
-	UserInputManager.initialize(self.base_context, cameraManager, tileDefinitionManager, hexGridManager, get_node("guiOverlayCanvasLayer"), get_node("CanvasLayer"))
+	var _managerReferences : Dictionary = {
+		"cameraManager": cameraManager,
+		"tileDefinitionManager": tileDefinitionManager,
+		"hexGridManager": hexGridManager
+	}
+
+	var _guiLayerReferences : Dictionary = {
+		"overlay": get_node("guiOverlayCanvasLayer"),
+		"hidden": get_node("guiHiddenCanvasLayer"),
+		"popup": get_node("popupCanvasLayer")
+	}
+
+	UserInputManager.initialize(self.base_context, _managerReferences, _guiLayerReferences)
 	UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
 
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
-	var scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
-	var instance = scene.instance()
-	get_node("guiOverlayCanvasLayer").add_child(instance)
+	var _scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
+	var _instance = _scene.instance()
+	get_node("guiOverlayCanvasLayer").add_child(_instance)
 	var _creativeMode : Object = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
 	_tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
 	_creativeMode.initialize_creative_mode_gui(self.base_context, self.tileDefinitionManager)
@@ -128,12 +136,6 @@ func _ready() -> void:
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-# # REMARK: Should be moved to userInputManager (when created)
-# func _input(event : InputEvent) -> void:
-# 	if event is InputEventMouse:
-# 		raycast_screenspace_position = event.position
-# 		cameraManager.initiate_raycast_from_position(raycast_screenspace_position)
-
 func _process(_delta : float) -> void:
 	_currentGuiMouseContext = UserInputManager.currentGuiMouseContext
 
@@ -152,7 +154,7 @@ func _process(_delta : float) -> void:
 				# print("tile is placeable: ", tile_is_placeable)
 
 				if tile_is_placeable:
-					hexGridManager.set_status_placeholder(_current_tile_index,true, false)
+					hexGridManager.set_status_placeholder(_current_tile_index, true, false)
 					hexGridManager.place_floating_tile_at_index(_current_tile_index)
 
 					# test for sfx
@@ -163,7 +165,7 @@ func _process(_delta : float) -> void:
 						var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
 						hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
 				else:
-					hexGridManager.set_status_placeholder(_current_tile_index,false, true)
+					hexGridManager.set_status_placeholder(_current_tile_index, false, true)
 					# test for sfx
 					audioManager.play_sfx(["game", "tile", "fail"])
 			

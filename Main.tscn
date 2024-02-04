@@ -42,6 +42,7 @@ light_indirect_energy = 2.0
 [node name="screenshotCanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="guiOverlayCanvasLayer" type="CanvasLayer" parent="."]
+layer = 2
 
 [node name="debugPanelContainer" type="PanelContainer" parent="guiOverlayCanvasLayer"]
 anchor_right = 0.133
@@ -58,10 +59,14 @@ margin_bottom = 377.0
 theme = SubResource( 1 )
 text = "Test"
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-pause_mode = 2
+[node name="guiHiddenCanvasLayer" type="CanvasLayer" parent="."]
+layer = 3
 
-[node name="PopupMenu" type="PanelContainer" parent="CanvasLayer"]
+[node name="popupCanvasLayer" type="CanvasLayer" parent="."]
+pause_mode = 2
+layer = 4
+
+[node name="PopupMenu" type="PanelContainer" parent="popupCanvasLayer"]
 pause_mode = 2
 anchor_left = 0.5
 anchor_top = 0.5
@@ -74,7 +79,7 @@ margin_bottom = 535.0
 theme = ExtResource( 11 )
 script = ExtResource( 10 )
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PopupMenu"]
+[node name="VBoxContainer" type="VBoxContainer" parent="popupCanvasLayer/PopupMenu"]
 margin_left = 24.0
 margin_top = 24.0
 margin_right = 868.0
@@ -84,7 +89,7 @@ __meta__ = {
 "_edit_group_": true
 }
 
-[node name="menuTitle" type="Label" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="menuTitle" type="Label" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_right = 844.0
 margin_bottom = 138.0
 custom_fonts/font = ExtResource( 13 )
@@ -92,26 +97,26 @@ text = "Menu"
 align = 1
 valign = 1
 
-[node name="spacer4" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="spacer4" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 142.0
 margin_right = 844.0
 margin_bottom = 190.0
 rect_min_size = Vector2( 0, 48 )
 size_flags_vertical = 0
 
-[node name="playButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="playButtonHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 194.0
 margin_right = 844.0
 margin_bottom = 346.0
 
-[node name="hspacer1" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
+[node name="hspacer1" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
 visible = false
 margin_right = 160.0
 margin_bottom = 152.0
 size_flags_horizontal = 7
 size_flags_stretch_ratio = 2.0
 
-[node name="resumeButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
+[node name="resumeButton" type="Button" parent="popupCanvasLayer/PopupMenu/VBoxContainer/playButtonHBox"]
 margin_right = 844.0
 margin_bottom = 152.0
 rect_min_size = Vector2( 0, 120 )
@@ -120,25 +125,25 @@ size_flags_vertical = 6
 size_flags_stretch_ratio = 5.0
 text = "Resume Game"
 
-[node name="spacer1" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="spacer1" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 350.0
 margin_right = 844.0
 margin_bottom = 398.0
 rect_min_size = Vector2( 0, 48 )
 size_flags_vertical = 0
 
-[node name="settingsButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="settingsButtonHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 402.0
 margin_right = 844.0
 margin_bottom = 554.0
 
-[node name="hspacer2" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
+[node name="hspacer2" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
 visible = false
 margin_bottom = 152.0
 size_flags_horizontal = 7
 size_flags_stretch_ratio = 2.0
 
-[node name="settingsButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
+[node name="settingsButton" type="Button" parent="popupCanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox"]
 margin_right = 844.0
 margin_bottom = 152.0
 rect_min_size = Vector2( 560, 120 )
@@ -147,7 +152,7 @@ size_flags_vertical = 6
 size_flags_stretch_ratio = 5.0
 text = "Settings"
 
-[node name="spacer2" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="spacer2" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_left = 422.0
 margin_top = 558.0
 margin_right = 422.0
@@ -156,19 +161,19 @@ rect_min_size = Vector2( 0, 48 )
 size_flags_horizontal = 6
 size_flags_vertical = 4
 
-[node name="creditsButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="creditsButtonHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 610.0
 margin_right = 844.0
 margin_bottom = 762.0
 
-[node name="hspacer3" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
+[node name="hspacer3" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
 visible = false
 margin_right = 158.0
 margin_bottom = 152.0
 size_flags_horizontal = 7
 size_flags_stretch_ratio = 2.0
 
-[node name="returnToMainMenuButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
+[node name="returnToMainMenuButton" type="Button" parent="popupCanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox"]
 margin_right = 844.0
 margin_bottom = 152.0
 rect_min_size = Vector2( 0, 120 )
@@ -177,26 +182,26 @@ size_flags_vertical = 6
 size_flags_stretch_ratio = 5.0
 text = "Return to Main Menu"
 
-[node name="spacer3" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="spacer3" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 766.0
 margin_right = 844.0
 margin_bottom = 814.0
 rect_min_size = Vector2( 0, 48 )
 size_flags_vertical = 4
 
-[node name="exitButtonHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="exitButtonHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 818.0
 margin_right = 844.0
 margin_bottom = 970.0
 
-[node name="hspacer4" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
+[node name="hspacer4" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
 visible = false
 margin_right = 158.0
 margin_bottom = 152.0
 size_flags_horizontal = 7
 size_flags_stretch_ratio = 2.0
 
-[node name="exitButton" type="Button" parent="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
+[node name="exitButton" type="Button" parent="popupCanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox"]
 margin_right = 844.0
 margin_bottom = 152.0
 rect_min_size = Vector2( 0, 120 )
@@ -205,14 +210,14 @@ size_flags_vertical = 6
 size_flags_stretch_ratio = 5.0
 text = "Exit to System"
 
-[node name="spacer5" type="Control" parent="CanvasLayer/PopupMenu/VBoxContainer"]
+[node name="spacer5" type="Control" parent="popupCanvasLayer/PopupMenu/VBoxContainer"]
 margin_top = 974.0
 margin_right = 844.0
 margin_bottom = 1022.0
 rect_min_size = Vector2( 0, 48 )
 size_flags_vertical = 0
 
-[node name="settings_popup_panelContainer" type="PanelContainer" parent="CanvasLayer/PopupMenu"]
+[node name="settings_popup_panelContainer" type="PanelContainer" parent="popupCanvasLayer/PopupMenu"]
 margin_left = 24.0
 margin_top = 125.0
 margin_right = 868.0
@@ -222,54 +227,54 @@ size_flags_vertical = 6
 theme = ExtResource( 11 )
 script = ExtResource( 14 )
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer"]
 margin_left = 24.0
 margin_top = 24.0
 margin_right = 820.0
 margin_bottom = 796.0
 size_flags_vertical = 2
 
-[node name="settingsPopup_Title_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+[node name="settingsPopup_Title_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
 margin_right = 796.0
 margin_bottom = 56.0
 size_flags_vertical = 1
 custom_fonts/font = ExtResource( 16 )
 text = "Settings"
 
-[node name="spacer" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+[node name="spacer" type="Control" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
 margin_top = 60.0
 margin_right = 796.0
 margin_bottom = 84.0
 rect_min_size = Vector2( 0, 24 )
 size_flags_vertical = 6
 
-[node name="audioSubmenu_vboxContainer" type="VBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+[node name="audioSubmenu_vboxContainer" type="VBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
 margin_top = 88.0
 margin_right = 796.0
 margin_bottom = 440.0
 size_flags_vertical = 6
 
-[node name="audioSubmenu_title_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+[node name="audioSubmenu_title_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_right = 796.0
 margin_bottom = 69.0
 size_flags_vertical = 1
 custom_fonts/font = ExtResource( 15 )
 text = "Audio"
 
-[node name="uiSFXHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+[node name="uiSFXHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 73.0
 margin_right = 796.0
 margin_bottom = 120.0
 size_flags_vertical = 5
 size_flags_stretch_ratio = 4.0
 
-[node name="volume_uiSFX_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
+[node name="volume_uiSFX_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
 margin_right = 264.0
 margin_bottom = 47.0
 size_flags_horizontal = 3
 text = "UI SFX"
 
-[node name="volume_uiSFX_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
+[node name="volume_uiSFX_slider" type="HSlider" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox"]
 margin_left = 268.0
 margin_right = 796.0
 margin_bottom = 47.0
@@ -279,19 +284,19 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 step = 0.1
 
-[node name="ambienceSFXHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+[node name="ambienceSFXHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 124.0
 margin_right = 796.0
 margin_bottom = 171.0
 
-[node name="volume_ambienceSFX_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
+[node name="volume_ambienceSFX_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
 margin_right = 264.0
 margin_bottom = 47.0
 size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
 text = "Ambience"
 
-[node name="volume_ambienceSFX_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
+[node name="volume_ambienceSFX_slider" type="HSlider" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox"]
 margin_left = 268.0
 margin_right = 796.0
 margin_bottom = 47.0
@@ -302,18 +307,18 @@ size_flags_stretch_ratio = 2.0
 step = 0.1
 editable = false
 
-[node name="gameSFXHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+[node name="gameSFXHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 175.0
 margin_right = 796.0
 margin_bottom = 222.0
 
-[node name="volume_gameSFX_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
+[node name="volume_gameSFX_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
 margin_right = 264.0
 margin_bottom = 47.0
 size_flags_horizontal = 3
 text = "Game SFX"
 
-[node name="volume_gameSFX_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
+[node name="volume_gameSFX_slider" type="HSlider" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox"]
 margin_left = 268.0
 margin_right = 796.0
 margin_bottom = 47.0
@@ -323,19 +328,19 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 step = 0.1
 
-[node name="musicHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+[node name="musicHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 226.0
 margin_right = 796.0
 margin_bottom = 273.0
 
-[node name="volume_music_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
+[node name="volume_music_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
 margin_right = 264.0
 margin_bottom = 47.0
 size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.443137, 0.411765, 0.411765, 1 )
 text = "Music"
 
-[node name="volume_music_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
+[node name="volume_music_slider" type="HSlider" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/musicHBox"]
 margin_left = 268.0
 margin_right = 796.0
 margin_bottom = 47.0
@@ -346,18 +351,18 @@ size_flags_stretch_ratio = 2.0
 step = 0.1
 editable = false
 
-[node name="masterHBox" type="HBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+[node name="masterHBox" type="HBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 277.0
 margin_right = 796.0
 margin_bottom = 324.0
 
-[node name="volume_master_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
+[node name="volume_master_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
 margin_right = 264.0
 margin_bottom = 47.0
 size_flags_horizontal = 3
 text = "MASTER"
 
-[node name="volume_master_slider" type="HSlider" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
+[node name="volume_master_slider" type="HSlider" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer/masterHBox"]
 margin_left = 268.0
 margin_right = 796.0
 margin_bottom = 47.0
@@ -367,34 +372,34 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 step = 0.1
 
-[node name="spacer7" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
+[node name="spacer7" type="Control" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/audioSubmenu_vboxContainer"]
 margin_top = 328.0
 margin_right = 796.0
 margin_bottom = 352.0
 rect_min_size = Vector2( 0, 24 )
 size_flags_vertical = 6
 
-[node name="visualSubmenu_vboxContainer" type="VBoxContainer" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+[node name="visualSubmenu_vboxContainer" type="VBoxContainer" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
 margin_top = 444.0
 margin_right = 796.0
 margin_bottom = 588.0
 size_flags_vertical = 2
 
-[node name="visualSubmenu_title_label" type="Label" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
+[node name="visualSubmenu_title_label" type="Label" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
 margin_right = 796.0
 margin_bottom = 69.0
 size_flags_vertical = 6
 custom_fonts/font = ExtResource( 15 )
 text = "Visual"
 
-[node name="spacer8" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
+[node name="spacer8" type="Control" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
 margin_top = 73.0
 margin_right = 796.0
 margin_bottom = 85.0
 rect_min_size = Vector2( 0, 12 )
 size_flags_vertical = 6
 
-[node name="fullscreen_toggle" type="CheckButton" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
+[node name="fullscreen_toggle" type="CheckButton" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/visualSubmenu_vboxContainer"]
 margin_top = 89.0
 margin_right = 796.0
 margin_bottom = 144.0
@@ -404,23 +409,23 @@ size_flags_vertical = 6
 size_flags_stretch_ratio = 2.0
 text = "Fullscreen"
 
-[node name="spacer2" type="Control" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+[node name="spacer2" type="Control" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
 margin_top = 592.0
 margin_right = 796.0
 margin_bottom = 616.0
 rect_min_size = Vector2( 0, 24 )
 size_flags_vertical = 6
 
-[node name="returnToInGameMenu" type="Button" parent="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
+[node name="returnToInGameMenu" type="Button" parent="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2"]
 margin_top = 620.0
 margin_right = 796.0
 margin_bottom = 772.0
 theme = ExtResource( 9 )
 text = "Return to Menu"
 
-[connection signal="mouse_entered" from="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox/resumeButton" to="CanvasLayer/PopupMenu" method="_on_button_hover"]
-[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/playButtonHBox/resumeButton" to="CanvasLayer/PopupMenu" method="_on_resumeButton_pressed"]
-[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox/settingsButton" to="CanvasLayer/PopupMenu" method="_on_settingsButton_pressed"]
-[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox/returnToMainMenuButton" to="CanvasLayer/PopupMenu" method="_on_returnToMainMenuButton_pressed"]
-[connection signal="pressed" from="CanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox/exitButton" to="CanvasLayer/PopupMenu" method="_on_exitButton_pressed"]
-[connection signal="pressed" from="CanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/returnToInGameMenu" to="CanvasLayer/PopupMenu" method="_on_returnToInGameMenu_pressed"]
+[connection signal="mouse_entered" from="popupCanvasLayer/PopupMenu/VBoxContainer/playButtonHBox/resumeButton" to="popupCanvasLayer/PopupMenu" method="_on_button_hover"]
+[connection signal="pressed" from="popupCanvasLayer/PopupMenu/VBoxContainer/playButtonHBox/resumeButton" to="popupCanvasLayer/PopupMenu" method="_on_resumeButton_pressed"]
+[connection signal="pressed" from="popupCanvasLayer/PopupMenu/VBoxContainer/settingsButtonHBox/settingsButton" to="popupCanvasLayer/PopupMenu" method="_on_settingsButton_pressed"]
+[connection signal="pressed" from="popupCanvasLayer/PopupMenu/VBoxContainer/creditsButtonHBox/returnToMainMenuButton" to="popupCanvasLayer/PopupMenu" method="_on_returnToMainMenuButton_pressed"]
+[connection signal="pressed" from="popupCanvasLayer/PopupMenu/VBoxContainer/exitButtonHBox/exitButton" to="popupCanvasLayer/PopupMenu" method="_on_exitButton_pressed"]
+[connection signal="pressed" from="popupCanvasLayer/PopupMenu/settings_popup_panelContainer/VBoxContainer2/returnToInGameMenu" to="popupCanvasLayer/PopupMenu" method="_on_returnToInGameMenu_pressed"]

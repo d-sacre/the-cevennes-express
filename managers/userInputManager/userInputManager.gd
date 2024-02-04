@@ -36,16 +36,9 @@ var currentGuiMouseContext : String
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-var _managerReferences : Dictionary = {
-	"cameraManager": null,
-	"tileDefinitionManager": null,
-	"hexGridManager": null
-}
+var _managerReferences : Dictionary = {}
 
-var _guiLayerReferences : Dictionary = {
-	"overlay": null,
-	"popup": null
-}
+var _guiLayerReferences : Dictionary = {}
 
 var _lastCameraMovementRequest : Vector2 = Vector2(0,0)
 
@@ -65,7 +58,7 @@ func _hide_gui(status : bool) -> void:
 		var _scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
 		var _instance = _scene.instance()
 		_instance.initialize(self.context)
-		self._guiLayerReferences["popup"].add_child(_instance)
+		self._guiLayerReferences["hidden"].add_child(_instance)
 		
 	else:
 		match self.variant:
@@ -75,13 +68,18 @@ func _hide_gui(status : bool) -> void:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
-func initialize(_base_context : String, cm : Object, tdm : Object, hgm : Object, gocl : Object, gpucl : Object) -> void:
-	self._managerReferences["cameraManager"] = cm
-	self._managerReferences["tileDefinitionManager"] = tdm
-	self._managerReferences["hexGridManager"] = hgm
-	self._guiLayerReferences["overlay"] = gocl
-	self._guiLayerReferences["popup"] = gpucl
+# func initialize(_base_context : String, cm : Object, tdm : Object, hgm : Object, gocl : Object, gpucl : Object) -> void:
+	# # TO-DO: needs to be rewritten in such form that two dictionaries are passed as arguments.
+	# # Otherwise this approach is not really modular/adaptable to main menu
+	# self._managerReferences["cameraManager"] = cm
+	# self._managerReferences["tileDefinitionManager"] = tdm
+	# self._managerReferences["hexGridManager"] = hgm
+	# self._guiLayerReferences["overlay"] = gocl
+	# self._guiLayerReferences["popup"] = gpucl
 
+func initialize(_base_context : String, mr : Dictionary, glr : Dictionary) -> void:
+	self._managerReferences = mr
+	self._guiLayerReferences = glr
 	self.context = _base_context
 
 	var _base_context_list : Array = self.context.split(self.TCE_SIGNALING_UUID_SEPERATOR)
@@ -89,6 +87,7 @@ func initialize(_base_context : String, cm : Object, tdm : Object, hgm : Object,
 
 	if self.base == "game":
 		self.variant = _base_context_list[1]
+		self._managerReferences["cameraManager"].enable_raycasting()
 
 	if self.variant == "creative":
 		self.currentGuiMouseContext = "grid"
@@ -179,6 +178,9 @@ func _ready() -> void:
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 # TO-DO: Needs to be outsourced into gameHandler 
+# REMARKS: Logic can be improved if currentGuiMouseContext = "grid" -> "game::creative::gui::grid"
+# Then the following would be possible: if currentGuiMouseContext.match("game::*::gui::grid"):
+# which would be independent of the game variant, but also more precise than if self.base == "game":
 func _input(event : InputEvent) -> void:
 	# mouse position (floating (tile) position)
 	if event is InputEventMouse:
