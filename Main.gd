@@ -73,9 +73,9 @@ func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue
 	if _audioManagerSignalResult.has("keyChain"):
 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
-func _on_new_tile_selected(_tile_definition_uuid : String) -> void:
-	var _tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
-	hexGridManager.change_floating_tile_type(_tile_definition)
+# func _on_new_tile_selected(_tile_definition_uuid : String) -> void:
+# 	var _tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
+# 	hexGridManager.change_floating_tile_type(_tile_definition)
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
@@ -139,50 +139,4 @@ func _ready() -> void:
 
 	# REMARK: temporary position, until tile definition code is properly implemented!
 	UserInputManager.initialize(self.context, _managerReferences, _guiLayerReferences)
-	_error = UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
-
-################################################################################
-#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
-################################################################################
-# func _process(_delta : float) -> void:
-# 	if Input.is_action_just_pressed("place_tile"):
-# 		if UserInputManager.get_current_gui_context() == "grid":
-# 			if not hexGridManager.is_current_grid_index_out_of_bounds():
-# 				var _floating_tile_status = hexGridManager.get_floating_tile_definition_uuid_and_rotation()
-# 				var _is_tile_placeable = false
-				
-# 				if _floating_tile_status.has("TILE_DEFINITION_UUID"): # required to prevent issues when no floating tile exists
-# 					_is_tile_placeable = true # cppBridge.can_tile_be_placed_here(_current_tile_index, _floating_tile_status["TILE_DEFINITION_UUID"], _floating_tile_status["rotation"]) # needs to be updated (Bridge + Backend)
-
-# 				if _is_tile_placeable:
-# 					hexGridManager.set_status_placeholder(true, false)
-# 					hexGridManager.place_floating_tile()#_at_index(_current_tile_index)
-# 					audioManager.play_sfx(["game", "tile", "success"])
-
-# 					var _tile_definition_uuid = _tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # not required for creative mode
-# 					if _tile_definition_uuid != "": 
-# 						var _tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
-# 						hexGridManager.create_floating_tile(_tile_definition)
-# 				else:
-# 					hexGridManager.set_status_placeholder(false, true)
-# 					audioManager.play_sfx(["game", "tile", "fail"])
-			
-	# # rotation of the tile
-	# if Input.is_action_just_pressed("rotate_tile_clockwise"):
-	# 	if UserInputManager.get_current_gui_context() == "grid":
-	# 		hexGridManager.rotate_floating_tile_clockwise() # rotate tile
-	# 		audioManager.play_sfx(["game", "tile", "rotate"])
-			
-	# 		if not hexGridManager.is_current_grid_index_out_of_bounds(): # safety to absolutely ensure that cursor is not out of grid bounds 
-	# 			var _floating_tile_status = hexGridManager.get_floating_tile_definition_uuid_and_rotation()
-				
-	# 			if _floating_tile_status.has("TILE_DEFINITION_UUID"): # if a floating tile exists
-	# 				# inquire at C++ Backend whether the tile would fit
-	# 				var _is_tile_placeable : bool = true #cppBridge.check_whether_tile_would_fit(hexGridManager.get_current_grid_index(), _floating_tile_status["TILE_DEFINITION_UUID"], _floating_tile_status["rotation"])
-					
-	# 				# set the highlight according to the answer of the C++ Backend
-	# 				if _is_tile_placeable:
-	# 					hexGridManager.set_status_placeholder(true, false)
-	# 				else:
-	# 					hexGridManager.set_status_placeholder(false, true)
-
+	# _error = UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")

@@ -9,7 +9,7 @@ extends Node
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal new_tile_selected(_tile_definition_uuid)
+# signal new_tile_selected(_tile_definition_uuid)
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
@@ -150,7 +150,9 @@ func _on_user_selected(tce_signaling_uuid : String, value : String) -> void:
 						pass
 			
 			elif _subsubuuid.match("definition"):
-				emit_signal("new_tile_selected", value)
+				# emit_signal("new_tile_selected", value)
+				var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(value) 
+				self._managerReferences["hexGridManager"].change_floating_tile_type(_tile_definition)
 				self._curentTileDefinitionUUID = value
 
 		elif _subuuid.match("gui::hide"):
