@@ -23,6 +23,8 @@ script = ExtResource( 4 )
 
 [node name="cppBridge" parent="." instance=ExtResource( 7 )]
 
+[node name="contextualLogic" type="Node" parent="."]
+
 [node name="tileDefinitionManager" parent="." instance=ExtResource( 5 )]
 
 [node name="hexGridManager" parent="." instance=ExtResource( 1 )]
