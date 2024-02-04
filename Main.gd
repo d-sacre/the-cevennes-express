@@ -34,7 +34,9 @@ var _last_tile_index : int = -1
 var _current_tile_index : int = -1
 
 var _tileSelector : Object
-var _currentGuiMouseContext : String = "grid"
+var _currentGuiMouseContext : String 
+
+var _error : int
 
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
@@ -61,8 +63,9 @@ func _on_raycast_result(current_collision_information : Array) -> void:
 
 	if _current_tile_index != _last_tile_index:
 		audioManager.play_sfx(["game", "tile", "move"])
-		hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index)
-		hexGridManager.move_floating_tile_to(_current_tile_index)
+		# hexGridManager.manage_highlighting_due_to_cursor(_current_tile_index, _last_tile_index)
+		# hexGridManager.move_floating_tile_to(_current_tile_index)
+		hexGridManager.move_floating_tile_to_and_highlight(_last_tile_index, _current_tile_index)
 
 func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue) -> void:
 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
@@ -70,17 +73,19 @@ func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue
 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
 func _on_new_tile_selected(_tile_definition_uuid : String) -> void:
-	hexGridManager.floating_tile_reference.queue_free()
-	hexGridManager.floating_tile_reference = hexGridManager
-	var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
-	hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
+	# hexGridManager.floating_tile_reference.queue_free()
+	# hexGridManager.floating_tile_reference = hexGridManager
+	# hexGridManager.delete_floating_tile()
+	var _tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
+	# hexGridManager.create_floating_tile(_current_tile_index, _tile_definition)
+	hexGridManager.change_floating_tile_type(_tile_definition)
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready() -> void:
 	userSettingsManager.initialize_user_settings()
-	settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
+	_error = settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
 	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
 	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
@@ -89,8 +94,7 @@ func _ready() -> void:
 
 	# setting up all camera related stuff
 	# TO-DO: Set starting position to the center of the grid
-	cameraManager.connect("raycast_result",self,"_on_raycast_result")
-	# cameraManager.enable_raycasting()
+	_error = cameraManager.connect("raycast_result",self,"_on_raycast_result")
 
 	# setting up the grid
 	_current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
@@ -116,7 +120,7 @@ func _ready() -> void:
 	}
 
 	UserInputManager.initialize(self.base_context, _managerReferences, _guiLayerReferences)
-	UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
+	_error = UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
 
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
 	var _scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
@@ -131,13 +135,13 @@ func _ready() -> void:
 	var tile_definition_uuid = _tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # for testing the creative mode
 	if tile_definition_uuid != "": 
 		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
-		hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
+		hexGridManager.create_floating_tile(_current_tile_index,tile_definition)
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _process(_delta : float) -> void:
-	_currentGuiMouseContext = UserInputManager.currentGuiMouseContext
+	_currentGuiMouseContext = UserInputManager.get_current_gui_context()
 
 	if Input.is_action_just_pressed("place_tile"):
 		if _currentGuiMouseContext == "grid":
@@ -163,7 +167,7 @@ func _process(_delta : float) -> void:
 					var tile_definition_uuid = _tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # not required for creative mode
 					if tile_definition_uuid != "": 
 						var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
-						hexGridManager.create_tile_floating_over_grid(_current_tile_index,tile_definition)
+						hexGridManager.create_floating_tile(_current_tile_index,tile_definition)
 				else:
 					hexGridManager.set_status_placeholder(_current_tile_index, false, true)
 					# test for sfx

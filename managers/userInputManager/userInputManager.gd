@@ -11,13 +11,6 @@ extends Node
 ################################################################################
 signal new_tile_selected(_tile_definition_uuid)
 
-# # Definition of global user interaction signals
-# signal button_interaction(tce_signaling_uuid, object_type, interaction_type)
-# signal user_changed_string(tce_signaling_uuid, object_type, value)
-# signal user_changed_float(tce_signaling_uuid, object_type, value)
-# signal user_changed_integer(tce_signaling_uuid, object_type, value)
-# signal gui_selector_context_changed(tce_signaling_uuid, interaction_type)
-
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
@@ -31,15 +24,14 @@ const TCE_SIGNALING_UUID_SEPERATOR : String = "::"
 var context : String
 var base : String
 var variant : String
-var currentGuiMouseContext : String 
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 var _managerReferences : Dictionary = {}
-
 var _guiLayerReferences : Dictionary = {}
 
+var _currentGuiMouseContext : String 
 var _lastCameraMovementRequest : Vector2 = Vector2(0,0)
 
 ################################################################################
@@ -51,7 +43,7 @@ func _hide_gui(status : bool) -> void:
 			self._guiLayerReferences["overlay"].visible = not status
 
 	if status:
-		self.currentGuiMouseContext = "grid"
+		self._currentGuiMouseContext = "grid"
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()
 
@@ -68,15 +60,6 @@ func _hide_gui(status : bool) -> void:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
-# func initialize(_base_context : String, cm : Object, tdm : Object, hgm : Object, gocl : Object, gpucl : Object) -> void:
-	# # TO-DO: needs to be rewritten in such form that two dictionaries are passed as arguments.
-	# # Otherwise this approach is not really modular/adaptable to main menu
-	# self._managerReferences["cameraManager"] = cm
-	# self._managerReferences["tileDefinitionManager"] = tdm
-	# self._managerReferences["hexGridManager"] = hgm
-	# self._guiLayerReferences["overlay"] = gocl
-	# self._guiLayerReferences["popup"] = gpucl
-
 func initialize(_base_context : String, mr : Dictionary, glr : Dictionary) -> void:
 	self._managerReferences = mr
 	self._guiLayerReferences = glr
@@ -90,18 +73,21 @@ func initialize(_base_context : String, mr : Dictionary, glr : Dictionary) -> vo
 		self._managerReferences["cameraManager"].enable_raycasting()
 
 	if self.variant == "creative":
-		self.currentGuiMouseContext = "grid"
+		self._currentGuiMouseContext = "grid"
 
 func create_tce_signaling_uuid(ctxt : String, keyChain : Array) -> String:
 	var _tmpString : String =  ctxt + self.TCE_SIGNALING_UUID_SEPERATOR
 	var _keyChainLength : int = len(keyChain)
 
-	for i in range(_keyChainLength):
-		_tmpString += keyChain[i]
-		if i != _keyChainLength - 1:
+	for _i in range(_keyChainLength):
+		_tmpString += keyChain[_i]
+		if _i != _keyChainLength - 1:
 			_tmpString +=  self.TCE_SIGNALING_UUID_SEPERATOR
 
 	return _tmpString
+
+func get_current_gui_context() -> String:
+	return self._currentGuiMouseContext
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -112,22 +98,22 @@ func _on_gui_selector_context_changed(tce_signaling_uuid : String, interaction :
 		var _subuuid : String = tce_signaling_uuid.trim_prefix("game::creative::gui::")
 		if _subuuid.match("sidepanel::right::selector::tile::definition"):
 			if interaction == "entered":
-				currentGuiMouseContext = tce_signaling_uuid
-				_managerReferences["cameraManager"].disable_zooming()
-				_managerReferences["cameraManager"].disable_raycasting()
+				self._currentGuiMouseContext = tce_signaling_uuid
+				self._managerReferences["cameraManager"].disable_zooming()
+				self._managerReferences["cameraManager"].disable_raycasting()
 			else:
-				currentGuiMouseContext = "grid"
-				_managerReferences["cameraManager"].enable_zooming()
-				_managerReferences["cameraManager"].enable_raycasting()
+				self._currentGuiMouseContext = "grid"
+				self._managerReferences["cameraManager"].enable_zooming()
+				self._managerReferences["cameraManager"].enable_raycasting()
 		elif _subuuid.match("hud::selector::action"):
 			if interaction == "entered":
-				currentGuiMouseContext = tce_signaling_uuid
-				_managerReferences["cameraManager"].disable_zooming()
-				_managerReferences["cameraManager"].disable_raycasting()
+				self._currentGuiMouseContext = tce_signaling_uuid
+				self._managerReferences["cameraManager"].disable_zooming()
+				self._managerReferences["cameraManager"].disable_raycasting()
 			else:
-				currentGuiMouseContext = "grid"
-				_managerReferences["cameraManager"].enable_zooming()
-				_managerReferences["cameraManager"].enable_raycasting()
+				self._currentGuiMouseContext = "grid"
+				self._managerReferences["cameraManager"].enable_zooming()
+				self._managerReferences["cameraManager"].enable_raycasting()
 	else:
 		print("Error: <tce_signaling_uuid> ",tce_signaling_uuid, " could not be processed!")
 	
@@ -161,10 +147,10 @@ func _on_user_selected(tce_signaling_uuid : String, value : String) -> void:
 
 		elif _subuuid.match("gui::hide"):
 			print("Hide GUI: ", true)
-			_hide_gui(true)
+			self._hide_gui(true)
 
 		elif _subuuid.match("gui::show"):
-			_hide_gui(false)
+			self._hide_gui(false)
 	else:
 		print("Error: <tce_signaling_uuid> ",tce_signaling_uuid, " could not be processed!")
 
@@ -178,8 +164,8 @@ func _ready() -> void:
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 # TO-DO: Needs to be outsourced into gameHandler 
-# REMARKS: Logic can be improved if currentGuiMouseContext = "grid" -> "game::creative::gui::grid"
-# Then the following would be possible: if currentGuiMouseContext.match("game::*::gui::grid"):
+# REMARKS: Logic can be improved if _currentGuiMouseContext = "grid" -> "game::creative::gui::grid"
+# Then the following would be possible: if _currentGuiMouseContext.match("game::*::gui::grid"):
 # which would be independent of the game variant, but also more precise than if self.base == "game":
 func _input(event : InputEvent) -> void:
 	# mouse position (floating (tile) position)
@@ -191,16 +177,16 @@ func _input(event : InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if self.base == "game":
 			if event.button_index == BUTTON_WHEEL_UP and event.pressed:
-				_managerReferences["cameraManager"].request_zoom_out()
+				self._managerReferences["cameraManager"].request_zoom_out()
 			if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
-				_managerReferences["cameraManager"].request_zoom_in()
+				self._managerReferences["cameraManager"].request_zoom_in()
 	
 	# camera movement speed modifier
 	if event is InputEventKey and event.pressed:
 		if event.shift:
-			_managerReferences["cameraManager"].set_movement_speed_mode("fast")
+			self._managerReferences["cameraManager"].set_movement_speed_mode("fast")
 		else:
-			_managerReferences["cameraManager"].set_movement_speed_mode("slow")
+			self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 
 func _process(_delta : float) -> void:
 	if self.base == "game":
@@ -211,6 +197,6 @@ func _process(_delta : float) -> void:
 		)
 
 		# to reduce the amount of unnecessary function calls when no camera movement is requested
-		if _lastCameraMovementRequest != _cameraMovementRequest:
-			_managerReferences["cameraManager"].request_movement(_cameraMovementRequest)
-			_lastCameraMovementRequest = _cameraMovementRequest
+		if self._lastCameraMovementRequest != _cameraMovementRequest:
+			self._managerReferences["cameraManager"].request_movement(_cameraMovementRequest)
+			self._lastCameraMovementRequest = _cameraMovementRequest

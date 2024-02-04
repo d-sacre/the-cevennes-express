@@ -56,10 +56,19 @@ func generate_grid(x : int, y : int) -> void:
 		_tile.initial_placeholder_configuration()
 		_tile.tile_index = _tile_index
 
+#### FUNCTIONS RELATED TO TILE HIGHLIGHTING #####################################
 func set_single_tile_highlight(index : int, highlight_status : bool) -> void:
 	var _tile = self.tile_reference[index]["reference"]
 	_tile.highlight = highlight_status
 	_tile.change_material = true
+
+# REMARK: Requires more logic to not interfer with chain highlighting set by the logic
+func manage_highlighting_due_to_cursor(_current_tile_index : int, _last_tile_index : int) -> void:
+	if _current_tile_index != -1:
+		self.set_single_tile_highlight(_current_tile_index, true)
+
+	if _last_tile_index != -1:
+		self.set_single_tile_highlight(_last_tile_index, false)
 
 func set_status_placeholder(index : int, _possible : bool, _impossible : bool) -> void: # needs more arguments in the future to pass status
 	var _tile = self.tile_reference[index]["reference"]
@@ -71,14 +80,16 @@ func set_status_placeholder(index : int, _possible : bool, _impossible : bool) -
 	
 	_tile.change_material = true
 
+#### FUNCTIONS RELATED TO FLOATING TILE CREATION/MANIPULATION #####################################
 func move_floating_tile_to(index : int) -> void:
 	if index != -1: # ensures that tile does not move if cursor is over an area outside the allowed grid area
 		if self.floating_tile_reference != self:
 			var _grid_reference = self.tile_reference[index]["reference"]
 			var _grid_position_physical = _grid_reference.transform.origin
 			self.floating_tile_reference.set_global_translation(Vector3(_grid_position_physical.x, FLOATING_TILE_DISTANCE_ABOVE_GRID, _grid_position_physical.z)) # translate to above the desired grid position
+			self.floating_tile_reference.tile_index = index
 
-func create_tile_floating_over_grid(index : int, tile_definition : Dictionary) -> void:
+func create_floating_tile(index : int, tile_definition : Dictionary) -> void:
 	# create tile and add it to the scene tree
 	var _tile = BASE_TILE.instance()
 	add_child(_tile)
@@ -103,11 +114,24 @@ func get_floating_tile_definition_uuid_and_rotation() -> Dictionary:
 	
 	return _tmp_uuid_and_rotation
 
+func delete_floating_tile() -> void:
+	self.floating_tile_reference.queue_free()
+	self.floating_tile_reference = self
+
+func change_floating_tile_type(tile_definition : Dictionary) -> void:
+	var _index = self.floating_tile_reference.tile_index
+	self.delete_floating_tile()
+	self.create_floating_tile(_index, tile_definition)
+			
 func rotate_floating_tile_clockwise() -> void:
 	if self.floating_tile_reference != self: # to prevent rotation of the grid when no floating tile available
 		self.floating_tile_rotation -= 60
 		self.floating_tile_rotation = floating_tile_rotation % 360
 		self.floating_tile_reference.rotation_degrees = Vector3(0,floating_tile_rotation,0)
+
+func move_floating_tile_to_and_highlight(prev : int, next : int) -> void:
+	self.manage_highlighting_due_to_cursor(next, prev)
+	self.move_floating_tile_to(next)
 
 func place_floating_tile_at_index(index : int) -> void:
 	var _grid_element : Object = self.tile_reference[index]["reference"]
@@ -133,15 +157,8 @@ func place_floating_tile_at_index(index : int) -> void:
 			# clean up
 			self.floating_tile_reference = self # clear the floating tile reference
 			_grid_element.queue_free()# remove placeholder
-		
 
-# REMARK: Requires more logic to not interfer with chain highlighting set by the logic
-func manage_highlighting_due_to_cursor(_current_tile_index : int, _last_tile_index : int) -> void:
-	if _current_tile_index != -1:
-		self.set_single_tile_highlight(_current_tile_index, true)
 
-	if _last_tile_index != -1:
-		self.set_single_tile_highlight(_last_tile_index, false)
 
 
 
