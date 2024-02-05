@@ -28,7 +28,6 @@ var context : String = "game::creative"
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-var _last_collison_object : Object
 var _current_collision_object : Object
 
 var _tileSelector : Object
@@ -73,10 +72,6 @@ func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue
 	if _audioManagerSignalResult.has("keyChain"):
 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
-# func _on_new_tile_selected(_tile_definition_uuid : String) -> void:
-# 	var _tile_definition = tileDefinitionManager.get_tile_definition_database_entry(_tile_definition_uuid) 
-# 	hexGridManager.change_floating_tile_type(_tile_definition)
-
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
@@ -85,7 +80,8 @@ func _ready() -> void:
 	self._managerReferences = {
 		"cameraManager": cameraManager,
 		"tileDefinitionManager": tileDefinitionManager,
-		"hexGridManager": hexGridManager
+		"hexGridManager": hexGridManager,
+		"cppBridge": cppBridge
 	}
 
 	self._guiLayerReferences = {
@@ -108,7 +104,6 @@ func _ready() -> void:
 	_error = cameraManager.connect("raycast_result",self,"_on_raycast_result")
 
 	# setting up the grid
-	# _current_tile_index = 15 # to set a position for the cursor; should be later adapted to be in the center of the grid
 	hexGridManager.set_current_grid_index(15)
 	hexGridManager.generate_grid(HEX_GRID_SIZE_X, HEX_GRID_SIZE_Y)
 	hexGridManager.manage_highlighting_due_to_cursor() # set the highlight correctly
@@ -120,7 +115,6 @@ func _ready() -> void:
 
 	# # initialize UserInputManager (correct position)
 	# UserInputManager.initialize(self.context, _managerReferences, _guiLayerReferences)
-	# _error = UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
 
 	# settings for creative mode (currently hardcoded, has to be made more flexible)
 	var _scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
@@ -139,4 +133,3 @@ func _ready() -> void:
 
 	# REMARK: temporary position, until tile definition code is properly implemented!
 	UserInputManager.initialize(self.context, _managerReferences, _guiLayerReferences)
-	# _error = UserInputManager.connect("new_tile_selected", self, "_on_new_tile_selected")
