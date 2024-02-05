@@ -35,12 +35,10 @@ var context : String = "game::creative" # available: "game::default", "game::cre
 ################################################################################
 var _current_collision_object : Object
 
-var _tileSelector : Object
-
-var _error : int
-
 var _managerReferences : Dictionary
 var _guiLayerReferences : Dictionary
+
+var _error : int
 
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
@@ -110,40 +108,20 @@ func _ready() -> void:
 
 	# setting up the grid
 	hexGridManager.set_current_grid_index(15)
-	hexGridManager.generate_grid(HEX_GRID_SIZE_X, HEX_GRID_SIZE_Y)
+	hexGridManager.generate_grid(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
 	hexGridManager.manage_highlighting_due_to_cursor() # set the highlight correctly
 
 	# initialize the C++-Bridge and the C++-Backend
-	cppBridge.initialize_cpp_bridge(HEX_GRID_SIZE_X, HEX_GRID_SIZE_Y)
+	cppBridge.initialize_cpp_bridge(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
 	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.get_tile_definition_database())
 	cppBridge.initialize_grid_in_cpp_backend(0)
-
-	# # initialize UserInputManager (correct position)
-	# UserInputManager.initialize(self.context, _managerReferences, _guiLayerReferences)
-
-	# gui settings for creative mode 
-	# var _scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
-	# var _instance = _scene.instance()
-	# get_node("guiOverlayCanvasLayer").add_child(_instance)
-	# var _creativeMode : Object = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
-	# _creativeMode.initialize_creative_mode_gui(self.context, self.tileDefinitionManager)
-
-	# _tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
-	
 
 	# contextual logic
 	var _scene2 : Resource = load("res://managers/userInputManager/game/game.tscn")
 	var _contextualLogic =  _scene2.instance()
 	add_child(_contextualLogic)
-	_contextualLogic.initialize(context, self._managerReferences, self._guiLayerReferences)
+	_contextualLogic.initialize(self.context, self._managerReferences, self._guiLayerReferences)
+	_contextualLogic.logic.initialize_floating_tile() # initialize the floating tile over the grid
 
-	# initialize the floating tile over the grid
-	_contextualLogic.logic.initialize_floating_tile()
-	# Depends on the Mode
-	# var tile_definition_uuid = _contextualLogic.logic._next_tile_definition_uuid()#_tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # for testing the creative mode
-	# if tile_definition_uuid != "": 
-	# 	var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
-	# 	hexGridManager.create_floating_tile(tile_definition)
-
-	# REMARK: temporary position, until tile definition code is properly implemented!
-	UserInputManager.initialize(self.context, _contextualLogic, _managerReferences, _guiLayerReferences)
+	# Initialize User Input Manager
+	UserInputManager.initialize(self.context, _contextualLogic, self._managerReferences, self._guiLayerReferences)

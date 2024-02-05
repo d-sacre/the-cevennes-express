@@ -3,6 +3,12 @@ class_name game_default
 extends game_base
 
 ################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
+
+################################################################################
 #### PARENT CLASS MEMBER FUNCTION OVERRIDES ####################################
 ################################################################################
 func _is_tile_placeable() -> bool:
@@ -31,6 +37,6 @@ func _get_next_tile_definition_uuid() -> String:
 ################################################################################
 # REMARK: It is necessary to call the base class _init function
 # source: https://forum.godotengine.org/t/how-do-i-pass-in-arguments-to-parent-script-when-extending-a-script/24883/2
-func _init(mr).(mr) -> void:
+func _init(ctxt, mr, glr).(ctxt, mr, glr) -> void:
     pass
 
