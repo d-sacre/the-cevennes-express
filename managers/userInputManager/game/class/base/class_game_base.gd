@@ -66,19 +66,15 @@ func _is_mouse_left_click(tce_signaling_uuid : String) -> bool:
 
 func _is_mouse_right_click(tce_signaling_uuid : String) -> bool:
     return self._is_mouse_event(tce_signaling_uuid) and tce_signaling_uuid.match("*::click::right")
-    
 
 func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
-    return self._is_mouse_left_click(tce_signaling_uuid) and self._currentGuiMouseContext.match("*::grid")
-    # if tce_signaling_uuid.match("*::user::interaction::*"):
-    #     if tce_signaling_uuid.match("*::mouse::*"):
-    #         if tce_signaling_uuid.match("*::click::left"):  
-    #             if self._currentGuiMouseContext.match("*::grid"):
-    #                 return true
-    # return false
+    return self._is_mouse_left_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
 
 func _is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid : String) -> bool:
-    return self._is_mouse_right_click(tce_signaling_uuid) and self._currentGuiMouseContext.match("*::grid")
+    return self._is_mouse_right_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
+
+func _is_current_gui_context_grid() -> bool:
+    return self._currentGuiMouseContext.match("*::grid")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
@@ -139,35 +135,39 @@ func rotate_tile_clockwise() -> void:
                 self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 
 func user_input_pipeline(tce_signaling_uuid : String, value : String) -> void:
-    # print("<Game Base::UI Command Pipeline> received: <", tce_signaling_uuid, "> with value: <", value, ">") 
     if tce_signaling_uuid.match("game::*"): # Safety to ensure that only valid requests are processed
-        # print("Success: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> can be processed!")
-        # if tce_signaling_uuid.match("*::user::interaction::*"):
-        #     if tce_signaling_uuid.match("*::mouse::*"):
-        #         if tce_signaling_uuid.match("*::click::left"):  
-        #             if self._currentGuiMouseContext.match("*::grid"):
-        #                 self.place_tile()
-        #         elif tce_signaling_uuid.match("*::click::right"):
-        #             if self._currentGuiMouseContext.match("*::grid"):
-        #                 self.rotate_tile_clockwise()
-        #     else:
-        #         pass
-        # else:
-        #     pass
         if self._is_correct_context_for_placing_tile(tce_signaling_uuid):
             self.place_tile()
 
         if self._is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid):
             self.rotate_tile_clockwise()
+
         if tce_signaling_uuid.match("*::user::selected::gui::show"):
             self._hide_gui(false)
-
         if tce_signaling_uuid.match("*::user::selected::gui::hide"):
             self._hide_gui(true)
+
+        if tce_signaling_uuid.match("*::user::interaction::mouse::movement"):
+            # parse position string into Vector2
+            value = value.trim_prefix("(")
+            value = value.trim_suffix(")")
+            var _tmp_value_array : PoolStringArray = value.split(", ")
+            var _position : Vector2 = Vector2(float(_tmp_value_array[0]), float(_tmp_value_array[1]))
+
+            self._managerReferences["cameraManager"].initiate_raycast_from_position(_position)
+
+        if tce_signaling_uuid.match("*::user::interaction::mouse::wheel::*"):
+            if tce_signaling_uuid.match("*::up"):
+                if _is_current_gui_context_grid():
+                    self._managerReferences["cameraManager"].request_zoom_out()
+
+            elif tce_signaling_uuid.match("*::down"):
+                if _is_current_gui_context_grid():
+                    self._managerReferences["cameraManager"].request_zoom_in()
     else:
         print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
 
-func gui_management_pipeline(tce_signaling_uuid : String, value : String) -> void:
+func gui_management_pipeline(tce_signaling_uuid : String, _value : String) -> void:
     # print("<Game Base::GUI Management Pipeline> received: <", tce_signaling_uuid, "> with value: <", value, ">")
     if tce_signaling_uuid.match("game::*::gui::*"):
         pass
@@ -182,3 +182,4 @@ func _init(ctxt : String, mr : Dictionary, glr : Dictionary) -> void:
     self._managerReferences = mr
     self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR+ "grid"
     self._guiLayerReferences = glr
+

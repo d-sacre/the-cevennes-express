@@ -42,12 +42,6 @@ func _hide_gui(status : bool) -> void:
 	else:
 		self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
 
-# # REMARK: Temporary workaround; only until game logic is outsourced from UserInputManager
-# func _get_next_tile_definition_uuid() -> String:
-#     self.update_tile_definition_uuid(UserInputManager._curentTileDefinitionUUID)
-
-#     return self._tileDefinitionUuid
-
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES #############################
 ################################################################################

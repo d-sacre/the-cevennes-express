@@ -34,36 +34,13 @@ var _curentTileDefinitionUUID : String = "" # REMARK: only temporarily; has to b
 var _logic 
 
 ################################################################################
-#### PRIVATE MEMBER FUNCTIONS ##################################################
-################################################################################
-# func _hide_gui(status : bool) -> void:
-# 	match self.variant:
-# 		"creative":
-# 			self._guiLayerReferences["overlay"].visible = not status
-
-# 	if status:
-# 		self._currentGuiMouseContext = "grid"
-# 		self._managerReferences["cameraManager"].enable_zooming()
-# 		self._managerReferences["cameraManager"].enable_raycasting()
-
-# 		var _scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
-# 		var _instance = _scene.instance()
-# 		_instance.initialize(self.context)
-# 		self._guiLayerReferences["hidden"].add_child(_instance)
-		
-# 	else:
-# 		match self.variant:
-# 			"creative":
-# 				self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
-
-################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize(_base_context : String, clr : Object, mr : Dictionary, glr : Dictionary) -> void:
 	self._managerReferences = mr
 	self._guiLayerReferences = glr
 	self.context = _base_context
-	self._logic = clr.logic #game_creative.new(self._managerReferences)
+	self._logic = clr.logic 
 
 	var _base_context_list : Array = self.context.split(self.TCE_SIGNALING_UUID_SEPERATOR)
 	self.base = _base_context_list[0]
@@ -90,6 +67,10 @@ func create_tce_signaling_uuid(ctxt : String, keyChain : Array) -> String:
 
 	return _tmpString
 
+func call_contextual_logic_with_custom_tce_signaling_uuid(keyChain : Array, value : String) -> void:
+	var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, keyChain)
+	self._logic.user_input_pipeline(_tmp_signaling_uuid, value)
+
 func get_current_gui_context() -> String:
 	return self._currentGuiMouseContext
 
@@ -99,69 +80,8 @@ func get_current_gui_context() -> String:
 func _on_gui_selector_context_changed(tce_signaling_uuid : String, interaction : String) -> void:
 	_logic.gui_management_pipeline(tce_signaling_uuid, interaction)
 
-	# print("<User Input Manager :: gui> received ", tce_signaling_uuid, " with status ", interaction)
-	# if tce_signaling_uuid.match("game::creative::gui::*"):
-	# 	var _subuuid : String = tce_signaling_uuid.trim_prefix("game::creative::gui::")
-	# 	if _subuuid.match("sidepanel::right::selector::tile::definition"):
-	# 		if interaction == "entered":
-	# 			self._currentGuiMouseContext = tce_signaling_uuid
-	# 			self._managerReferences["cameraManager"].disable_zooming()
-	# 			self._managerReferences["cameraManager"].disable_raycasting()
-	# 		else:
-	# 			self._currentGuiMouseContext = "grid"
-	# 			self._managerReferences["cameraManager"].enable_zooming()
-	# 			self._managerReferences["cameraManager"].enable_raycasting()
-	# 	elif _subuuid.match("hud::selector::action"):
-	# 		if interaction == "entered":
-	# 			self._currentGuiMouseContext = tce_signaling_uuid
-	# 			self._managerReferences["cameraManager"].disable_zooming()
-	# 			self._managerReferences["cameraManager"].disable_raycasting()
-	# 		else:
-	# 			self._currentGuiMouseContext = "grid"
-	# 			self._managerReferences["cameraManager"].enable_zooming()
-	# 			self._managerReferences["cameraManager"].enable_raycasting()
-	# else:
-	# 	print("Error: <tce_signaling_uuid> ",tce_signaling_uuid, " could not be processed!")
-	
-
 func _on_user_selected(tce_signaling_uuid : String, value : String) -> void:
 	_logic.user_input_pipeline(tce_signaling_uuid, value)
-
-	# print("<User Input Manager :: user selected> received ", tce_signaling_uuid, " with value: ", value)
-
-	# # REMARK: very simplified code hardcoded for game::creative only;
-	# # Needs to be generalized and modularized!
-	# if tce_signaling_uuid.match("game::creative::user::selected::*"):
-	# 	var _subuuid : String = tce_signaling_uuid.trim_prefix("game::creative::user::selected::")
-
-	# 	if _subuuid.match("tile::*"):
-	# 		var _subsubuuid : String = _subuuid.trim_prefix("tile::")
-
-	# 		if _subsubuuid.match("action::*"):
-	# 			var _subsubsubuuid : String = _subsubuuid.trim_prefix("action::")
-			
-	# 			match _subsubsubuuid:
-	# 				"place":
-	# 					print("place")
-	# 				"replace":
-	# 					pass
-	# 				"pick":
-	# 					pass
-	# 				"delete":
-	# 					pass
-			
-	# 		elif _subsubuuid.match("definition"):
-	# 			var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(value) 
-	# 			self._managerReferences["hexGridManager"].change_floating_tile_type(_tile_definition)
-	# 			self._curentTileDefinitionUUID = value
-
-	# 	elif _subuuid.match("gui::hide"):
-	# 		self._hide_gui(true)
-
-	# 	elif _subuuid.match("gui::show"):
-	# 		self._hide_gui(false)
-	# else:
-	# 	print("Error: <tce_signaling_uuid> ",tce_signaling_uuid, " could not be processed!")
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
@@ -172,23 +92,29 @@ func _ready() -> void:
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
-# TO-DO: Needs to be outsourced into gameHandler 
-# REMARKS: Logic can be improved if _currentGuiMouseContext = "grid" -> "game::creative::gui::grid"
-# Then the following would be possible: if _currentGuiMouseContext.match("game::*::gui::grid"):
-# which would be independent of the game variant, but also more precise than if self.base == "game":
 func _input(event : InputEvent) -> void:
 	# mouse position (floating (tile) position)
 	if event is InputEventMouse:
-		if self.base == "game":
-			self._managerReferences["cameraManager"].initiate_raycast_from_position(event.position)
+		# if self.base == "game":
+		# 	self._managerReferences["cameraManager"].initiate_raycast_from_position(event.position)
+		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "movement"]
+		self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, str(event.position))
 	
 	# mouse scroll (camera zooming)
 	if event is InputEventMouseButton:
-		if self.base == "game":
-			if event.button_index == BUTTON_WHEEL_UP and event.pressed:
-				self._managerReferences["cameraManager"].request_zoom_out()
-			if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
-				self._managerReferences["cameraManager"].request_zoom_in()
+		# if self.base == "game":
+		# 	if event.button_index == BUTTON_WHEEL_UP and event.pressed:
+		# 		self._managerReferences["cameraManager"].request_zoom_out()
+		# 	if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
+		# 		self._managerReferences["cameraManager"].request_zoom_in()
+
+		if event.button_index == BUTTON_WHEEL_UP and event.pressed:
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "up"]
+			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "pressed")
+
+		if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "down"]
+			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "pressed")
 	
 	# camera movement speed modifier
 	if event is InputEventKey and event.pressed:
@@ -198,6 +124,7 @@ func _input(event : InputEvent) -> void:
 			self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 
 func _process(_delta : float) -> void:
+	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
 	if self.base == "game":
 		# checking for camera movement request
 		var _cameraMovementRequest : Vector2 = Vector2(
@@ -212,16 +139,14 @@ func _process(_delta : float) -> void:
 
 	if Input.is_action_just_pressed("place_tile"):
 		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "left"]
-		var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, _tmp_signaling_keychain)
-		self._logic.user_input_pipeline(_tmp_signaling_uuid, "just_pressed")
-		# if UserInputManager.get_current_gui_context() == "grid":
-		# 	self._logic.place_tile()
+		# var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, _tmp_signaling_keychain)
+		# self._logic.user_input_pipeline(_tmp_signaling_uuid, "just_pressed")
+		self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
 			
 	# rotation of the tile
 	if Input.is_action_just_pressed("rotate_tile_clockwise"):
-		# if UserInputManager.get_current_gui_context() == "grid":
-		# 	self._logic.rotate_tile_clockwise()
 		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "right"]
-		var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, _tmp_signaling_keychain)
-		self._logic.user_input_pipeline(_tmp_signaling_uuid, "just_pressed")
+		# var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, _tmp_signaling_keychain)
+		# self._logic.user_input_pipeline(_tmp_signaling_uuid, "just_pressed")
+		self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
 	
