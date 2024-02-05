@@ -125,6 +125,12 @@ func initialize(context : String, tdm : Object) -> void:
 	self.tce_signaling_uuid["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid["gui"]["list"])
 	self.tce_signaling_uuid["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid["actions"]["new_tile_definition_selected"]["list"])
 
+	# required to set proper initialization value of _curentTileDefinitionUUID
+	# REMARK: Hopefully a temporary solution?
+	var _index : int = (self._tileList.get_selected_items())[0]
+	var _tmp_uuid : String = self._tileList.get_item_metadata(_index)
+	UserInputManager._curentTileDefinitionUUID = _tmp_uuid
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################

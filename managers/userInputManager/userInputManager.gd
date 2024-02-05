@@ -7,11 +7,6 @@ extends Node
 ################################################################################
 
 ################################################################################
-#### CUSTOM SIGNAL DEFINITIONS #################################################
-################################################################################
-# signal new_tile_selected(_tile_definition_uuid)
-
-################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 # TO-DO: should be moved into another autoload, so that other parts can access
@@ -64,10 +59,11 @@ func _hide_gui(status : bool) -> void:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
-func initialize(_base_context : String, mr : Dictionary, glr : Dictionary) -> void:
+func initialize(_base_context : String, clr : Object, mr : Dictionary, glr : Dictionary) -> void:
 	self._managerReferences = mr
 	self._guiLayerReferences = glr
 	self.context = _base_context
+	self._logic = clr.logic #game_creative.new(self._managerReferences)
 
 	var _base_context_list : Array = self.context.split(self.TCE_SIGNALING_UUID_SEPERATOR)
 	self.base = _base_context_list[0]
@@ -75,12 +71,10 @@ func initialize(_base_context : String, mr : Dictionary, glr : Dictionary) -> vo
 	if self.base == "game":
 		self.variant = _base_context_list[1]
 		self._managerReferences["cameraManager"].enable_raycasting()
-		self._currentGuiMouseContext = "grid"
-
-		if self.variant == "creative":
-			self._logic = game_creative.new(self._managerReferences)
+		self._currentGuiMouseContext = "grid"	
 
 		# REMARK: Only temporary, until proper tile definition contextual logic is implemented
+		# Could it cause the issue of overwriting other settings?
 		var _tmp = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
 		if _tmp.has("TILE_DEFINITION_UUID"):
 			self._curentTileDefinitionUUID = _tmp["TILE_DEFINITION_UUID"]
@@ -153,13 +147,11 @@ func _on_user_selected(tce_signaling_uuid : String, value : String) -> void:
 						pass
 			
 			elif _subsubuuid.match("definition"):
-				# emit_signal("new_tile_selected", value)
 				var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(value) 
 				self._managerReferences["hexGridManager"].change_floating_tile_type(_tile_definition)
 				self._curentTileDefinitionUUID = value
 
 		elif _subuuid.match("gui::hide"):
-			print("Hide GUI: ", true)
 			self._hide_gui(true)
 
 		elif _subuuid.match("gui::show"):
@@ -217,45 +209,9 @@ func _process(_delta : float) -> void:
 	if Input.is_action_just_pressed("place_tile"):
 		if UserInputManager.get_current_gui_context() == "grid":
 			self._logic.place_tile()
-		# 	if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
-		# 		var _floating_tile_status = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
-		# 		var _is_tile_placeable = false
-				
-		# 		if _floating_tile_status.has("TILE_DEFINITION_UUID"): # required to prevent issues when no floating tile exists
-		# 			_is_tile_placeable = true # cppBridge.can_tile_be_placed_here(_current_tile_index, _floating_tile_status["TILE_DEFINITION_UUID"], _floating_tile_status["rotation"]) # needs to be updated (Bridge + Backend)
-
-		# 		if _is_tile_placeable:
-		# 			self._managerReferences["hexGridManager"].set_status_placeholder(true, false)
-		# 			self._managerReferences["hexGridManager"].place_floating_tile()#_at_index(_current_tile_index)
-		# 			audioManager.play_sfx(["game", "tile", "success"])
-					
-		# 			# REMARK: Only temporary solution, until proper logic separation into different variants is in place!
-		# 			var _tile_definition_uuid = self._curentTileDefinitionUUID # cppBridge.request_next_tile_definition_uuid() # not required for creative mode
-
-		# 			if _tile_definition_uuid != "": 
-		# 				var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
-		# 				self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
-		# 		else:
-		# 			self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
-		# 			audioManager.play_sfx(["game", "tile", "fail"])
 			
 	# rotation of the tile
 	if Input.is_action_just_pressed("rotate_tile_clockwise"):
 		if UserInputManager.get_current_gui_context() == "grid":
 			self._logic.rotate_tile_clockwise()
-			# self._managerReferences["hexGridManager"].rotate_floating_tile_clockwise() # rotate tile
-			# audioManager.play_sfx(["game", "tile", "rotate"])
-			
-			# if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds(): # safety to absolutely ensure that cursor is not out of grid bounds 
-			# 	var _floating_tile_status = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
-				
-			# 	if _floating_tile_status.has("TILE_DEFINITION_UUID"): # if a floating tile exists
-			# 		# inquire at C++ Backend whether the tile would fit
-			# 		var _is_tile_placeable : bool = true #cppBridge.check_whether_tile_would_fit(self._managerReferences["hexGridManager"].get_current_grid_index(), _floating_tile_status["TILE_DEFINITION_UUID"], _floating_tile_status["rotation"])
-					
-			# 		# set the highlight according to the answer of the C++ Backend
-			# 		if _is_tile_placeable:
-			# 			self._managerReferences["hexGridManager"].set_status_placeholder(true, false)
-			# 		else:
-			# 			self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 	

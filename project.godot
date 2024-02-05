@@ -22,7 +22,7 @@ _global_script_classes=[ {
 "base": "game_base",
 "class": "game_default",
 "language": "GDScript",
-"path": "res://managers/userInputManager/game/class/class_name game_default.gd"
+"path": "res://managers/userInputManager/game/class/class_game_default.gd"
 } ]
 _global_script_class_icons={
 "game_base": "",

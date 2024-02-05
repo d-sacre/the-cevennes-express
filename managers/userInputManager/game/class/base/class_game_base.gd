@@ -18,6 +18,8 @@ class_name game_base
 ################################################################################
 var _managerReferences : Dictionary = {}
 
+var _tileDefinitionUuid : String = "" # REMARK: Not a good solution; could crash the game if the function is not properly overwritten
+
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
@@ -30,10 +32,9 @@ func _is_tile_placeable() -> bool:
 func _is_tile_placeable_with_current_rotation() -> bool:
     return false
 
-func _next_tile_definition_uuid() -> String:
+func _get_next_tile_definition_uuid() -> String:
     # REMARK: Not a good solution; could crash the game if the function is not properly overwritten
-    var _new_tduuid : String = "" 
-    return _new_tduuid
+    return self._tileDefinitionUuid
 
 func _get_floating_tile_status() -> Dictionary:
     var _dict : Dictionary = {}
@@ -45,6 +46,15 @@ func _get_floating_tile_status() -> Dictionary:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+func initialize_floating_tile() -> void:
+    var tile_definition_uuid = self._get_next_tile_definition_uuid()
+    if tile_definition_uuid != "": 
+        var tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(tile_definition_uuid) 
+        self._managerReferences["hexGridManager"].create_floating_tile(tile_definition)
+
+func update_tile_definition_uuid(uuid : String) -> void:
+    self._tileDefinitionUuid = uuid
+
 func place_tile() -> void:
     if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
         var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
@@ -59,7 +69,7 @@ func place_tile() -> void:
             audioManager.play_sfx(["game", "tile", "success"])
             
             # REMARK: Only temporary solution, until proper logic separation into different variants is in place!
-            var _tile_definition_uuid : String = self._next_tile_definition_uuid()
+            var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
 
             if _tile_definition_uuid != "": 
                 var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 

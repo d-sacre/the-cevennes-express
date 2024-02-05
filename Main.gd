@@ -23,7 +23,12 @@ const HEX_GRID_SIZE_Y : int = 10
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
-var context : String = "game::creative"
+
+# REMARK: Cannot be set at instantiation (e.g. when scene is switched); 
+# has to be set afterwards (which requires an AutoLoad and a custom initialization 
+# function called in _ready)
+# see for example: https://forum.godotengine.org/t/transfering-a-variable-over-to-another-scene/33407/8
+var context : String = "game::creative" # available: "game::default", "game::creative"
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -116,20 +121,29 @@ func _ready() -> void:
 	# # initialize UserInputManager (correct position)
 	# UserInputManager.initialize(self.context, _managerReferences, _guiLayerReferences)
 
-	# settings for creative mode (currently hardcoded, has to be made more flexible)
-	var _scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
-	var _instance = _scene.instance()
-	get_node("guiOverlayCanvasLayer").add_child(_instance)
-	var _creativeMode : Object = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
-	_tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
-	_creativeMode.initialize_creative_mode_gui(self.context, self.tileDefinitionManager)
+	# gui settings for creative mode 
+	# var _scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
+	# var _instance = _scene.instance()
+	# get_node("guiOverlayCanvasLayer").add_child(_instance)
+	# var _creativeMode : Object = get_node("guiOverlayCanvasLayer/creativeModeOverlay")
+	# _creativeMode.initialize_creative_mode_gui(self.context, self.tileDefinitionManager)
+
+	# _tileSelector = get_node("guiOverlayCanvasLayer/creativeModeOverlay/tileSelector")
+	
+
+	# contextual logic
+	var _scene2 : Resource = load("res://managers/userInputManager/game/game.tscn")
+	var _contextualLogic =  _scene2.instance()
+	add_child(_contextualLogic)
+	_contextualLogic.initialize(context, self._managerReferences, self._guiLayerReferences)
 
 	# initialize the floating tile over the grid
+	_contextualLogic.logic.initialize_floating_tile()
 	# Depends on the Mode
-	var tile_definition_uuid = _tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # for testing the creative mode
-	if tile_definition_uuid != "": 
-		var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
-		hexGridManager.create_floating_tile(tile_definition)
+	# var tile_definition_uuid = _contextualLogic.logic._next_tile_definition_uuid()#_tileSelector.selectedTile # cppBridge.request_next_tile_definition_uuid() # for testing the creative mode
+	# if tile_definition_uuid != "": 
+	# 	var tile_definition = tileDefinitionManager.get_tile_definition_database_entry(tile_definition_uuid) 
+	# 	hexGridManager.create_floating_tile(tile_definition)
 
 	# REMARK: temporary position, until tile definition code is properly implemented!
-	UserInputManager.initialize(self.context, _managerReferences, _guiLayerReferences)
+	UserInputManager.initialize(self.context, _contextualLogic, _managerReferences, _guiLayerReferences)
