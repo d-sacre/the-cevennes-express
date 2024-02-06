@@ -1,20 +1,26 @@
 class_name game_base
 
 ################################################################################
+################################################################################
 #### AUTOLOAD REMARKS ##########################################################
+################################################################################
 ################################################################################
 # This script expects the following autoloads:
 # "UserInputManager": res://managers/userInputManager/userInputManager.tscn
 # "audioManager": res://managers/audioManager/audioManager.tscn
 
 ################################################################################
+################################################################################
 #### IMPORTANT REMARKS #########################################################
+################################################################################
 ################################################################################
 # It is not possible to specify an override for the _process() function, as it 
 # does not seem to be run, even after the class being properly initialized 
 
 ################################################################################
+################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
+################################################################################
 ################################################################################
 var _managerReferences : Dictionary = {}
 var _guiLayerReferences : Dictionary = {}
@@ -23,163 +29,244 @@ var _context : String
 var _tileDefinitionUuid : String = "" # REMARK: Not a good solution; could crash the game if the function is not properly overwritten
 var _currentGuiMouseContext : String 
 
+const _separator : String = UserInputManager.TCE_SIGNALING_UUID_SEPERATOR
+
+################################################################################
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
+################################################################################
 ################################################################################
 # REMARK: Private functions in the sense as they should neither be accessed nor
 # changed outside of the parent class or inherited classes
 
 ################################################################################
-#### SETTER AND GETTER
+#### PRIVATE MEMBER FUNCTIONS: SETTER AND GETTER ###############################
+################################################################################
 func _get_next_tile_definition_uuid() -> String:
-    # REMARK: Not a good solution; could crash the game if the function is not properly overwritten
-    return self._tileDefinitionUuid
+	# REMARK: Not a good solution; could crash the game if the function is not properly overwritten
+	return self._tileDefinitionUuid
 
 func _get_floating_tile_status() -> Dictionary:
-    var _dict : Dictionary = {}
-    if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
-         _dict = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
+	var _dict : Dictionary = {}
+	if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
+		 _dict = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
 
-    return _dict
-
-func _hide_gui(_status : bool) -> void:
-    pass
+	return _dict
 
 ################################################################################
-#### BOOLS
+#### PRIVATE MEMBER FUNCTIONS: BOOL EXPRESSIONS ################################
+################################################################################
 func _is_tile_placeable() -> bool:
-    return false
+	return false
 
 func _is_tile_placeable_with_current_rotation() -> bool:
-    return false
+	return false
 
-## event handling
+func _is_tce_signaling_uuid_matching(tce_signaling_uuid : String, keyChain : Array) -> bool:
+	return UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, keyChain)
+
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS: BOOL EVENTS #####################################
+################################################################################
 func _is_mouse_event(tce_signaling_uuid : String) -> bool: 
-    if tce_signaling_uuid.match("*::user::interaction::*"):
-        if tce_signaling_uuid.match("*::mouse::*"):
-            return true
+	# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "interaction" + self._separator + "*"):
+	# 	if tce_signaling_uuid.match("*" + self._separator + "mouse" + self._separator + "*"):
+	# 		return true
 
-    return false
+	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "*"]):
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "mouse", "*"]):
+			return true
+
+	return false
 
 func _is_mouse_left_click(tce_signaling_uuid : String) -> bool:
-    return self._is_mouse_event(tce_signaling_uuid) and tce_signaling_uuid.match("*::click::left")
+	# return self._is_mouse_event(tce_signaling_uuid) and tce_signaling_uuid.match("*" + self._separator + "click" + self._separator + "left")
+	return self._is_mouse_event(tce_signaling_uuid) and self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "click", "left"])
 
 func _is_mouse_right_click(tce_signaling_uuid : String) -> bool:
-    return self._is_mouse_event(tce_signaling_uuid) and tce_signaling_uuid.match("*::click::right")
+	# return self._is_mouse_event(tce_signaling_uuid) and tce_signaling_uuid.match("*" + self._separator + "click" + self._separator + "right")
+	return self._is_mouse_event(tce_signaling_uuid) and self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "click", "right"])
 
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS: BOOL CONTEXT ####################################
+################################################################################
 func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
-    return self._is_mouse_left_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	return self._is_mouse_left_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
 
 func _is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid : String) -> bool:
-    return self._is_mouse_right_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	return self._is_mouse_right_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
 
 func _is_current_gui_context_grid() -> bool:
-    return self._currentGuiMouseContext.match("*::grid")
+	return self._currentGuiMouseContext.match("*" + self._separator + "grid")
 
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS: TILE MANIPULATION ###############################
+################################################################################
+func change_floating_tile_type() -> void:
+	var tile_definition_uuid = self._get_next_tile_definition_uuid()
+	if tile_definition_uuid != "": 
+		var tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(tile_definition_uuid) 
+		self._managerReferences["hexGridManager"].change_floating_tile_type(tile_definition)
+
+func rotate_tile_clockwise() -> void:
+	self._managerReferences["hexGridManager"].rotate_floating_tile_clockwise() # rotate tile
+	audioManager.play_sfx(["game", "tile", "rotate"])
+	
+	if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds(): # safety to absolutely ensure that cursor is not out of grid bounds 
+		var _floating_tile_status = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
+		
+		if _floating_tile_status.has("TILE_DEFINITION_UUID"): # if a floating tile exists
+			# inquire at C++ Backend whether the tile would fit
+			var _is_placeable : bool = self._is_tile_placeable_with_current_rotation()
+			
+			# set the highlight according to the answer of the C++ Backend
+			if _is_placeable:
+				self._managerReferences["hexGridManager"].set_status_placeholder(true, false)
+			else:
+				self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
+
+func place_tile() -> void:
+	print("Current index: ", self._managerReferences["hexGridManager"].get_current_grid_index())
+	if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
+		var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
+		var _is_placeable : bool = false
+		
+		if _floating_tile_status.has("TILE_DEFINITION_UUID"): # required to prevent issues when no floating tile exists
+			_is_placeable = self._is_tile_placeable()
+
+		if _is_placeable:
+			self._managerReferences["hexGridManager"].set_status_placeholder(true, false)
+			self._managerReferences["hexGridManager"].place_floating_tile()#_at_index(_current_tile_index)
+			audioManager.play_sfx(["game", "tile", "success"])
+			
+			# REMARK: Only temporary solution, until proper logic separation into different variants is in place!
+			var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
+
+			if _tile_definition_uuid != "": 
+				var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
+				self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
+		else:
+			self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
+			audioManager.play_sfx(["game", "tile", "fail"])
+
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS: TOOLS ###########################################
+################################################################################
+func _hide_gui(_status : bool) -> void:
+	pass
+
+################################################################################
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+################################################################################
 func initialize_floating_tile() -> void:
-    var tile_definition_uuid = self._get_next_tile_definition_uuid()
-    if tile_definition_uuid != "": 
-        var tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(tile_definition_uuid) 
-        self._managerReferences["hexGridManager"].create_floating_tile(tile_definition)
+	var tile_definition_uuid = self._get_next_tile_definition_uuid()
+	if tile_definition_uuid != "": 
+		var tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(tile_definition_uuid) 
+		self._managerReferences["hexGridManager"].create_floating_tile(tile_definition)
 
 func update_tile_definition_uuid(uuid : String) -> void:
-    self._tileDefinitionUuid = uuid
+	self._tileDefinitionUuid = uuid
 
-func change_floating_tile_type() -> void:
-    var tile_definition_uuid = self._get_next_tile_definition_uuid()
-    if tile_definition_uuid != "": 
-        var tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(tile_definition_uuid) 
-        self._managerReferences["hexGridManager"].change_floating_tile_type(tile_definition)
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: USER INPUT PIPELINE ##############################
+################################################################################
+# REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
+func user_input_pipeline(tce_signaling_uuid : String, value) -> void: 
+	# if tce_signaling_uuid.match("game" + self._separator + "*"): # Safety to ensure that only valid requests are processed
+	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["game", "*"]): # Safety to ensure that only valid requests are processed
+		if self._is_correct_context_for_placing_tile(tce_signaling_uuid):
+			self.place_tile()
 
-func place_tile() -> void:
-    if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
-        var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
-        var _is_placeable : bool = false
-        
-        if _floating_tile_status.has("TILE_DEFINITION_UUID"): # required to prevent issues when no floating tile exists
-            _is_placeable = self._is_tile_placeable()
+		if self._is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid):
+			self.rotate_tile_clockwise()
 
-        if _is_placeable:
-            self._managerReferences["hexGridManager"].set_status_placeholder(true, false)
-            self._managerReferences["hexGridManager"].place_floating_tile()#_at_index(_current_tile_index)
-            audioManager.play_sfx(["game", "tile", "success"])
-            
-            # REMARK: Only temporary solution, until proper logic separation into different variants is in place!
-            var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "gui", "show"]):
+			self._hide_gui(false)
+		
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "gui", "hide"]):
+			self._hide_gui(true)
 
-            if _tile_definition_uuid != "": 
-                var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
-                self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
-        else:
-            self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
-            audioManager.play_sfx(["game", "tile", "fail"])
+		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "selected" + self._separator + "gui" + self._separator + "show"):
+		#     self._hide_gui(false)
+		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "selected" + self._separator + "gui" + self._separator + "hide"):
+		#     self._hide_gui(true)
 
-func rotate_tile_clockwise() -> void:
-    self._managerReferences["hexGridManager"].rotate_floating_tile_clockwise() # rotate tile
-    audioManager.play_sfx(["game", "tile", "rotate"])
-    
-    if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds(): # safety to absolutely ensure that cursor is not out of grid bounds 
-        var _floating_tile_status = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
-        
-        if _floating_tile_status.has("TILE_DEFINITION_UUID"): # if a floating tile exists
-            # inquire at C++ Backend whether the tile would fit
-            var _is_placeable : bool = self._is_tile_placeable_with_current_rotation()
-            
-            # set the highlight according to the answer of the C++ Backend
-            if _is_placeable:
-                self._managerReferences["hexGridManager"].set_status_placeholder(true, false)
-            else:
-                self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
+		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "interaction" + self._separator + "mouse" + self._separator + "movement"):
+			# # parse position string into Vector2
+			# value = value.trim_prefix("(")
+			# value = value.trim_suffix(")")
+			# var _tmp_value_array : PoolStringArray = value.split(", ")
+			# var _position : Vector2 = Vector2(float(_tmp_value_array[0]), float(_tmp_value_array[1]))
+			# self._managerReferences["cameraManager"].initiate_raycast_from_position(_position)
+		
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "movement"]):
+			if value is Vector2:
+				self._managerReferences["cameraManager"].initiate_raycast_from_position(value)
+			else:
+				print("Error: Variable type does not match")
 
-func user_input_pipeline(tce_signaling_uuid : String, value : String) -> void:
-    if tce_signaling_uuid.match("game::*"): # Safety to ensure that only valid requests are processed
-        if self._is_correct_context_for_placing_tile(tce_signaling_uuid):
-            self.place_tile()
+		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "interaction" + self._separator + "mouse" + self._separator + "wheel" + self._separator + "*"):
+		#     if tce_signaling_uuid.match("*" + self._separator + "up"):
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "wheel", "*"]):
+			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
+				if _is_current_gui_context_grid():
+					self._managerReferences["cameraManager"].request_zoom_out()
 
-        if self._is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid):
-            self.rotate_tile_clockwise()
+			# elif tce_signaling_uuid.match("*" + self._separator + "down"):
+			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
+				if _is_current_gui_context_grid():
+					self._managerReferences["cameraManager"].request_zoom_in()
 
-        if tce_signaling_uuid.match("*::user::selected::gui::show"):
-            self._hide_gui(false)
-        if tce_signaling_uuid.match("*::user::selected::gui::hide"):
-            self._hide_gui(true)
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","internal", "collision", "detected"]):
+			if value is Dictionary:
+				if value.has("colliding"):
+					var _tmp_collision_status = value["colliding"]["status"]
 
-        if tce_signaling_uuid.match("*::user::interaction::mouse::movement"):
-            # parse position string into Vector2
-            value = value.trim_prefix("(")
-            value = value.trim_suffix(")")
-            var _tmp_value_array : PoolStringArray = value.split(", ")
-            var _position : Vector2 = Vector2(float(_tmp_value_array[0]), float(_tmp_value_array[1]))
+					# REMARK: Required to set highlighting correctly. But might this be the culprit 
+					# for the "placement and removal of floating tile at index 0 when new tile definition is selected" bug?
+					self._managerReferences["hexGridManager"].set_last_grid_index_to_current()
 
-            self._managerReferences["cameraManager"].initiate_raycast_from_position(_position)
+					# REMARK: Hardcoded for the case of only hitting a hex tile. 
+					# Other collisions like with trains have to be implemented differently!
+					if _tmp_collision_status:
+						self._managerReferences["hexGridManager"].set_current_grid_index(value["grid_index"])
+						self._managerReferences["hexGridManager"].set_last_index_within_grid_boundary_to_current()
+						self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "grid"
+					else:
+						self._managerReferences["hexGridManager"].set_current_grid_index_out_of_bounds()
+						self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "void"
 
-        if tce_signaling_uuid.match("*::user::interaction::mouse::wheel::*"):
-            if tce_signaling_uuid.match("*::up"):
-                if _is_current_gui_context_grid():
-                    self._managerReferences["cameraManager"].request_zoom_out()
+					print("Game Base: collider: <current|last|last within boundary>: <", self._managerReferences["hexGridManager"].get_current_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), ">")
 
-            elif tce_signaling_uuid.match("*::down"):
-                if _is_current_gui_context_grid():
-                    self._managerReferences["cameraManager"].request_zoom_in()
-    else:
-        print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
+					if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
+						audioManager.play_sfx(["game", "tile", "move"])
+						self._managerReferences["hexGridManager"].move_floating_tile_and_highlight()
+	else:
+		pass
+		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
+		# print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
 
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: GUI MANAGEMENT PIPELINE ##########################
+################################################################################
 func gui_management_pipeline(tce_signaling_uuid : String, _value : String) -> void:
-    # print("<Game Base::GUI Management Pipeline> received: <", tce_signaling_uuid, "> with value: <", value, ">")
-    if tce_signaling_uuid.match("game::*::gui::*"):
-        pass
-    else:
-        print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
+	if tce_signaling_uuid.match("game" + self._separator + "*" + self._separator + "gui" + self._separator + "*"):
+		pass
+	else:
+		pass
+		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
+		# print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
 
+################################################################################
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
+################################################################################
 func _init(ctxt : String, mr : Dictionary, glr : Dictionary) -> void:
-    self._context = ctxt
-    self._managerReferences = mr
-    self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR+ "grid"
-    self._guiLayerReferences = glr
+	self._context = ctxt
+	self._managerReferences = mr
+	self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "grid"
+	self._guiLayerReferences = glr
 

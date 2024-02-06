@@ -11,7 +11,7 @@ const TILE_SPECIAL_TEXTURES : Dictionary = {
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
-var tile_index : int 
+var grid_index : int 
 var tile_definition_uuid : String
 
 var change_material : bool = false

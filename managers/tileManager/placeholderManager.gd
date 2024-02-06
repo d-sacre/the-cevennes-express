@@ -13,7 +13,7 @@ const PLACEHOLDER_TEXTURES : Dictionary = {
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
-var tile_index : int 
+var grid_index : int 
 
 var change_material : bool = false
 var highlight : bool = false

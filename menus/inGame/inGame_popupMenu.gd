@@ -27,6 +27,9 @@ func _on_resumeButton_pressed():
 
 func _on_returnToMainMenuButton_pressed():
 	get_tree().paused = false
+	# REMARK: Change UserInputManager context manually as a temporary solution 
+	# until new Main Menu supporting the logic is created
+	UserInputManager.context = "menu:main"
 	get_tree().change_scene("res://menus/mainMenu/mainMenu.tscn")
 
 

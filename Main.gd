@@ -33,7 +33,7 @@ var context : String = "game::creative" # available: "game::default", "game::cre
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-var _current_collision_object : Object
+# var _current_collision_object : Object
 
 var _managerReferences : Dictionary
 var _guiLayerReferences : Dictionary
@@ -47,33 +47,28 @@ onready var hexGridManager : Object = $hexGridManager
 onready var cameraManager : Object = $cameraManager
 onready var tileDefinitionManager : Object = $tileDefinitionManager
 onready var cppBridge : Object = $cppBridge
+onready var collisionManager : Object = $collisionManager
 onready var settingsPopout : Object = $guiPopupCanvasLayer/PopupMenu/settings_popup_panelContainer
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
-# REMARK: hardcoded for the case of only hitting a hex tile. 
-# Other collisions like with trains have to be implemented differently!
-func _on_raycast_result(current_collision_information : Array) -> void:
-	hexGridManager.set_last_grid_index_to_current()
-	if current_collision_information[0] != false:
-		var collider_ref = current_collision_information[1]
-		var collider_parent_object = collider_ref.get_parent()
-		# REMARK: hardcoded for the case of only hitting a hex tile. 
-		# Other collisions like with trains have to be implemented differently!
-		# _current_tile_index = collider_parent_object.tile_index
-		hexGridManager.set_current_grid_index(collider_parent_object.tile_index)
-	else:
-		hexGridManager.set_current_grid_index_out_of_bounds()
+# # REMARK: hardcoded for the case of only hitting a hex tile. 
+# # Other collisions like with trains have to be implemented differently!
+# func _on_raycast_result(current_collision_information : Array) -> void:
+# 	hexGridManager.set_last_grid_index_to_current()
+# 	if current_collision_information[0] != false:
+# 		var collider_ref = current_collision_information[1]
+# 		var collider_parent_object = collider_ref.get_parent()
+# 		# REMARK: hardcoded for the case of only hitting a hex tile. 
+# 		# Other collisions like with trains have to be implemented differently!
+# 		hexGridManager.set_current_grid_index(collider_parent_object.grid_index)
+# 	else:
+# 		hexGridManager.set_current_grid_index_out_of_bounds()
 
-	if not hexGridManager.is_last_grid_index_equal_current():
-		audioManager.play_sfx(["game", "tile", "move"])
-		hexGridManager.move_floating_tile_and_highlight()
-
-# func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue) -> void:
-# 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
-# 	if _audioManagerSignalResult.has("keyChain"):
-# 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
+# 	if not hexGridManager.is_last_grid_index_equal_current():
+# 		audioManager.play_sfx(["game", "tile", "move"])
+# 		hexGridManager.move_floating_tile_and_highlight()
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
@@ -84,7 +79,8 @@ func _ready() -> void:
 		"cameraManager": cameraManager,
 		"tileDefinitionManager": tileDefinitionManager,
 		"hexGridManager": hexGridManager,
-		"cppBridge": cppBridge
+		"cppBridge": cppBridge,
+		"collisionManager" : collisionManager
 	}
 
 	self._guiLayerReferences = {
@@ -95,19 +91,20 @@ func _ready() -> void:
 
 	# Initialize user settings
 	userSettingsManager.initialize_user_settings()
-	# _error = settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
 	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
 	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
 	# initialize audio manager singleton correctly and set the user sepcific volume levels
 	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
 
-	# setting up all camera related stuff
-	# TO-DO: Set starting position to the center of the grid
-	_error = cameraManager.connect("raycast_result",self,"_on_raycast_result")
+	# # setting up all camera related stuff
+	# # TO-DO: Set starting position to the center of the grid
+	# _error = cameraManager.connect("raycast_result",self,"_on_raycast_result")
 
 	# setting up the grid
 	hexGridManager.set_current_grid_index(15)
+	hexGridManager.set_last_index_within_grid_boundary(15)
+	hexGridManager.set_highlight_persistence("void", true)
 	hexGridManager.generate_grid(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
 	hexGridManager.manage_highlighting_due_to_cursor() # set the highlight correctly
 
@@ -115,6 +112,9 @@ func _ready() -> void:
 	cppBridge.initialize_cpp_bridge(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
 	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.get_tile_definition_database())
 	cppBridge.initialize_grid_in_cpp_backend(0)
+
+	# Initialize collisionManager
+	collisionManager.initialize(self.context, self._managerReferences)
 
 	# contextual logic
 	var _scene2 : Resource = load("res://managers/userInputManager/game/game.tscn")
