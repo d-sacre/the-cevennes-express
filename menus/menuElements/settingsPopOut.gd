@@ -134,3 +134,5 @@ func _ready():
 		else:
 			pass
 			
+	self.connect("user_settings_changed", userSettingsManager, "_on_user_settings_changed")
+			

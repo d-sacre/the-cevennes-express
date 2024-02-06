@@ -93,35 +93,29 @@ func _ready() -> void:
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _input(event : InputEvent) -> void:
-	# mouse position (floating (tile) position)
-	if event is InputEventMouse:
-		# if self.base == "game":
-		# 	self._managerReferences["cameraManager"].initiate_raycast_from_position(event.position)
-		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "movement"]
-		self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, str(event.position))
-	
-	# mouse scroll (camera zooming)
-	if event is InputEventMouseButton:
-		# if self.base == "game":
-		# 	if event.button_index == BUTTON_WHEEL_UP and event.pressed:
-		# 		self._managerReferences["cameraManager"].request_zoom_out()
-		# 	if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
-		# 		self._managerReferences["cameraManager"].request_zoom_in()
+	# REMARK: Temporary Limitation to "game" context required until Main Menu is updated!
+	if self.base == "game": # temporary!
+		# mouse position (floating (tile) position)
+		if event is InputEventMouse:
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "movement"]
+			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, str(event.position))
+		
+		# mouse scroll (camera zooming)
+		if event is InputEventMouseButton:
+			if event.button_index == BUTTON_WHEEL_UP and event.pressed:
+				var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "up"]
+				self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "pressed")
 
-		if event.button_index == BUTTON_WHEEL_UP and event.pressed:
-			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "up"]
-			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "pressed")
-
-		if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
-			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "down"]
-			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "pressed")
-	
-	# camera movement speed modifier
-	if event is InputEventKey and event.pressed:
-		if event.shift:
-			self._managerReferences["cameraManager"].set_movement_speed_mode("fast")
-		else:
-			self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
+			if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
+				var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "down"]
+				self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "pressed")
+		
+		# camera movement speed modifier
+		if event is InputEventKey and event.pressed:
+			if event.shift:
+				self._managerReferences["cameraManager"].set_movement_speed_mode("fast")
+			else:
+				self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 
 func _process(_delta : float) -> void:
 	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
@@ -137,16 +131,14 @@ func _process(_delta : float) -> void:
 			self._managerReferences["cameraManager"].request_movement(_cameraMovementRequest)
 			self._lastCameraMovementRequest = _cameraMovementRequest
 
-	if Input.is_action_just_pressed("place_tile"):
-		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "left"]
-		# var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, _tmp_signaling_keychain)
-		# self._logic.user_input_pipeline(_tmp_signaling_uuid, "just_pressed")
-		self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
-			
-	# rotation of the tile
-	if Input.is_action_just_pressed("rotate_tile_clockwise"):
-		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "right"]
-		# var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, _tmp_signaling_keychain)
-		# self._logic.user_input_pipeline(_tmp_signaling_uuid, "just_pressed")
-		self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
+		# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
+		# after Main Menu has been replaced
+		if Input.is_action_just_pressed("place_tile"):
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "left"]
+			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
+				
+		# rotation of the tile
+		if Input.is_action_just_pressed("rotate_tile_clockwise"):
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "right"]
+			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
 	

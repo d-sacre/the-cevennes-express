@@ -11,6 +11,8 @@ func _ready():
 	if OS.has_feature("JavaScript"):
 		$VBoxContainer/exitButtonHBox.visible = false
 
+		
+
 func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		self.visible = !self.visible

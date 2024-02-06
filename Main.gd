@@ -70,10 +70,10 @@ func _on_raycast_result(current_collision_information : Array) -> void:
 		audioManager.play_sfx(["game", "tile", "move"])
 		hexGridManager.move_floating_tile_and_highlight()
 
-func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue) -> void:
-	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
-	if _audioManagerSignalResult.has("keyChain"):
-		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
+# func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue) -> void:
+# 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
+# 	if _audioManagerSignalResult.has("keyChain"):
+# 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
@@ -95,7 +95,7 @@ func _ready() -> void:
 
 	# Initialize user settings
 	userSettingsManager.initialize_user_settings()
-	_error = settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
+	# _error = settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
 	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
 	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 

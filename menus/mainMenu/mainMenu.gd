@@ -84,10 +84,10 @@ func _on_button_exited_hover(buttonContext, buttonId, buttonRef) -> void:
 	if not buttonRef.disabled:
 		buttonRef.text = buttonText[buttonId]
 		
-func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
-	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
-	if _audioManagerSignalResult.has("keyChain"):
-		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
+# func _on_user_settings_changed(settingKeychain, setterType, settingValue) -> void:
+# 	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
+# 	if _audioManagerSignalResult.has("keyChain"):
+# 		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
@@ -113,7 +113,8 @@ func _ready():
 			_sourceRef.connect(_signal, self, "_on_"+_signal)
 			
 	# connect to the user settings changed signal
-	settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
+	# settingsPopout.connect("user_settings_changed", self, "_on_user_settings_changed")
+	# not required, since the settings popout is already connected to the signal handler in the UserSettingsManager
 
 	# initialize all the settings elements to the correct values
 	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())

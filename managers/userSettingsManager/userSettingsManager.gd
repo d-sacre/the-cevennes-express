@@ -89,4 +89,14 @@ func update_user_settings(settingKeychain : Array, setterType, settingValue) -> 
 func get_user_settings() -> Dictionary:
 	return self._userSettings
 
+################################################################################
+#### SIGNAL HANDLING ###########################################################
+################################################################################
+# Currently not working for main menu, but would be for in-game popup menu
+func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue) -> void:
+	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
+	if _audioManagerSignalResult.has("keyChain"):
+		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
+	
+
 

@@ -42,7 +42,7 @@ func _get_floating_tile_status() -> Dictionary:
 
     return _dict
 
-func _hide_gui(status : bool) -> void:
+func _hide_gui(_status : bool) -> void:
     pass
 
 ################################################################################
