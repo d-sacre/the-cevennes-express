@@ -133,12 +133,7 @@ func place_tile() -> void:
 			audioManager.play_sfx(["game", "tile", "success"])
 			
 			self._create_new_floating_tile()
-			# # REMARK: Only temporary solution, until proper logic separation into different variants is in place!
-			# var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
-
-			# if _tile_definition_uuid != "": 
-			# 	var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
-			# 	self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
+			
 		else:
 			self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 			audioManager.play_sfx(["game", "tile", "fail"])

@@ -72,8 +72,11 @@ func _hide_gui(status : bool) -> void:
 	else:
 		self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
 		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date
-		var _tmp_tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(self._last_tile_definition_uuid)
-		self._managerReferences["hexGridManager"].create_floating_tile(_tmp_tile_definition)
+
+		if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
+			var _tmp_tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(self._last_tile_definition_uuid)
+			self._managerReferences["hexGridManager"].create_floating_tile(_tmp_tile_definition)
+		
 		self._managerReferences["hexGridManager"]._last_index_within_grid_boundary_highlight = self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary()
 		self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"]._last_index_within_grid_boundary_highlight, true)
 		self._managerReferences["hexGridManager"].set_highlight_persistence("void", true)
@@ -222,12 +225,6 @@ func _is_correct_context_for_replacing_tile(tce_signaling_uuid : String) -> bool
 		if self._selectorOperationMode == "replace":
 			return true
 
-	# if ._is_correct_context_for_placing_tile(tce_signaling_uuid):
-	# 	if (self._is_current_gui_mouse_context_grid()):  
-	# 		if self._selectorOperationMode == "replace":
-	# 			if not self._is_gui_hidden:
-	# 				return true
-
 	return false
 
 func _is_correct_context_for_picking_tile_definition_uuid(tce_signaling_uuid : String) -> bool:
@@ -236,7 +233,6 @@ func _is_correct_context_for_picking_tile_definition_uuid(tce_signaling_uuid : S
 			return true
 	
 	return false
-
 
 func _is_correct_context_for_deleting_tile(tce_signaling_uuid : String) -> bool:
 	if self._is_grid_interaction_permitted(tce_signaling_uuid):
@@ -271,11 +267,7 @@ func replace_tile() -> void:
 			audioManager.play_sfx(["game", "tile", "success"])
 
 			self._create_new_floating_tile()
-			# var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
-
-			# if _tile_definition_uuid != "": 
-			# 	var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
-			# 	self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
+			
 		else:
 			self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 			audioManager.play_sfx(["game", "tile", "fail"])

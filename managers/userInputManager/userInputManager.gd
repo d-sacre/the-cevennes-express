@@ -72,13 +72,6 @@ func initialize(_base_context : String, clr : Object, mr : Dictionary, glr : Dic
 
 func create_tce_signaling_uuid(ctxt : String, keyChain : Array) -> String:
 	var _tmpString : String =  ctxt + self.TCE_SIGNALING_UUID_SEPERATOR
-	# var _keyChainLength : int = len(keyChain)
-
-	# for _i in range(_keyChainLength):
-	# 	_tmpString += keyChain[_i]
-	# 	if _i != _keyChainLength - 1:
-	# 		_tmpString +=  self.TCE_SIGNALING_UUID_SEPERATOR
-
 	_tmpString += self._create_string_with_tce_signaling_uuid_seperator(keyChain)
 
 	return _tmpString
@@ -120,7 +113,6 @@ func _input(event : InputEvent) -> void:
 		# mouse position (floating (tile) position)
 		if event is InputEventMouse:
 			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "movement"]
-			# self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, str(event.position))
 			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, event.position)
 		
 		# mouse scroll (camera zooming)

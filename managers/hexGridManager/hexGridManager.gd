@@ -73,7 +73,6 @@ var _rotation_persistence : Dictionary = {
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
 ################################################################################
-
 func _manage_rotation_persistence() -> void:
 	if not self._rotation_persistence["persistence"]:
 		self.floating_tile_rotation = 0
@@ -332,7 +331,6 @@ func replace_grid_object_at_index_with(index : int, replacement : Object, replac
 
 	# DESCRIPTION: Remove old grid element
 	_grid_element.queue_free()
-	
 
 func place_floating_tile_at_index(index : int) -> void:
 	# var _grid_element : Object = self.tile_reference[index]["reference"]
@@ -354,27 +352,6 @@ func place_floating_tile_at_index(index : int) -> void:
 			# REMARK: has to be called before floating tile is queued free (will not work otherwise)
 			self._manage_rotation_persistence()
 			self.floating_tile_reference = self # clear the floating tile reference
-			
-			# # setting the grid_index to the correct value
-			# self.floating_tile_reference.grid_index = index
-			# self.floating_tile_reference.transform.origin = _grid_physical_position # set floating tile on grid layer (perhaps some smoothing)
-			
-			# # collision needs to be switched on again on all child elements, otherwise the raycast will not detect the placed tile; 
-			# # includes all the assets that will be placed on the tile!
-			# # TO-DO: Write for loop to obtain all collision objects and re-enable them
-			# self.floating_tile_reference.get_node("hexCollider/CollisionShape2").disabled = false
-
-			# # add floating tile to the tile reference
-			# self.tile_reference[index]["reference"] = floating_tile_reference
-			# self.tile_reference[index]["type"] = "tile"
-
-			# # DESCRIPTION: Reset rotation according to rules if necessary;
-			# # REMARK: has to be called before floating tile is queued free (will not work otherwise)
-			# self._manage_rotation_persistence()
-
-			# # clean up
-			# self.floating_tile_reference = self # clear the floating tile reference
-			# _grid_element.queue_free() # remove placeholder
 
 func place_floating_tile() -> void:
 	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
