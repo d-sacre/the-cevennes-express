@@ -34,7 +34,6 @@ func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
 		if (self._is_current_gui_mouse_context_grid()):  
 			if self._selectorOperationMode == "place":
 				if not self._is_gui_hidden:
-					print("Game Creative: correct placing context: current mouse context: ", self._currentGuiMouseContext)
 					return true
 
 	return false
@@ -71,7 +70,8 @@ func _hide_gui(status : bool) -> void:
 		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date
 		var _tmp_tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(self._last_tile_definition_uuid)
 		self._managerReferences["hexGridManager"].create_floating_tile(_tmp_tile_definition)
-		self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), true)
+		self._managerReferences["hexGridManager"]._last_index_within_grid_boundary_highlight = self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary()
+		self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"]._last_index_within_grid_boundary_highlight, true)
 		self._managerReferences["hexGridManager"].set_highlight_persistence("void", true)
 
 ################################################################################
@@ -89,12 +89,10 @@ func gui_management_pipeline(tce_signaling_uuid : String, value) -> void:
 	# Extend base class functionality
 	if tce_signaling_uuid.match("game::*::gui::*"):
 		if tce_signaling_uuid.match("*::sidepanel::right::selector::tile::definition"):
-			# print("Sidepanel ", value)
 			if value is String:
 				self._manage_grid_to_gui_transition(tce_signaling_uuid, value)
 
 		elif tce_signaling_uuid.match("*::hud::selector::action"):
-			# print("Action Selector ", value)
 			if value is String:
 				self._manage_grid_to_gui_transition(tce_signaling_uuid, value)
 	else:
@@ -157,8 +155,6 @@ func _manage_grid_to_gui_transition(tce_signaling_uuid : String, value : String)
 		self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "grid"
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()
-
-	# print("Manage Helper function: ", self._currentGuiMouseContext)
 
 ################################################################################
 ################################################################################

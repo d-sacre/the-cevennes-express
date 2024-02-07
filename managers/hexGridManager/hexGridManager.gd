@@ -18,6 +18,18 @@ const TILE_SIZE : float = 1.0
 const FLOATING_TILE_DISTANCE_ABOVE_GRID : float = 1.0
 const INDEX_OUT_OF_BOUNDS : int = -1
 
+const _highlight_persistence_default : Dictionary = {
+	"void": {
+		"persistence": true,
+		"intensity": 1
+	}
+}
+
+const _rotation_persistence_default : Dictionary = {
+	"persistence": false,
+	"mode": "always" # Available Options: "always", "type"
+}
+
 ################################################################################
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
@@ -40,6 +52,8 @@ var _last_grid_index : int = self.INDEX_OUT_OF_BOUNDS
 var _last_index_within_grid_boundary : int = 0
 var _last_index_within_grid_boundary_highlight : int = 0
 
+var _lastTileDefinitionUuid : String = ""
+
 # FUTURE: Add more contexts, allow for highlight intensity modulation/mixing with
 # other highlights (needs also work in placeholderManager.gd, tileManager.gd)
 var _highlight_persistence : Dictionary = {
@@ -48,6 +62,35 @@ var _highlight_persistence : Dictionary = {
 		"intensity": 1
 	}
 }
+
+var _rotation_persistence : Dictionary = {
+	"persistence": false,
+	"mode": "always" # Available Options: "always", "type"
+}
+
+################################################################################
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS ##################################################
+################################################################################
+################################################################################
+
+func _manage_rotation_persistence() -> void:
+	if not self._rotation_persistence["persistence"]:
+		self.floating_tile_rotation = 0
+	else:
+		if str(self._rotation_persistence["mode"]) == "always":
+			pass
+		elif str(self._rotation_persistence["mode"]) == "type":
+			if self.floating_tile_reference != self: # REMARK: Safety
+				if self._lastTileDefinitionUuid == self.floating_tile_reference.tile_definition_uuid:
+					pass
+				else:
+					self.floating_tile_rotation = 0
+					self._lastTileDefinitionUuid = self.floating_tile_reference.tile_definition_uuid
+			else:
+				self.floating_tile_rotation = 0
+				print("Error: Floating Tile does not exist")
+				
 
 ################################################################################
 ################################################################################
@@ -120,6 +163,10 @@ func set_current_grid_index_out_of_bounds() -> void:
 # FUTURE: Needs to be extended to accept more parameters and not necessarily a fixed amount!
 func set_highlight_persistence(mode : String, status : bool) -> void: 
 	self._highlight_persistence[mode]["persistence"] = status
+
+func set_rotation_persistence(status : bool, mode : String) -> void:
+	self._rotation_persistence["persistence"] = status
+	self._rotation_persistence["mode"] = mode
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: BOOL EXPRESSIONS #################################
@@ -207,12 +254,16 @@ func create_floating_tile_at_index(index : int, tile_definition : Dictionary) ->
 
 	self.floating_tile_reference = _tile
 
-	# configure the tile
+	# DESCRIPTION: Configure the tile
 	_tile.initial_tile_configuration(tile_definition)
 	# REMARK: Collision needs to be switched off for all child elements, otherwise the raycast will falsely detect a hit,
 	# which leads to jumping of the tile; includes all the assets that will be placed on the tile!
 	# TO-DO: Write for loop to obtain all collision objects and disable them
 	_tile.get_node("hexCollider/CollisionShape2").disabled = true
+
+	# DESCRIPTION: Reset rotation according to rules if necessary, apply rotation and move to new position
+	self._manage_rotation_persistence()
+	self.floating_tile_reference.rotation_degrees = Vector3(0,self.floating_tile_rotation,0)
 	self.move_floating_tile_to(index)
 
 func create_floating_tile(tile_definition : Dictionary) -> void:
@@ -230,8 +281,14 @@ func get_floating_tile_definition_uuid_and_rotation() -> Dictionary:
 
 func delete_floating_tile() -> void:
 	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
+		# DESCRIPTION: Reset rotation according to rules if necessary;
+		# REMARK: Has to be called before floating tile is queued free (will not work otherwise)
+		self._manage_rotation_persistence()
+
+		# DESCRIPTION: Delete the floating tile and reset the reference variable
 		self.floating_tile_reference.queue_free()
 		self.floating_tile_reference = self
+		
 
 func change_floating_tile_type(tile_definition : Dictionary) -> void:
 	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
@@ -242,8 +299,8 @@ func change_floating_tile_type(tile_definition : Dictionary) -> void:
 func rotate_floating_tile_clockwise() -> void:
 	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
 		self.floating_tile_rotation -= 60
-		self.floating_tile_rotation = floating_tile_rotation % 360
-		self.floating_tile_reference.rotation_degrees = Vector3(0,floating_tile_rotation,0)
+		self.floating_tile_rotation = self.floating_tile_rotation % 360
+		self.floating_tile_reference.rotation_degrees = Vector3(0,self.floating_tile_rotation,0)
 
 func move_floating_tile_to_and_highlight(next : int) -> void:
 	self.manage_highlighting_due_to_cursor()
@@ -272,6 +329,10 @@ func place_floating_tile_at_index(index : int) -> void:
 			# add floating tile to the tile reference
 			self.tile_reference[index]["reference"] = floating_tile_reference
 			self.tile_reference[index]["type"] = "tile"
+
+			# DESCRIPTION: Reset rotation according to rules if necessary;
+			# REMARK: has to be called before floating tile is queued free (will not work otherwise)
+			self._manage_rotation_persistence()
 
 			# clean up
 			self.floating_tile_reference = self # clear the floating tile reference

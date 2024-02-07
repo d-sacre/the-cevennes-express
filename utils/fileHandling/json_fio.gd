@@ -6,8 +6,10 @@ extends Node
 # This script is autoloaded as "JsonFio".
 
 func _init():
+	print("The Cévennes Express - Version 0.0.1 - Codename \"Back on Track\"")
+	print("\n<AUTOLOADS>")
 	print("=> AutoLoading Scripts...")
-	print("\t-> Initialize JSON File Input/Output Utility...")
+	print("\t-> Load JSON File Input/Output Utility...")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################

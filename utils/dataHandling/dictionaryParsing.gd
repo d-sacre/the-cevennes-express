@@ -6,7 +6,7 @@ extends Node
 # This script is autoloaded as "DictionaryParsing".
 
 func _init():
-	print("\t-> Initialize Dictionary Parsing Utility...")
+	print("\t-> Load Dictionary Parsing Utility...")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################

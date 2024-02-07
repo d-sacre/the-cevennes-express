@@ -96,6 +96,6 @@ func set_predefined_playlist(playlistId : String, _start_playback : bool = true)
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready() -> void:
-	print("\t-> Initialize AudioManager...")
+	print("\t-> Load AudioManager...")
 	self.connect("music_playlist_updated", musicManager, "_on_music_playlist_updated") # required, since musicManager is loaded as singleton BEFORE audioManager
 

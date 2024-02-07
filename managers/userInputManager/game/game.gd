@@ -19,7 +19,6 @@ func initialize(context : String, mr : Dictionary, glr : Dictionary) -> void:
 	self._guiLayerReferences = glr
 
 	if context.match("*creative"):
-		print("Creative Game")
 		# GUI
 		var _scene = load("res://gui/overlays/creativeMode/creativeModeOverlay.tscn")
 		var _instance = _scene.instance()
@@ -30,7 +29,5 @@ func initialize(context : String, mr : Dictionary, glr : Dictionary) -> void:
 		logic = game_creative.new(context, self._managerReferences, self._guiLayerReferences)
 
 	elif context.match("*default"):
-		print("Default Game")
-
 		# logic
 		logic = game_default.new(context, self._managerReferences, self._guiLayerReferences)

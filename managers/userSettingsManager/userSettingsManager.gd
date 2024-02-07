@@ -38,7 +38,7 @@ func _update() -> void:
 func initialize_user_settings() -> void:
 	# checking if user settings file already exists
 	var file = File.new()
-	print("\t-> Initialize UserSettingsManager...")
+	print("\t-> Load UserSettingsManager...")
 	if not file.file_exists(self.USER_SETTINGS_FILEPATH):
 		print("\t\t-> User Settings File @ ", self.USER_SETTINGS_FILEPATH, " does NOT already exist. Copying defaults from ", self.FALLBACK_USER_SETTINGS_FILEPATH, ".")
 		var _default_data = JsonFio.load_json(self.FALLBACK_USER_SETTINGS_FILEPATH)

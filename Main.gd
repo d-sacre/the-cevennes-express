@@ -33,8 +33,6 @@ var context : String = "game::creative" # available: "game::default", "game::cre
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
-# var _current_collision_object : Object
-
 var _managerReferences : Dictionary
 var _guiLayerReferences : Dictionary
 
@@ -49,26 +47,6 @@ onready var tileDefinitionManager : Object = $tileDefinitionManager
 onready var cppBridge : Object = $cppBridge
 onready var collisionManager : Object = $collisionManager
 onready var settingsPopout : Object = $guiPopupCanvasLayer/PopupMenu/settings_popup_panelContainer
-
-################################################################################
-#### SIGNAL HANDLING ###########################################################
-################################################################################
-# # REMARK: hardcoded for the case of only hitting a hex tile. 
-# # Other collisions like with trains have to be implemented differently!
-# func _on_raycast_result(current_collision_information : Array) -> void:
-# 	hexGridManager.set_last_grid_index_to_current()
-# 	if current_collision_information[0] != false:
-# 		var collider_ref = current_collision_information[1]
-# 		var collider_parent_object = collider_ref.get_parent()
-# 		# REMARK: hardcoded for the case of only hitting a hex tile. 
-# 		# Other collisions like with trains have to be implemented differently!
-# 		hexGridManager.set_current_grid_index(collider_parent_object.grid_index)
-# 	else:
-# 		hexGridManager.set_current_grid_index_out_of_bounds()
-
-# 	if not hexGridManager.is_last_grid_index_equal_current():
-# 		audioManager.play_sfx(["game", "tile", "move"])
-# 		hexGridManager.move_floating_tile_and_highlight()
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
@@ -91,32 +69,30 @@ func _ready() -> void:
 
 	# Initialize user settings
 	userSettingsManager.initialize_user_settings()
-	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
-	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
-	# initialize audio manager singleton correctly and set the user sepcific volume levels
-	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
-
-	# # setting up all camera related stuff
-	# # TO-DO: Set starting position to the center of the grid
-	# _error = cameraManager.connect("raycast_result",self,"_on_raycast_result")
-
+	print("\n<CONTEXT>\n=> Initializing a Game in \"", self.context.trim_prefix("game::"), "\" Mode...")
+	
+	# initialize the C++-Bridge and the C++-Backend
+	print("\t-> Initialize C++ Backend...")
+	cppBridge.initialize_cpp_bridge(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
+	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.get_tile_definition_database())
+	cppBridge.initialize_grid_in_cpp_backend(0)
+	
 	# setting up the grid
+	print("\t-> Initialize hexGridManager...")
 	hexGridManager.set_current_grid_index(15)
 	hexGridManager.set_last_index_within_grid_boundary(15)
 	hexGridManager.set_highlight_persistence("void", true)
 	hexGridManager.generate_grid(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
 	hexGridManager.manage_highlighting_due_to_cursor() # set the highlight correctly
 
-	# initialize the C++-Bridge and the C++-Backend
-	cppBridge.initialize_cpp_bridge(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
-	cppBridge.pass_tile_definition_database_to_cpp_backend(tileDefinitionManager.get_tile_definition_database())
-	cppBridge.initialize_grid_in_cpp_backend(0)
-
 	# Initialize collisionManager
+	print("\t-> Initialize collisionManager...")
 	collisionManager.initialize(self.context, self._managerReferences)
 
 	# contextual logic
+	print("\t-> Configure UserInputManager...")
+	print("\t\t-> Load Game Variant specific Contextual Logic...")
 	var _scene2 : Resource = load("res://managers/userInputManager/game/game.tscn")
 	var _contextualLogic =  _scene2.instance()
 	add_child(_contextualLogic)
@@ -124,4 +100,13 @@ func _ready() -> void:
 	_contextualLogic.logic.initialize_floating_tile() # initialize the floating tile over the grid
 
 	# Initialize User Input Manager
+	print("\t\t-> Initialize UserInputManager")
 	UserInputManager.initialize(self.context, _contextualLogic, self._managerReferences, self._guiLayerReferences)
+
+	# initialize audio manager singleton correctly and set the user sepcific volume levels
+	print("\t-> Initialize AudioManager...")
+	audioManager.initialize_volume_levels(userSettingsManager.get_user_settings())
+
+	print("\t-> Initialize GUI...")
+	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
+	settingsPopout.button_initialize(userSettingsManager.get_user_settings())

@@ -31,7 +31,7 @@ func play_sound(keyChain : Array) -> void:
 ################################################################################
 func _ready() -> void:
 	print("=> AutoLoading Managers...")
-	print("\t-> Initialize sfxManager...")
+	print("\t-> Load sfxManager...")
 	# loading all the sounds from the json file
 	print("\t\t-> Loading SFX Database...\n\t\t-> Creating SFX Categories and AudioStreamPlayers...")
 	self._sfx = JsonFio.load_json("res://managers/audioManager/sfx/sfx.json")

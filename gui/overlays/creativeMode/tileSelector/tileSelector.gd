@@ -101,7 +101,8 @@ func _create_icon_texture(fp : String) -> ImageTexture:
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize_tile_list(_tileDefinitionManager : Object) -> void:
-	print("Initializing Tile List...")
+	print("\t\t\t-> Initializing Tile Definition Selection List...")
+	print("\t\t\t\t-> Creating Tile Thumbnails...")
 
 	self._tileDatabase = _tileDefinitionManager.get_tile_definition_database()
 	var _keys = _tileDatabase.keys()
@@ -116,6 +117,7 @@ func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 		self._tileList.set_item_metadata(_counter, _tileDefinitionUUID)
 		_counter += 1
 	
+	print("\t\t\t\t-> Setting Defaults...")
 	self._tileList.select(0,true)
 	self.selectedTile = _tileList.get_item_metadata(0)
 

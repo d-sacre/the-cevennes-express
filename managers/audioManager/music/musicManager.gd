@@ -77,7 +77,7 @@ func _on_song_finished() -> void:
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready() -> void:
-	print("\t-> Initialize MusicManager...")
+	print("\t-> Load MusicManager...")
 	# load all the song information from the json file
 	self._songs = JsonFio.load_json("res://managers/audioManager/music/music.json")
 	var _song_objects = self._songs.keys()

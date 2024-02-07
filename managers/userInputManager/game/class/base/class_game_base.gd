@@ -69,10 +69,6 @@ func _is_tce_signaling_uuid_matching(tce_signaling_uuid : String, keyChain : Arr
 #### PRIVATE MEMBER FUNCTIONS: BOOL EVENTS #####################################
 ################################################################################
 func _is_mouse_event(tce_signaling_uuid : String) -> bool: 
-	# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "interaction" + self._separator + "*"):
-	# 	if tce_signaling_uuid.match("*" + self._separator + "mouse" + self._separator + "*"):
-	# 		return true
-
 	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "*"]):
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "mouse", "*"]):
 			return true
@@ -80,11 +76,9 @@ func _is_mouse_event(tce_signaling_uuid : String) -> bool:
 	return false
 
 func _is_mouse_left_click(tce_signaling_uuid : String) -> bool:
-	# return self._is_mouse_event(tce_signaling_uuid) and tce_signaling_uuid.match("*" + self._separator + "click" + self._separator + "left")
 	return self._is_mouse_event(tce_signaling_uuid) and self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "click", "left"])
 
 func _is_mouse_right_click(tce_signaling_uuid : String) -> bool:
-	# return self._is_mouse_event(tce_signaling_uuid) and tce_signaling_uuid.match("*" + self._separator + "click" + self._separator + "right")
 	return self._is_mouse_event(tce_signaling_uuid) and self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "click", "right"])
 
 ################################################################################
@@ -126,7 +120,6 @@ func rotate_tile_clockwise() -> void:
 				self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 
 func place_tile() -> void:
-	print("Current index: ", self._managerReferences["hexGridManager"].get_current_grid_index())
 	if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
 		var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
 		var _is_placeable : bool = false
@@ -174,7 +167,6 @@ func update_tile_definition_uuid(uuid : String) -> void:
 ################################################################################
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func user_input_pipeline(tce_signaling_uuid : String, value) -> void: 
-	# if tce_signaling_uuid.match("game" + self._separator + "*"): # Safety to ensure that only valid requests are processed
 	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["game", "*"]): # Safety to ensure that only valid requests are processed
 		if self._is_correct_context_for_placing_tile(tce_signaling_uuid):
 			self.place_tile()
@@ -188,33 +180,17 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "gui", "hide"]):
 			self._hide_gui(true)
 
-		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "selected" + self._separator + "gui" + self._separator + "show"):
-		#     self._hide_gui(false)
-		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "selected" + self._separator + "gui" + self._separator + "hide"):
-		#     self._hide_gui(true)
-
-		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "interaction" + self._separator + "mouse" + self._separator + "movement"):
-			# # parse position string into Vector2
-			# value = value.trim_prefix("(")
-			# value = value.trim_suffix(")")
-			# var _tmp_value_array : PoolStringArray = value.split(", ")
-			# var _position : Vector2 = Vector2(float(_tmp_value_array[0]), float(_tmp_value_array[1]))
-			# self._managerReferences["cameraManager"].initiate_raycast_from_position(_position)
-		
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "movement"]):
 			if value is Vector2:
 				self._managerReferences["cameraManager"].initiate_raycast_from_position(value)
 			else:
 				print("Error: Variable type does not match")
 
-		# if tce_signaling_uuid.match("*" + self._separator + "user" + self._separator + "interaction" + self._separator + "mouse" + self._separator + "wheel" + self._separator + "*"):
-		#     if tce_signaling_uuid.match("*" + self._separator + "up"):
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "wheel", "*"]):
 			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
 				if _is_current_gui_context_grid():
 					self._managerReferences["cameraManager"].request_zoom_out()
 
-			# elif tce_signaling_uuid.match("*" + self._separator + "down"):
 			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
 				if _is_current_gui_context_grid():
 					self._managerReferences["cameraManager"].request_zoom_in()
@@ -238,7 +214,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 						self._managerReferences["hexGridManager"].set_current_grid_index_out_of_bounds()
 						self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "void"
 
-					print("Game Base: collider: <current|last|last within boundary>: <", self._managerReferences["hexGridManager"].get_current_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), ">")
+					# print("Game Base: collider: <current|last|last within boundary>: <", self._managerReferences["hexGridManager"].get_current_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), ">")
 
 					if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
 						audioManager.play_sfx(["game", "tile", "move"])

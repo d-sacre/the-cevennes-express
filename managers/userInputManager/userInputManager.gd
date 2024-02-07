@@ -109,7 +109,7 @@ func _on_user_selected(tce_signaling_uuid : String, value) -> void:
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready() -> void:
-	print("\t-> Initialize UserInputManager...")
+	print("\t-> Load UserInputManager...")
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
