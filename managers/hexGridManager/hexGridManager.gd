@@ -90,7 +90,6 @@ func _manage_rotation_persistence() -> void:
 			else:
 				self.floating_tile_rotation = 0
 				print("Error: Floating Tile does not exist")
-				
 
 ################################################################################
 ################################################################################
@@ -119,7 +118,7 @@ func generate_grid(x : int, y : int) -> void:
 
 		var _tile = PLACEHOLDER_TILE.instance()
 		add_child(_tile)
-		tile_reference.append({"type": "placeholder", "reference": _tile})
+		self.tile_reference.append({"type": "placeholder", "reference": _tile})
 		_tile.translate(Vector3(_tile_coordinates.x, 0, _tile_coordinates.y))
 		_tile.initial_placeholder_configuration()
 		_tile.grid_index = _grid_index
@@ -181,6 +180,17 @@ func is_highlight_persistence_void() -> bool:
 	return self._highlight_persistence["void"]["persistence"]
 
 ################################################################################
+#### PUBLIC MEMBER FUNCTIONS: GRID INFORMATION #################################
+################################################################################
+func get_current_grid_element_information() -> Dictionary:
+	var _return : Dictionary = {}
+
+	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
+		_return = self.tile_reference[self._current_grid_index]
+
+	return _return
+
+################################################################################
 #### PUBLIC MEMBER FUNCTIONS: GRID CELL HIGHLIGHTING ###########################
 ################################################################################
 func set_single_grid_cell_highlight(index : int, highlight_status : bool) -> void:
@@ -221,13 +231,11 @@ func manage_highlighting_due_to_cursor() -> void:
 			if self._last_index_within_grid_boundary_highlight != self.get_current_grid_index():
 				self.set_single_grid_cell_highlight(self._last_index_within_grid_boundary_highlight, false)
 
-		
-
 func set_status_placeholder_at_index(index : int, _possible : bool, _impossible : bool) -> void: # needs more arguments in the future to pass status
 	var _tile = self.tile_reference[index]["reference"]
 
 	# only temporary to test possible/impossible texture change
-	if self.tile_reference[index]["type"]=="placeholder":
+	if self.tile_reference[index]["type"] == "placeholder":
 		_tile.placement_possible = _possible
 		_tile.placement_impossible = _impossible
 	
@@ -309,41 +317,96 @@ func move_floating_tile_to_and_highlight(next : int) -> void:
 func move_floating_tile_and_highlight() -> void:
 	self.move_floating_tile_to_and_highlight(self._current_grid_index)
 
-func place_floating_tile_at_index(index : int) -> void:
+func replace_grid_object_at_index_with(index : int, replacement : Object, replacement_object_type : String) -> void:
 	var _grid_element : Object = self.tile_reference[index]["reference"]
-	var _ft_starting_position : Vector3 = floating_tile_reference.transform.origin
 	var _grid_physical_position : Vector3 = _grid_element.transform.origin
+
+	# DESCRIPTION: Set replacement object grid index and physically place it on grid layer 
+	# REMARK: Perhaps apply animation/tween/smoothing
+	replacement.grid_index = index
+	replacement.transform.origin = _grid_physical_position 
+
+	# DESCRIPTION: Replace reference and type with new data
+	self.tile_reference[index]["reference"] = replacement
+	self.tile_reference[index]["type"] = replacement_object_type
+
+	# DESCRIPTION: Remove old grid element
+	_grid_element.queue_free()
+	
+
+func place_floating_tile_at_index(index : int) -> void:
+	# var _grid_element : Object = self.tile_reference[index]["reference"]
+	var _ft_starting_position : Vector3 = floating_tile_reference.transform.origin
+	var _grid_physical_position : Vector3 = self.tile_reference[index]["reference"].transform.origin
 
 	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
 		# for safety: check whether floating tile is still at the correct position
 		if (_ft_starting_position.x == _grid_physical_position.x) and (_ft_starting_position.z == _grid_physical_position.z):
-			# setting the grid_index to the correct value
-			self.floating_tile_reference.grid_index = index
-			self.floating_tile_reference.transform.origin = _grid_physical_position # set floating tile on grid layer (perhaps some smoothing)
-			
-			# collision needs to be switched on again on all child elements, otherwise the raycast will not detect the placed tile; 
+			self.replace_grid_object_at_index_with(index, self.floating_tile_reference, "tile")
+
+			# Description: Collision needs to be switched on again on all child elements, 
+			# otherwise the raycast will not detect the placed tile; 
 			# includes all the assets that will be placed on the tile!
 			# TO-DO: Write for loop to obtain all collision objects and re-enable them
 			self.floating_tile_reference.get_node("hexCollider/CollisionShape2").disabled = false
 
-			# add floating tile to the tile reference
-			self.tile_reference[index]["reference"] = floating_tile_reference
-			self.tile_reference[index]["type"] = "tile"
-
-			# DESCRIPTION: Reset rotation according to rules if necessary;
+			# DESCRIPTION: Reset rotation according to rules if necessary and free the floating tile reference
 			# REMARK: has to be called before floating tile is queued free (will not work otherwise)
 			self._manage_rotation_persistence()
-
-			# clean up
 			self.floating_tile_reference = self # clear the floating tile reference
-			_grid_element.queue_free() # remove placeholder
+			
+			# # setting the grid_index to the correct value
+			# self.floating_tile_reference.grid_index = index
+			# self.floating_tile_reference.transform.origin = _grid_physical_position # set floating tile on grid layer (perhaps some smoothing)
+			
+			# # collision needs to be switched on again on all child elements, otherwise the raycast will not detect the placed tile; 
+			# # includes all the assets that will be placed on the tile!
+			# # TO-DO: Write for loop to obtain all collision objects and re-enable them
+			# self.floating_tile_reference.get_node("hexCollider/CollisionShape2").disabled = false
+
+			# # add floating tile to the tile reference
+			# self.tile_reference[index]["reference"] = floating_tile_reference
+			# self.tile_reference[index]["type"] = "tile"
+
+			# # DESCRIPTION: Reset rotation according to rules if necessary;
+			# # REMARK: has to be called before floating tile is queued free (will not work otherwise)
+			# self._manage_rotation_persistence()
+
+			# # clean up
+			# self.floating_tile_reference = self # clear the floating tile reference
+			# _grid_element.queue_free() # remove placeholder
 
 func place_floating_tile() -> void:
-	self.place_floating_tile_at_index(self._current_grid_index)
+	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
+		self.place_floating_tile_at_index(self._current_grid_index)
 
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: PLACED TILE MANIPULATION #########################
+################################################################################
+func replace_tile() -> void:
+	var _tmp_index : int = self.get_current_grid_index()
+	if  _tmp_index != self.INDEX_OUT_OF_BOUNDS:
+		self.place_floating_tile()
 
+func get_tile_definition_uuid_from_tile_at_grid_index(index: int) -> String:
+	var _tmp_string : String = ""
 
+	if index != self.INDEX_OUT_OF_BOUNDS:
+		if self.tile_reference[index]["type"] == "tile":
+			_tmp_string = self.tile_reference[index]["reference"].tile_definition_uuid
 
+	return _tmp_string
 
+func get_tile_definition_uuid_from_current_grid_index() -> String:
+	return self.get_tile_definition_uuid_from_tile_at_grid_index(self._current_grid_index)
 
+func delete_tile() -> void:
+	var _tmp_index : int = self.get_current_grid_index()
+	if  _tmp_index != self.INDEX_OUT_OF_BOUNDS:
 
+		# DESCRIPTION: Instantiate a placeholder object 
+		var _tile = PLACEHOLDER_TILE.instance()
+		add_child(_tile)
+		_tile.initial_placeholder_configuration()
+
+		self.replace_grid_object_at_index_with(_tmp_index, _tile, "placeholder")

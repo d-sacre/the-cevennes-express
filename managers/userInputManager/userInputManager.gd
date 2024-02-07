@@ -156,12 +156,12 @@ func _process(_delta : float) -> void:
 
 		# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
 		# after Main Menu has been replaced
-		if Input.is_action_just_pressed("place_tile"):
+		if Input.is_action_just_pressed("game_confirm"):
 			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "left"]
 			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
 				
 		# rotation of the tile
-		if Input.is_action_just_pressed("rotate_tile_clockwise"):
+		if Input.is_action_just_pressed("game_option"):
 			var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "right"]
 			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
 	

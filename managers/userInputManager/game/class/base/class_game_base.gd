@@ -129,15 +129,16 @@ func place_tile() -> void:
 
 		if _is_placeable:
 			self._managerReferences["hexGridManager"].set_status_placeholder(true, false)
-			self._managerReferences["hexGridManager"].place_floating_tile()#_at_index(_current_tile_index)
+			self._managerReferences["hexGridManager"].place_floating_tile()
 			audioManager.play_sfx(["game", "tile", "success"])
 			
-			# REMARK: Only temporary solution, until proper logic separation into different variants is in place!
-			var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
+			self._create_new_floating_tile()
+			# # REMARK: Only temporary solution, until proper logic separation into different variants is in place!
+			# var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
 
-			if _tile_definition_uuid != "": 
-				var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
-				self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
+			# if _tile_definition_uuid != "": 
+			# 	var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
+			# 	self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
 		else:
 			self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 			audioManager.play_sfx(["game", "tile", "fail"])
@@ -147,6 +148,13 @@ func place_tile() -> void:
 ################################################################################
 func _hide_gui(_status : bool) -> void:
 	pass
+
+func _create_new_floating_tile() -> void:
+	var _tile_definition_uuid : String = self._get_next_tile_definition_uuid()
+
+	if _tile_definition_uuid != "": 
+		var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
+		self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
 
 ################################################################################
 ################################################################################

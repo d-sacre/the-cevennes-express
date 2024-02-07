@@ -19,9 +19,9 @@ signal action_mode(tce_signaling_uuid, value)
 ################################################################################
 const ACTION_ITEM_LIST_DEFAULT : Array = [
 	{"text": "Place", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/place_icon.png"},"default": true, "selectable": true, "disabled": false, "metadata": "user::selected::tile::action::place"},
-	{"text": "Replace", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/replace_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "user::selected::tile::action::replace"},
-	{"text": "Pick", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/pick_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "user::selected::tile::action::pick"},
-	{"text": "Delete", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/delete_icon.png"},"default": false, "selectable": false, "disabled": true, "metadata": "user::selected::tile::action::delete"},
+	{"text": "Replace", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/replace_icon.png"},"default": false, "selectable": true, "disabled": false, "metadata": "user::selected::tile::action::replace"},
+	{"text": "Pick", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/pick_icon.png"},"default": false, "selectable": true, "disabled": false, "metadata": "user::selected::tile::action::pick"},
+	{"text": "Delete", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/delete_icon.png"},"default": false, "selectable": true, "disabled": false, "metadata": "user::selected::tile::action::delete"},
 	{"text": "Hide GUI", "icon": {"path": "res://gui/overlays/creativeMode/actionSelector/icons/hide-gui_icon.png"},"default": false, "selectable": true, "disabled": false, "metadata": "user::selected::gui::hide"}
 ]
 
