@@ -7,6 +7,11 @@ extends Node
 ################################################################################
 
 ################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
+signal user_input_manager_send_public_command(tce_signaling_uuid, value)
+
+################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 # TO-DO: should be moved into another autoload, so that other parts can access
@@ -80,6 +85,9 @@ func match_tce_signaling_uuid(tce_signaling_uuid : String, keyChain : Array) -> 
 	var _tmpString = self._create_string_with_tce_signaling_uuid_seperator(keyChain)
 	return tce_signaling_uuid.match(_tmpString)
 
+func send_public_command(tce_signaling_uuid : String, value) -> void:
+	emit_signal("user_input_manager_send_public_command", tce_signaling_uuid, value)
+
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func call_contextual_logic_with_custom_tce_signaling_uuid(keyChain : Array, value) -> void:
 	var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, keyChain)
@@ -133,6 +141,12 @@ func _input(event : InputEvent) -> void:
 				self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 
 func _process(_delta : float) -> void:
+	# DESCRIPTION: General keyboard input handling
+	for _i in range(1,6):
+		if Input.is_action_just_pressed("keyboard_option" + str(_i)):
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "keyboard", "option"+str(_i)]
+			self.call_contextual_logic_with_custom_tce_signaling_uuid(_tmp_signaling_keychain, "just_pressed")
+
 	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
 	if self.base == "game":
 		# checking for camera movement request

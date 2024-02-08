@@ -58,7 +58,7 @@ func request_next_tile_definition_uuid() -> String:
 func check_whether_tile_would_fit(grid_index : int, tile_definition_uuid : String, rotation : int) -> bool:
 	var _is_placeable : bool = false
 
-	var _index2D = _convert_1D_index_to_2D(grid_index)
+	var _index2D = self._convert_1D_index_to_2D(grid_index)
 	_is_placeable = cppBackend.OnHover(_index2D.x, _index2D.y, rotation)
 
 	return _is_placeable
@@ -72,6 +72,16 @@ func can_tile_be_placed_here(grid_index : int, tile_definition_uuid : String, ro
 	_is_placeable = cppBackend.OnSet(_index2D.x, _index2D.y, rotation)
 
 	return _is_placeable
+
+# REMARK: Currently just placeholder (until C++ Backend is updated)
+func replace_tile_at_index_with(grid_index : int, tduuid : String) -> void:
+	var _index2D = self._convert_1D_index_to_2D(grid_index)
+	print("cppBridge: Replace tile function not yet implemented in C++ Backend")
+
+# REMARK: Currently just placeholder (until C++ Backend is updated)
+func delete_tile_at_index(grid_index : int) -> void:
+	var _index2D = self._convert_1D_index_to_2D(grid_index)
+	print("cppBridge: Delete tile function not yet implemented in C++ Backend")
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################

@@ -16,6 +16,12 @@ extends game_base
 ################################################################################
 ################################################################################
 
+func update_tile_definition_uuid(uuid : String) -> void:
+	.update_tile_definition_uuid(uuid)
+	var _tmp_signaling_keychain : Array = ["UserInputManager", "is", "requesting", "update","tile", "definition", "uuid"]
+	var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+	UserInputManager.send_public_command(_tmp_signaling_string, self._tileDefinitionUuid)
+
 ################################################################################
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: BOOL EXPRESSIONS ##########
 ################################################################################
@@ -38,7 +44,7 @@ func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
 	return false
 
 func _is_mouse_right_click(tce_signaling_uuid : String) -> bool:
-	return ._is_mouse_right_click(tce_signaling_uuid) and not ((self._selectorOperationMode == "pick") or (self._selectorOperationMode == "delete"))
+	return ._is_mouse_right_click(tce_signaling_uuid) and not ((self._selectorOperationMode == "pick") or (self._selectorOperationMode == "delete") or self._is_gui_hidden)
 
 ################################################################################
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: TOOLS #####################
@@ -60,7 +66,7 @@ func _hide_gui(status : bool) -> void:
 		_instance.initialize(self._context)
 		self._guiLayerReferences["hidden"].add_child(_instance)
 
-		# remove floating tile if existing
+		# DESCRIPTION: Remove floating tile if existing
 		if self._managerReferences["hexGridManager"].floating_tile_reference != self._managerReferences["hexGridManager"]:
 			var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
 			self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
@@ -70,6 +76,11 @@ func _hide_gui(status : bool) -> void:
 		self._managerReferences["hexGridManager"].set_highlight_persistence("void", false)
 		
 	else:
+		# DESCRIPTION: Delete unhide GUI button if still existing
+		if self._guiLayerReferences["hidden"].has_node("hiddenGUI"):
+			# FUTURE: Play hiding animation before deleting element
+			self._guiLayerReferences["hidden"].get_node("hiddenGUI").queue_free()
+
 		self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
 		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date
 
@@ -114,35 +125,57 @@ func gui_management_pipeline(tce_signaling_uuid : String, value) -> void:
 func user_input_pipeline(tce_signaling_uuid : String, value) -> void: 
 	.user_input_pipeline(tce_signaling_uuid, value) # execute base class function definition
 
+	var _creativeModeOverlay : Object = self._guiLayerReferences["overlay"].get_node("creativeModeOverlay")
+
 	# Extend base class functionality
 	if tce_signaling_uuid.match("game::creative::*"): # Safety to ensure that only valid requests are processed
 		# DESCRIPTION: Handling of setting the different action mode
 		if self._is_tile_action_mode_changed_to_place(tce_signaling_uuid):
 			self._selectorOperationMode = "place"
+			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 
 			if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
 				self._create_new_floating_tile()
 
 		if self._is_tile_action_mode_changed_to_replace(tce_signaling_uuid):
 			self._selectorOperationMode = "replace"
-
+			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
+			
 			if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
 				self._create_new_floating_tile()
 
 		if self._is_tile_action_mode_changed_to_pick(tce_signaling_uuid):
 			self._selectorOperationMode = "pick"
+			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 
 			if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
 				self._create_new_floating_tile()
 
 		if self._is_tile_action_mode_changed_to_delete(tce_signaling_uuid):
 			self._selectorOperationMode = "delete"
+			_creativeModeOverlay.deactivate_and_hide_tile_selector()
 
 			# remove floating tile if existing
 			if self._managerReferences["hexGridManager"].floating_tile_reference != self._managerReferences["hexGridManager"]:
 				var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
 				self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
 				self._managerReferences["hexGridManager"].delete_floating_tile()
+		
+		# DESCRIPTION: Checking for option key presses
+		for _i in range(1,6):
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "keyboard", "option"+str(_i)]
+			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+			if tce_signaling_uuid.match(_tmp_signaling_string):
+				# DESCRIPTION: Unhide GUI first if it should be hidden and the hide gui options has not been requested
+				if self._is_gui_hidden:
+					if _i!= 5:
+						self._hide_gui(false)
+				
+				# DESCRIPTION: Send a execution request via the InputManager Command Signal to ensure that all relevant
+				# entities can react properly.
+				_tmp_signaling_keychain  = ["UserInputManager", "is", "requesting", "execution", "option"+str(_i)]
+				_tmp_signaling_string  = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+				UserInputManager.send_public_command(_tmp_signaling_string, _i)
 
 		# DESCRIPTION: Handling of selections
 		if self._is_correct_context_for_obtaining_new_tile_definition(tce_signaling_uuid):
@@ -162,6 +195,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 			
 			if _tmp_tduuid != "":
 				self.update_tile_definition_uuid(_tmp_tduuid)
+				audioManager.play_sfx(["game", "tile", "pick"])
 			else:
 				self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 				audioManager.play_sfx(["game", "tile", "fail"])
@@ -263,6 +297,9 @@ func replace_tile() -> void:
 			_is_placeable = self._managerReferences["hexGridManager"].tile_reference[self._managerReferences["hexGridManager"].get_current_grid_index()]["type"] != "placeholder"
 
 		if _is_placeable:
+			var _tmp_tduuid : String = _floating_tile_status["TILE_DEFINITION_UUID"]
+			var _tmp_index : int = self._managerReferences["hexGridManager"].get_current_grid_index()
+			self._managerReferences["cppBridge"].replace_tile_at_index_with(_tmp_index, _tmp_tduuid) # DESCRIPTION: Pass change of tile definition to C++ Backend
 			self._managerReferences["hexGridManager"].replace_tile()
 			audioManager.play_sfx(["game", "tile", "success"])
 
@@ -284,6 +321,8 @@ func delete_tile() -> void:
 
 		# FUTURE: Perhaps outsource this into a function template that can be overwritten
 		if _is_removable:
+			var _tmp_index : int = self._managerReferences["hexGridManager"].get_current_grid_index()
+			self._managerReferences["cppBridge"].delete_tile_at_index(_tmp_index)
 			self._managerReferences["hexGridManager"].delete_tile()
 			audioManager.play_sfx(["game", "tile", "success"])
 		else:

@@ -33,6 +33,13 @@
                 "autoplay": false,
                 "bus": "Game SFX"
             },
+            "pick": {
+                "fp": "res://assets/audio/sfx/game/tile/windchimes_asc1.wav",
+                "volume_db": -6,
+                "playing": false,
+                "autoplay": false,
+                "bus": "Game SFX"
+            },
             "success": {
                 "fp": "res://assets/audio/sfx/game/tile/snare3_rimshot_f_1.wav",
                 "volume_db": -6,

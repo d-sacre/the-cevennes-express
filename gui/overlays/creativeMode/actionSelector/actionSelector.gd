@@ -28,7 +28,7 @@ const ACTION_ITEM_LIST_DEFAULT : Array = [
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
-var tce_signaling_uuid : Dictionary = {
+var tce_signaling_uuid_lut : Dictionary = {
 	"gui": {
 		"list" : ["gui", "hud", "selector", "action"],
 		"string": ""
@@ -58,15 +58,15 @@ func _item_selected(index : int) -> void:
 	if _is_selectable:
 		var _actionMode = self._actionItemList.get_item_metadata(index)
 		self.mode = _actionMode
-		emit_signal("action_mode", self.tce_signaling_uuid["actions"]["prefix"]+_actionMode, "NONE")
+		emit_signal("action_mode", self.tce_signaling_uuid_lut["actions"]["prefix"]+_actionMode, "NONE")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize(context : String) -> void:
 	self._context = context
-	self.tce_signaling_uuid["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid["gui"]["list"])
-	self.tce_signaling_uuid["actions"]["prefix"] = UserInputManager.create_tce_signaling_uuid(self._context, [])
+	self.tce_signaling_uuid_lut["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid_lut["gui"]["list"])
+	self.tce_signaling_uuid_lut["actions"]["prefix"] = UserInputManager.create_tce_signaling_uuid(self._context, [])
 
 func initialize_selection_to_default() -> void:
 	var _index = 0 # TO-DO: Add logic to find the default
@@ -77,14 +77,27 @@ func initialize_selection_to_default() -> void:
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_mouse_entered() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"]["string"], "entered")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"]["string"], "exited")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "exited")
 
 func _on_item_selected(index : int) -> void:
 	self._item_selected(index)
-	
+
+func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
+	var _tmp_signaling_keychain : Array  = ["*UserInputManager", "is", "requesting", "execution", "option*"]
+
+	# REMARK: Currently hardcoded to assume that the actionSelector.tscn will only 
+	# be used in the game::creative context. To make it more flexible/less 
+	# susceptible to errors, the context should also be checked
+	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+		if value is int:
+			var _tmp_index : int = value-1
+			self._actionItemList.unselect_all()
+			self._actionItemList.select(_tmp_index)
+			self._item_selected(_tmp_index)
+
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
@@ -103,6 +116,8 @@ func _ready() -> void:
 		self._actionItemList.set_item_metadata(_counter, _entry["metadata"])
 		_counter += 1
 
+	self._actionItemList.set_allow_reselect(true)
+
 	self._actionItemList.select(0,true)
 	var _defaultMetadata : String = self._actionItemList.get_item_metadata(0) 
 	emit_signal("action_mode", _defaultMetadata)
@@ -113,6 +128,7 @@ func _ready() -> void:
 	self._actionItemList.connect("mouse_exited", self, "_on_mouse_exited")
 	self._actionItemList.connect("item_selected", self, "_on_item_selected")
 
-	# initialize signaling to User Input Manager
+	# initialize signaling from/to User Input Manager
+	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")
 	self.connect("action_mode", UserInputManager, "_on_user_selected")
 	self.connect("gui_mouse_context", UserInputManager, "_on_gui_selector_context_changed")

@@ -22,7 +22,8 @@ const TILE_LIST_ICON_SIZE_DEFAULT : Vector2 = Vector2(128,128)
 ################################################################################
 var selectedTile : String = ""
 var tileListIconSize : Vector2 = TILE_LIST_ICON_SIZE_DEFAULT
-var tce_signaling_uuid : Dictionary = {
+
+var tce_signaling_uuid_lut : Dictionary = {
 	"gui": {
 		"list": ["gui", "sidepanel", "right", "selector", "tile", "definition"],
 		"string": ""
@@ -41,6 +42,8 @@ var tce_signaling_uuid : Dictionary = {
 # var tileDefinitionManager : Object  # only in the testing setup; later has to be inherited from main.gd
 var _tileList : ItemList
 var _tileDatabase : Dictionary = {}
+var _tile_tduuid_to_list_index_lut : Dictionary = {}
+
 var _context : String 
 
 ################################################################################
@@ -115,6 +118,7 @@ func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 		var _iconTexture = _create_icon_texture(_tileTexturePath)
 		self._tileList.add_item("Tile "+str(_counter), _iconTexture, true)
 		self._tileList.set_item_metadata(_counter, _tileDefinitionUUID)
+		self._tile_tduuid_to_list_index_lut[_tileDefinitionUUID] = _counter
 		_counter += 1
 	
 	print("\t\t\t\t-> Setting Defaults...")
@@ -124,27 +128,45 @@ func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 func initialize(context : String, tdm : Object) -> void:
 	self.initialize_tile_list(tdm)
 	self._context = context
-	self.tce_signaling_uuid["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid["gui"]["list"])
-	self.tce_signaling_uuid["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid["actions"]["new_tile_definition_selected"]["list"])
+	self.tce_signaling_uuid_lut["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid_lut["gui"]["list"])
+	self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["list"])
 
-	# required to set proper initialization value of _curentTileDefinitionUUID
-	# REMARK: Hopefully a temporary solution?
+	# SESCRIPTION: Required to set proper initialization value of _curentTileDefinitionUUID
+	# REMARK: Hopefully a temporary solution? Perhaps use UserInputManager command bus?
 	var _index : int = (self._tileList.get_selected_items())[0]
 	var _tmp_uuid : String = self._tileList.get_item_metadata(_index)
 	UserInputManager._curentTileDefinitionUUID = _tmp_uuid
+
+func deactivate_and_hide() -> void:
+	# FUTURE: Deactivate tile selection for additional safety and perhaps play hiding animation
+	self.visible = false
+
+func reactivate_and_unhide() -> void:
+	if not self.visible:
+		# FUTURE: Activate tile selection for additional safety and perhaps play unhiding animation
+		self.visible = true
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_item_selected(index : int) -> void:
 	self.selectedTile = self._tileList.get_item_metadata(index)
-	emit_signal("new_tile_definition_selected", tce_signaling_uuid["actions"]["new_tile_definition_selected"]["string"], self.selectedTile)
+	emit_signal("new_tile_definition_selected", self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"], self.selectedTile)
 
 func _on_mouse_entered() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"]["string"], "entered")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid["gui"]["string"], "exited")
+	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "exited")
+
+func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
+	var _tmp_signaling_keychain : Array = ["game", "creative", "UserInputManager", "is", "requesting", "update", "tile", "definition", "uuid"]
+	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+		if value is String:
+			var _tmp_list_index : int = self._tile_tduuid_to_list_index_lut[value]
+			self._tileList.unselect_all()
+			self._tileList.select(_tmp_list_index)
+			self._tileList.ensure_current_is_visible()
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
@@ -157,7 +179,8 @@ func _ready() -> void:
 	self._tileList.connect("mouse_entered", self, "_on_mouse_entered")
 	self._tileList.connect("mouse_exited", self, "_on_mouse_exited")
 
-	# initialize signaling to User Input Manager
+	# initialize signaling from/to User Input Manager
+	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")
 	self.connect("new_tile_definition_selected", UserInputManager, "_on_user_selected")
 	self.connect("gui_mouse_context", UserInputManager, "_on_gui_selector_context_changed")
 
@@ -168,6 +191,7 @@ func _ready() -> void:
 
 	self.tileListIconSize = Vector2(_tileListIconWidth,_tileListIconWidth)
 	self._tileList.set_fixed_icon_size(self.tileListIconSize)
+	self._tileList.set_allow_reselect(true)
 	
 
 

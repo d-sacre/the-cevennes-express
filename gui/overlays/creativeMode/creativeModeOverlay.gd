@@ -28,4 +28,10 @@ func initialize_creative_mode_gui(context: String, tdm : Object) -> void:
 func set_creative_mode_gui_to_default() -> void:
 	self._actionSelector.initialize_selection_to_default()
 
+func deactivate_and_hide_tile_selector() -> void:
+	self._tileSelector.deactivate_and_hide()
+
+func reactivate_and_unhide_tile_selector() -> void:
+	self._tileSelector.reactivate_and_unhide()
+
 	
