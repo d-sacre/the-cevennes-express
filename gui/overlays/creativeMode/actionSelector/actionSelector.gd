@@ -86,7 +86,7 @@ func _on_item_selected(index : int) -> void:
 	self._item_selected(index)
 
 func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
-	var _tmp_signaling_keychain : Array  = ["*UserInputManager", "is", "requesting", "execution", "option*"]
+	var _tmp_signaling_keychain : Array  = ["*UserInputManager", "requesting", "global", "execution", "option*"]
 
 	# REMARK: Currently hardcoded to assume that the actionSelector.tscn will only 
 	# be used in the game::creative context. To make it more flexible/less 

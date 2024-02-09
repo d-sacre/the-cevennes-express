@@ -29,12 +29,9 @@ text = "Test"
 margin_top = 424.0
 margin_right = 256.0
 margin_bottom = 438.0
-text = "Primary Input Method"
+text = "User Input Method"
 
 [node name="inputMethodOptionButton" type="OptionButton" parent="GridContainer"]
 margin_top = 442.0
 margin_right = 256.0
 margin_bottom = 462.0
-text = "Mouse"
-items = [ "Mouse", null, false, 0, null, "Keyboard", null, false, 1, null ]
-selected = 0

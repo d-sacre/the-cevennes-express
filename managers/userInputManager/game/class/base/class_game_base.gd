@@ -75,23 +75,36 @@ func _is_mouse_event(tce_signaling_uuid : String) -> bool:
 
 	return false
 
-func _is_mouse_left_click(tce_signaling_uuid : String) -> bool:
-	return self._is_mouse_event(tce_signaling_uuid) and self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "click", "left"])
+func _is_input_event_confirm(tce_signaling_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "confirm"])
 
-func _is_mouse_right_click(tce_signaling_uuid : String) -> bool:
-	return self._is_mouse_event(tce_signaling_uuid) and self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "click", "right"])
+func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "option", "general"])
+
+func _is_input_event_modifier(tce_signaling_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","user", "interaction", "modifier"])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: BOOL CONTEXT ####################################
 ################################################################################
 func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
-	return self._is_mouse_left_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	return self._is_input_event_confirm(tce_signaling_uuid) and self._is_current_gui_context_grid()
 
 func _is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid : String) -> bool:
-	return self._is_mouse_right_click(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	return self._is_input_event_option_general(tce_signaling_uuid) and self._is_current_gui_context_grid()
+
+func _is_correct_context_for_zooming(tce_signaling_uuid : String) -> bool:
+	if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "scroll", "*"]):
+			return true
+
+	return false
 
 func _is_current_gui_context_grid() -> bool:
 	return self._currentGuiMouseContext.match("*" + self._separator + "grid")
+
+func _is_correct_context_for_movement_channel1(tce_signaling_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "movement", "channel1"])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: TILE MANIPULATION ###############################
@@ -189,14 +202,31 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 			else:
 				print("Error: Variable type does not match")
 
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "wheel", "*"]):
-			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
-				if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
-					self._managerReferences["cameraManager"].request_zoom_out()
+		if self._is_correct_context_for_movement_channel1(tce_signaling_uuid):
+			if value is Vector2:
+				self._managerReferences["cameraManager"].request_movement(value)
 
+		if self._is_input_event_modifier(tce_signaling_uuid):
+			if value is String:
+				if value == "just_pressed":
+					self._managerReferences["cameraManager"].set_movement_speed_mode("fast")
+				else:
+					self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
+
+		if self._is_correct_context_for_zooming(tce_signaling_uuid):
+			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
+				self._managerReferences["cameraManager"].request_zoom_out()
 			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
-				if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
-					self._managerReferences["cameraManager"].request_zoom_in()
+				self._managerReferences["cameraManager"].request_zoom_in()
+
+		# if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "wheel", "*"]):
+		# 	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
+		# 		if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
+		# 			self._managerReferences["cameraManager"].request_zoom_out()
+
+		# 	elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
+		# 		if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
+		# 			self._managerReferences["cameraManager"].request_zoom_in()
 
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","internal", "collision", "detected"]):
 			if value is Dictionary:
@@ -216,8 +246,6 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 					else:
 						self._managerReferences["hexGridManager"].set_current_grid_index_out_of_bounds()
 						self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "void"
-
-					# print("Game Base: collider: <current|last|last within boundary>: <", self._managerReferences["hexGridManager"].get_current_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_grid_index(), "|",self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), ">")
 
 					if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
 						audioManager.play_sfx(["game", "tile", "move"])

@@ -15,10 +15,9 @@ extends game_base
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES ############################
 ################################################################################
 ################################################################################
-
 func update_tile_definition_uuid(uuid : String) -> void:
 	.update_tile_definition_uuid(uuid)
-	var _tmp_signaling_keychain : Array = ["UserInputManager", "is", "requesting", "update","tile", "definition", "uuid"]
+	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update","tile", "definition", "uuid"]
 	var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
 	UserInputManager.send_public_command(_tmp_signaling_string, self._tileDefinitionUuid)
 
@@ -26,9 +25,13 @@ func update_tile_definition_uuid(uuid : String) -> void:
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: BOOL EXPRESSIONS ##########
 ################################################################################
 func _is_tile_placeable() -> bool:
+	# REMARK: Needs to be adapted when C++ Backend has been updated; needs to take into account
+	# the difference between place (Backend request required) and replace (always allowed)
 	return true
 
 func _is_tile_placeable_with_current_rotation() -> bool:
+	# REMARK: Needs to be adapted when C++ Backend has been updated; needs to take into account
+	# the difference between place (Backend request required) and replace (always allowed)
 	return true
 
 func _is_current_gui_mouse_context_grid() -> bool:
@@ -36,15 +39,15 @@ func _is_current_gui_mouse_context_grid() -> bool:
 
 func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
 	if ._is_correct_context_for_placing_tile(tce_signaling_uuid):
-		if (self._is_current_gui_mouse_context_grid()):  
+		if (self._is_current_gui_mouse_context_grid()):  # REMARK: Already in base class definition?
 			if self._selectorOperationMode == "place":
 				if not self._is_gui_hidden:
 					return true
 
 	return false
 
-func _is_mouse_right_click(tce_signaling_uuid : String) -> bool:
-	return ._is_mouse_right_click(tce_signaling_uuid) and not ((self._selectorOperationMode == "pick") or (self._selectorOperationMode == "delete") or self._is_gui_hidden)
+func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:
+	return ._is_input_event_option_general(tce_signaling_uuid) and not ((self._selectorOperationMode == "pick") or (self._selectorOperationMode == "delete") or self._is_gui_hidden)
 
 ################################################################################
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: TOOLS #####################
@@ -163,7 +166,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 		
 		# DESCRIPTION: Checking for option key presses
 		for _i in range(1,6):
-			var _tmp_signaling_keychain : Array = ["user", "interaction", "keyboard", "option"+str(_i)]
+			var _tmp_signaling_keychain : Array = ["user", "interaction", "option", str(_i)]
 			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
 			if tce_signaling_uuid.match(_tmp_signaling_string):
 				# DESCRIPTION: Unhide GUI first if it should be hidden and the hide gui options has not been requested
@@ -173,7 +176,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 				
 				# DESCRIPTION: Send a execution request via the InputManager Command Signal to ensure that all relevant
 				# entities can react properly.
-				_tmp_signaling_keychain  = ["UserInputManager", "is", "requesting", "execution", "option"+str(_i)]
+				_tmp_signaling_keychain  = ["UserInputManager", "requesting", "global", "execution", "option", str(_i)]
 				_tmp_signaling_string  = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
 				UserInputManager.send_public_command(_tmp_signaling_string, _i)
 
@@ -190,7 +193,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 		if self._is_correct_context_for_deleting_tile(tce_signaling_uuid):
 			self.delete_tile()
 
-		if _is_correct_context_for_picking_tile_definition_uuid(tce_signaling_uuid):
+		if self._is_correct_context_for_picking_tile_definition_uuid(tce_signaling_uuid):
 			var _tmp_tduuid : String = self._managerReferences["hexGridManager"].get_tile_definition_uuid_from_current_grid_index()
 			
 			if _tmp_tduuid != "":

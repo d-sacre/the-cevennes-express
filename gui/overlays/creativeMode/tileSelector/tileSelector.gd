@@ -160,7 +160,7 @@ func _on_mouse_exited() -> void:
 	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "exited")
 
 func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
-	var _tmp_signaling_keychain : Array = ["game", "creative", "UserInputManager", "is", "requesting", "update", "tile", "definition", "uuid"]
+	var _tmp_signaling_keychain : Array = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
 	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
 		if value is String:
 			var _tmp_list_index : int = self._tile_tduuid_to_list_index_lut[value]

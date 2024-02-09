@@ -1,11 +1,17 @@
 extends PanelContainer
 
 ################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
+
+################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const _controls_description_lut : Dictionary = {
-	"mouse": """12345 = Select Tile Action Mode, \nWASD = Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out,\nRight Click: Rotate Tile,\nLeft Click: Request Tile Action""",
-	"keyboard": "12345 = Select Tile Action Mode, \nNot implemented yet!"
+	"MOUSE_KEYBOARD_MIXED": """12345 = Select Tile Action Mode, \nWASD = Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out,\nRight Click: Rotate Tile,\nLeft Click: Request Tile Action""",
+	"KEYBOARD_ONLY": "12345 = Select Tile Action Mode, \nNot implemented yet!"
 }
 
 ################################################################################
@@ -13,9 +19,10 @@ const _controls_description_lut : Dictionary = {
 ################################################################################
 var _geometry_info_prefix : String = ""
 var _managerReferences : Dictionary = {}
-var _inputMethod : String = "mouse"
+var _inputMethod : String = "MOUSE_KEYBOARD_MIXED"
 
 onready var _debugText : RichTextLabel = $GridContainer/debugInfoRichText
+onready var _inputOptionsButton : OptionButton = $GridContainer/inputMethodOptionButton
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
@@ -24,18 +31,33 @@ func initialize(mr : Dictionary) -> void:
 	self._managerReferences = mr
 
 func _on_input_method_selected(index : int) -> void:
-	match index:
-		0 :
-			self._inputMethod = "mouse"
-		1: 
-			self._inputMethod = "keyboard"
+	self._inputMethod = (_inputOptionsButton.get_item_metadata(index))["key"]
+	UserInputManager.set_current_input_method((_inputOptionsButton.get_item_metadata(index))["TCE_INPUT_METHOD_UUID"])
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready() -> void:
 	_debugText.set_use_bbcode(true)
-	$GridContainer/inputMethodOptionButton.connect("item_selected",self, "_on_input_method_selected")
+	_inputOptionsButton.connect("item_selected",self, "_on_input_method_selected")
+
+	# DESCRIPTION: Add Options to Option Button
+	var _keys : Array = ["MOUSE_ONLY", "MOUSE_KEYBOARD_MIXED", "KEYBOARD_ONLY", "CONTROLLER_ONLY", "TOUCH_ONLY"]
+
+	var _counter = 0
+	for _key in _keys:
+		var _data : Dictionary = UserInputManager.INPUT_METHOD_MODES[_key]
+		var _optionText : String = _data["TEXT"]
+		var _metadata : Dictionary = {"key": _key, "TCE_INPUT_METHOD_UUID": _data["TCE_INPUT_METHOD_UUID"]}
+
+		_inputOptionsButton.add_item(_optionText, _counter)
+		_inputOptionsButton.set_item_metadata(_counter, _metadata)
+		_inputOptionsButton.set_item_disabled(_counter, not _data["AVAILABLE"])
+
+		if _key == "MOUSE_KEYBOARD_MIXED":
+			_inputOptionsButton.select(_counter)
+
+		_counter += 1
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
