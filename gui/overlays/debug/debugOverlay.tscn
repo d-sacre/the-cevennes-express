@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://gui/overlays/debug/debug.gd" type="Script" id=1]
+
+[sub_resource type="Theme" id=1]
+RichTextLabel/fonts/bold_font = null
+
+[node name="debugOverlay" type="PanelContainer"]
+anchor_right = 0.133
+margin_right = 0.639999
+margin_bottom = 384.0
+rect_min_size = Vector2( 128, 384 )
+script = ExtResource( 1 )
+
+[node name="GridContainer" type="GridContainer" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 263.0
+margin_bottom = 469.0
+
+[node name="debugInfoRichText" type="RichTextLabel" parent="GridContainer"]
+margin_right = 256.0
+margin_bottom = 420.0
+rect_min_size = Vector2( 256, 420 )
+theme = SubResource( 1 )
+text = "Test"
+
+[node name="inputMethodLabel" type="Label" parent="GridContainer"]
+margin_top = 424.0
+margin_right = 256.0
+margin_bottom = 438.0
+text = "Primary Input Method"
+
+[node name="inputMethodOptionButton" type="OptionButton" parent="GridContainer"]
+margin_top = 442.0
+margin_right = 256.0
+margin_bottom = 462.0
+text = "Mouse"
+items = [ "Mouse", null, false, 0, null, "Keyboard", null, false, 1, null ]
+selected = 0

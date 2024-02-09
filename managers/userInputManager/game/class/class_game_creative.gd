@@ -324,7 +324,7 @@ func delete_tile() -> void:
 			var _tmp_index : int = self._managerReferences["hexGridManager"].get_current_grid_index()
 			self._managerReferences["cppBridge"].delete_tile_at_index(_tmp_index)
 			self._managerReferences["hexGridManager"].delete_tile()
-			audioManager.play_sfx(["game", "tile", "success"])
+			audioManager.play_sfx(["game", "tile", "delete"])
 		else:
 			self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 			audioManager.play_sfx(["game", "tile", "fail"])

@@ -191,11 +191,11 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "wheel", "*"]):
 			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
-				if _is_current_gui_context_grid():
+				if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
 					self._managerReferences["cameraManager"].request_zoom_out()
 
 			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
-				if _is_current_gui_context_grid():
+				if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
 					self._managerReferences["cameraManager"].request_zoom_in()
 
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","internal", "collision", "detected"]):
