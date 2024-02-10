@@ -3,4 +3,5 @@
 [ext_resource path="res://managers/userInputManager/userInputManager.gd" type="Script" id=1]
 
 [node name="userInputManager" type="Node"]
+pause_mode = 2
 script = ExtResource( 1 )

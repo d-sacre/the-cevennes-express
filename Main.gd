@@ -83,6 +83,7 @@ func _ready() -> void:
 	hexGridManager.set_current_grid_index(15)
 	hexGridManager.set_last_index_within_grid_boundary(15)
 	hexGridManager.set_highlight_persistence("void", true)
+	hexGridManager.load_rotation_persistence_default(self.context.trim_prefix("game::"))
 	hexGridManager.generate_grid(self.HEX_GRID_SIZE_X, self.HEX_GRID_SIZE_Y)
 	hexGridManager.manage_highlighting_due_to_cursor() # set the highlight correctly
 

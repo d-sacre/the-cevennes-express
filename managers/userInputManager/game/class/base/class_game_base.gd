@@ -28,6 +28,7 @@ var _context : String
 
 var _tileDefinitionUuid : String = "" # REMARK: Not a good solution; could crash the game if the function is not properly overwritten
 var _currentGuiMouseContext : String 
+var _menu_ingame_visible : bool = false
 
 const _separator : String = UserInputManager.TCE_SIGNALING_UUID_SEPERATOR
 
@@ -83,6 +84,9 @@ func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:
 
 func _is_input_event_modifier(tce_signaling_uuid : String) -> bool:
 	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","user", "interaction", "modifier"])
+
+func _is_input_event_cancel(tce_signaling_uuid: String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "cancel"])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: BOOL CONTEXT ####################################
@@ -219,14 +223,19 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
 				self._managerReferences["cameraManager"].request_zoom_in()
 
-		# if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "wheel", "*"]):
-		# 	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
-		# 		if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
-		# 			self._managerReferences["cameraManager"].request_zoom_out()
+		if self._is_input_event_cancel(tce_signaling_uuid):
+			var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
+			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+			UserInputManager.send_public_command(_tmp_signaling_string, self._tileDefinitionUuid)
 
-		# 	elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
-		# 		if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
-		# 			self._managerReferences["cameraManager"].request_zoom_in()
+			# REMARK: Very simple logic. Will not behave as expected if user is in submenu!
+			# FUTURE: Should be extended to include all ingame menu subcontexts, especially settings!
+			if self._menu_ingame_visible:
+				self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
+			else:
+				self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "menu" + self._separator + "ingame" + self._separator + "root"
+
+			self._menu_ingame_visible = !self._menu_ingame_visible
 
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","internal", "collision", "detected"]):
 			if value is Dictionary:
@@ -242,10 +251,10 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 					if _tmp_collision_status:
 						self._managerReferences["hexGridManager"].set_current_grid_index(value["grid_index"])
 						self._managerReferences["hexGridManager"].set_last_index_within_grid_boundary_to_current()
-						self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "grid"
+						self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
 					else:
 						self._managerReferences["hexGridManager"].set_current_grid_index_out_of_bounds()
-						self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "void"
+						self._currentGuiMouseContext = self._context + self._separator + "void"
 
 					if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
 						audioManager.play_sfx(["game", "tile", "move"])
@@ -274,6 +283,6 @@ func gui_management_pipeline(tce_signaling_uuid : String, _value : String) -> vo
 func _init(ctxt : String, mr : Dictionary, glr : Dictionary) -> void:
 	self._context = ctxt
 	self._managerReferences = mr
-	self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "grid"
+	self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
 	self._guiLayerReferences = glr
 

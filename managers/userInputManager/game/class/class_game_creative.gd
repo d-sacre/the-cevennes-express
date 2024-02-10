@@ -17,7 +17,7 @@ extends game_base
 ################################################################################
 func update_tile_definition_uuid(uuid : String) -> void:
 	.update_tile_definition_uuid(uuid)
-	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update","tile", "definition", "uuid"]
+	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
 	var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
 	UserInputManager.send_public_command(_tmp_signaling_string, self._tileDefinitionUuid)
 
@@ -53,30 +53,32 @@ func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: TOOLS #####################
 ################################################################################
 func _hide_gui(status : bool) -> void:
-	self._is_gui_hidden = status
+	
 	# REMARK: Should be implemented properly at a later date
 	self._selectorOperationMode = "NONE" 
 
 	self._guiLayerReferences["overlay"].visible = not status
 
 	if status:
-		self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR+ "grid"
+		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()
 
-		var _scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
-		var _instance = _scene.instance()
-		_instance.initialize(self._context)
-		self._guiLayerReferences["hidden"].add_child(_instance)
+		# REMARK:/FUTURE: Should be instanced @ ready and only visibility set, not deleted
+		if not self._is_gui_hidden:  # REMARK: To remove multiple "Unhide GUI" Buttons
+			var _scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
+			var _instance = _scene.instance()
+			_instance.initialize(self._context)
+			self._guiLayerReferences["hidden"].add_child(_instance)
 
-		# DESCRIPTION: Remove floating tile if existing
-		if self._managerReferences["hexGridManager"].floating_tile_reference != self._managerReferences["hexGridManager"]:
-			var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
-			self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
-			self._managerReferences["hexGridManager"].delete_floating_tile()
-		
-		self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), false)
-		self._managerReferences["hexGridManager"].set_highlight_persistence("void", false)
+			# DESCRIPTION: Remove floating tile if existing
+			if self._managerReferences["hexGridManager"].floating_tile_reference != self._managerReferences["hexGridManager"]:
+				var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
+				self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
+				self._managerReferences["hexGridManager"].delete_floating_tile()
+			
+			self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), false)
+			self._managerReferences["hexGridManager"].set_highlight_persistence("void", false)
 		
 	else:
 		# DESCRIPTION: Delete unhide GUI button if still existing
@@ -95,6 +97,7 @@ func _hide_gui(status : bool) -> void:
 		self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"]._last_index_within_grid_boundary_highlight, true)
 		self._managerReferences["hexGridManager"].set_highlight_persistence("void", true)
 
+	self._is_gui_hidden = status
 ################################################################################
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES #############################
@@ -287,7 +290,7 @@ func _manage_grid_to_gui_transition(tce_signaling_uuid : String, value : String)
 		self._managerReferences["cameraManager"].disable_zooming()
 		self._managerReferences["cameraManager"].disable_raycasting()
 	else:
-		self._currentGuiMouseContext = self._context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR + "grid"
+		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()
 

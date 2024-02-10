@@ -25,9 +25,15 @@ const _highlight_persistence_default : Dictionary = {
 	}
 }
 
-const _rotation_persistence_default : Dictionary = {
-	"persistence": false,
-	"mode": "always" # Available Options: "always", "type"
+const _rotation_persistence_defaults : Dictionary = {
+	"default" : {
+		"persistence": false,
+		"mode": "always" # Available Options: "always", "type"
+	},
+	"creative" : {
+		"persistence": true,
+		"mode": "always" # Available Options: "always", "type"
+	}
 }
 
 ################################################################################
@@ -161,6 +167,9 @@ func set_current_grid_index_out_of_bounds() -> void:
 # FUTURE: Needs to be extended to accept more parameters and not necessarily a fixed amount!
 func set_highlight_persistence(mode : String, status : bool) -> void: 
 	self._highlight_persistence[mode]["persistence"] = status
+
+func load_rotation_persistence_default(name : String) -> void:
+	self._rotation_persistence = self._rotation_persistence_defaults[name]
 
 func set_rotation_persistence(status : bool, mode : String) -> void:
 	self._rotation_persistence["persistence"] = status

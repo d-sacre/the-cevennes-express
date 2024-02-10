@@ -32,7 +32,7 @@ const INPUT_METHOD_MODES : Dictionary = {
 	"KEYBOARD_ONLY": {
 		"TEXT": "Keyboard (only)",
 		"TCE_INPUT_METHOD_UUID": "keyboard" + TCE_SIGNALING_UUID_SEPERATOR + "only",
-		"AVAILABLE": true
+		"AVAILABLE": false
 	},
 	"CONTROLLER_ONLY": {
 		"TEXT": "Controller (only)",
@@ -63,7 +63,8 @@ const TCE_SIGNALING_UUID_INPUT_EVENTS : Dictionary = {
 	"modifier": ["user", "interaction", "modifier"],
 	"movement": {
 		"channel1": ["user", "interaction", "movement", "channel1"]
-	}
+	},
+	"cancel": ["user", "interaction", "cancel"]
 }
 
 const GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT : Dictionary = {
@@ -71,7 +72,8 @@ const GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT : Dictionary = {
 	"mouse_click_right":  ["option", "general"],
 	"mouse_wheel_up" : ["scroll", "up"],
 	"mouse_wheel_down": ["scroll", "down"],
-	"keyboard_modifier": ["modifier"]
+	"keyboard_modifier": ["modifier"],
+	"keyboard_cancel": ["cancel"]
 }
 
 ################################################################################
@@ -187,29 +189,9 @@ func _input(event : InputEvent) -> void:
 			if event is InputEventMouse:
 				var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "movement"]
 				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, event.position)
-			
-			# # mouse scroll (camera zooming)
-			# if event is InputEventMouseButton:
-			# 	if event.button_index == BUTTON_WHEEL_UP and event.pressed:
-			# 		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "up"]
-			# 		self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "pressed")
-
-			# 	if event.button_index == BUTTON_WHEEL_DOWN and event.pressed:
-			# 		var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "wheel", "down"]
-			# 		self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "pressed")
-		
-		# # DESCRIPTION: Process keyboard inputs only when keyboard is selected as an input method
-		# if self._currentInputMethod.match("*keyboard*"):
-		# 	# camera movement speed modifier
-		# 	if event is InputEventKey and event.pressed:
-		# 		if event.shift:
-		# 			self._managerReferences["cameraManager"].set_movement_speed_mode("fast")
-		# 		else:
-		# 			self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 
 func _process(_delta : float) -> void:
 	# DESCRIPTION: General keyboard input handling
-
 	# DESCRIPTION: Process keyboard inputs only when keyboard is selected as an input method
 	if self._currentInputMethod.match("*keyboard*"):
 		for _i in range(1,6):
@@ -231,30 +213,13 @@ func _process(_delta : float) -> void:
 			if self._lastMovementRequestChannel1 != _movementRequestChannel1:
 				var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, ["movement", "channel1"])
 				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, _movementRequestChannel1)
-				# self._managerReferences["cameraManager"].request_movement(_movementRequestChannel1) # TO-DO: Outsource to game
 				self._lastMovementRequestChannel1 = _movementRequestChannel1
-
-			# if Input.is_action_just_pressed("keyboard_modifier"):
-			# 	self._managerReferences["cameraManager"].set_movement_speed_mode("fast")
-			
-			# if Input.is_action_just_released("keyboard_modifier"):
-			# 	self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 	
 	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
 	if self.base == "game":
 		# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
 		# after Main Menu has been replaced
-		# DESCRIPTION: Process mouse inputs only when mouse is selected as an input method
-		# if self._currentInputMethod.match("*mouse*"):
-			# if Input.is_action_just_pressed("mouse_click_left"):
-			# 	var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "left"]
-			# 	self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "just_pressed")
-					
-			# # rotation of the tile
-			# if Input.is_action_just_pressed("mouse_click_right"):
-			# 	var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "click", "right"]
-			# 	self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "just_pressed")
-
+		
 		# REMARK: Should be outsourced into function!
 		# REMARK: Mouse Wheel does only have the "just released" function
 		# source: https://forum.godotengine.org/t/how-do-i-get-input-from-the-mouse-wheel/27979/3
@@ -271,7 +236,7 @@ func _process(_delta : float) -> void:
 					else:
 						print("Error: Godot Input Event not found in LUT!")
 
-		_events = ["mouse_click_left", "mouse_click_right", "keyboard_modifier"]
+		_events = ["mouse_click_left", "mouse_click_right", "keyboard_modifier", "keyboard_cancel"]
 		for _event in _events:
 			var _event_split : PoolStringArray = _event.split("_")
 
