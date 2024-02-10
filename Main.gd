@@ -80,6 +80,7 @@ func _ready() -> void:
 	
 	# setting up the grid
 	print("\t-> Initialize hexGridManager...")
+	hexGridManager.initialize(self._managerReferences)
 	hexGridManager.set_current_grid_index(15)
 	hexGridManager.set_last_index_within_grid_boundary(15)
 	hexGridManager.set_highlight_persistence("void", true)
@@ -102,7 +103,8 @@ func _ready() -> void:
 
 	# Initialize User Input Manager
 	print("\t\t-> Initialize UserInputManager")
-	UserInputManager.initialize(self.context, "mouse::keyboard::mixed", _contextualLogic, self._managerReferences, self._guiLayerReferences)
+	#"mouse::keyboard::mixed", "keyboard::only"
+	UserInputManager.initialize(self.context, "keyboard::only", _contextualLogic, self._managerReferences, self._guiLayerReferences)
 
 	# initialize audio manager singleton correctly and set the user sepcific volume levels
 	print("\t-> Initialize AudioManager...")

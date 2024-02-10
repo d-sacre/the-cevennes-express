@@ -32,7 +32,7 @@ const INPUT_METHOD_MODES : Dictionary = {
 	"KEYBOARD_ONLY": {
 		"TEXT": "Keyboard (only)",
 		"TCE_INPUT_METHOD_UUID": "keyboard" + TCE_SIGNALING_UUID_SEPERATOR + "only",
-		"AVAILABLE": false
+		"AVAILABLE": true
 	},
 	"CONTROLLER_ONLY": {
 		"TEXT": "Controller (only)",
@@ -62,7 +62,9 @@ const TCE_SIGNALING_UUID_INPUT_EVENTS : Dictionary = {
 	},
 	"modifier": ["user", "interaction", "modifier"],
 	"movement": {
-		"channel1": ["user", "interaction", "movement", "channel1"]
+		"channel1": ["user", "interaction", "movement", "channel1"],
+		"channel2": ["user", "interaction", "movement", "channel2"],
+		"channel3": ["user", "interaction", "movement", "channel3"]
 	},
 	"cancel": ["user", "interaction", "cancel"]
 }
@@ -160,6 +162,11 @@ func set_current_input_method(method : String) -> void:
 	self._currentInputMethod = method
 	print("Current Input Method changed to ", self._currentInputMethod)
 
+	if method == "keyboard::only":
+		self._managerReferences["hexGridManager"].enable_floating_tile_movement_by_asmr()
+	else:
+		self._managerReferences["hexGridManager"].disable_floating_tile_movement_by_asmr()
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
@@ -209,7 +216,12 @@ func _process(_delta : float) -> void:
 					Input.get_action_strength("keyboard_move_channel1_up") - Input.get_action_strength("keyboard_move_channel1_down")
 			)
 
+			# var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, ["movement", "channel1"])
+			# self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, _movementRequestChannel1)
+
 			# to reduce the amount of unnecessary function calls when no camera movement is requested
+			# REMARK: Does not work in the case of keyboard/controller only input, as the tile can only be moved
+			# one grid per key press. Keeping a key pressed does not allow for moving multiple grids at a time
 			if self._lastMovementRequestChannel1 != _movementRequestChannel1:
 				var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, ["movement", "channel1"])
 				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, _movementRequestChannel1)

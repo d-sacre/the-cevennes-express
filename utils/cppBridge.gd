@@ -31,6 +31,9 @@ func _convert_1D_index_to_2D(index : int) -> Vector2:
 
 	return Vector2(x,y)
 
+func _convert_2D_index_to_1D(index2D : Vector2) -> int:
+	return int(index2D.x) + int(index2D.y) * self._hex_grid_size_x
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################

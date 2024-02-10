@@ -202,13 +202,32 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "movement"]):
 			if value is Vector2:
-				self._managerReferences["cameraManager"].initiate_raycast_from_position(value)
+				# DESCRIPTION: Only initiate raycast from camera when Input Mode uses mouse information
+				if UserInputManager._currentInputMethod.match("*mouse*"):
+					self._managerReferences["cameraManager"].initiate_raycast_from_position(value)
 			else:
 				print("Error: Variable type does not match")
 
 		if self._is_correct_context_for_movement_channel1(tce_signaling_uuid):
 			if value is Vector2:
-				self._managerReferences["cameraManager"].request_movement(value)
+				# DESCRIPTION: Request camera movement only in Input Mode which uses mouse information
+				# In all other cases: Manipulate the position of the floating tile
+				if UserInputManager._currentInputMethod.match("*mouse*"):
+					self._managerReferences["cameraManager"].request_movement(value)
+				else: # REMARK: Temporary solution; it would be better to outsource floating tile into own dedicated scene
+					# if value != Vector2(0,0): # DESCRIPTION: To prevent falsely resetting the highlight 
+						# var _tmp_camera_position = self._managerReferences["hexGridManager"].move_floating_tile_by_action_strength(value)
+						# var _camera_offset : Vector3 = self._managerReferences["cameraManager"].CAMERA_POSITION_DEFAULT
+						
+						# # DESCRIPTION: Catch case where floating tile is at the border and no new position is returned
+						# if _tmp_camera_position != Vector3.INF:
+						# 	_tmp_camera_position.y += _camera_offset.y
+						# 	_tmp_camera_position.z += _camera_offset.z
+						
+						# self._managerReferences["cameraManager"].request_new_position(_tmp_camera_position)
+						
+					self._managerReferences["hexGridManager"].request_floating_tile_movement(value)
+
 
 		if self._is_input_event_modifier(tce_signaling_uuid):
 			if value is String:

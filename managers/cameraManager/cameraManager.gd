@@ -55,6 +55,9 @@ func initiate_raycast_from_position(screenspace_position : Vector2) -> void:
 func request_movement(asmr : Vector2) -> void:
 	self._cameraMovementRequest = asmr
 
+func request_new_position(pos : Vector3) -> void:
+	self._position_requested = pos
+
 func request_zoom_in() -> void:
 	if self._zooming_permitted:
 		self._zoom_requested -= Vector2(self.CAMERA_SPEED["zoom"][self._current_camera_speed_mode],0)
@@ -86,20 +89,25 @@ func _ready() -> void:
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _process(_delta : float) -> void:
-	self._position_requested += Vector3(
-		_cameraMovementRequest.x*self.CAMERA_SPEED["x"][self._current_camera_speed_mode],
-		0,
-		_cameraMovementRequest.y*self.CAMERA_SPEED["z"][self._current_camera_speed_mode]
-	)
-	
-	self._position_current = self.transform.origin
-	if self._position_current != self._position_requested:
-		# fix to move highlighted position with camera movement; should lead to less raycast calls than when implemented
-		# in _process()@cameraRaycast.gd
-		# Problem: The more callers for the raycast method, the less reliable the process could get 
-		# self._camera.initiate_raycast_from_last_position() 
-		self._position_current = self._position_current.linear_interpolate(self._position_requested,0.1)
-		self.transform.origin = self._position_current
+
+	# DESCRIPTION: Catch case that position request is invalid
+	if self._position_requested != Vector3.INF:
+		# print("status: ", self._position_requested != Vector3.INF)
+		# print("position requested: ", self._position_requested, "current: ", self._position_current)
+		self._position_requested += Vector3(
+			self._cameraMovementRequest.x*self.CAMERA_SPEED["x"][self._current_camera_speed_mode],
+			0,
+			self._cameraMovementRequest.y*self.CAMERA_SPEED["z"][self._current_camera_speed_mode]
+		)
+		
+		self._position_current = self.transform.origin
+		if self._position_current != self._position_requested:
+			# fix to move highlighted position with camera movement; should lead to less raycast calls than when implemented
+			# in _process()@cameraRaycast.gd
+			# Problem: The more callers for the raycast method, the less reliable the process could get 
+			# self._camera.initiate_raycast_from_last_position() 
+			self._position_current = self._position_current.linear_interpolate(self._position_requested,0.1)
+			self.transform.origin = self._position_current
 		
 	self._zoom_current = Vector2(self._camera.transform.origin.z,0)
 	if self._zoom_current != self._zoom_requested:
