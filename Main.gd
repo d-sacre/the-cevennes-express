@@ -104,7 +104,7 @@ func _ready() -> void:
 	# Initialize User Input Manager
 	print("\t\t-> Initialize UserInputManager")
 	#"mouse::keyboard::mixed", "keyboard::only"
-	UserInputManager.initialize(self.context, "keyboard::only", _contextualLogic, self._managerReferences, self._guiLayerReferences)
+	UserInputManager.initialize(self.context, "mouse::keyboard::mixed", _contextualLogic, self._managerReferences, self._guiLayerReferences)
 
 	# initialize audio manager singleton correctly and set the user sepcific volume levels
 	print("\t-> Initialize AudioManager...")

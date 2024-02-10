@@ -216,10 +216,8 @@ func _process(_delta : float) -> void:
 					Input.get_action_strength("keyboard_move_channel1_up") - Input.get_action_strength("keyboard_move_channel1_down")
 			)
 
-			# var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, ["movement", "channel1"])
-			# self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, _movementRequestChannel1)
-
-			# to reduce the amount of unnecessary function calls when no camera movement is requested
+			# DESCRIPTION: To reduce the amount of unnecessary function calls when no camera movement is requested, check whether
+			# current request is identical to previous request
 			# REMARK: Does not work in the case of keyboard/controller only input, as the tile can only be moved
 			# one grid per key press. Keeping a key pressed does not allow for moving multiple grids at a time
 			if self._lastMovementRequestChannel1 != _movementRequestChannel1:

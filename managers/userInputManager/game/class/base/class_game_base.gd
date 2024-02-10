@@ -215,17 +215,6 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 				if UserInputManager._currentInputMethod.match("*mouse*"):
 					self._managerReferences["cameraManager"].request_movement(value)
 				else: # REMARK: Temporary solution; it would be better to outsource floating tile into own dedicated scene
-					# if value != Vector2(0,0): # DESCRIPTION: To prevent falsely resetting the highlight 
-						# var _tmp_camera_position = self._managerReferences["hexGridManager"].move_floating_tile_by_action_strength(value)
-						# var _camera_offset : Vector3 = self._managerReferences["cameraManager"].CAMERA_POSITION_DEFAULT
-						
-						# # DESCRIPTION: Catch case where floating tile is at the border and no new position is returned
-						# if _tmp_camera_position != Vector3.INF:
-						# 	_tmp_camera_position.y += _camera_offset.y
-						# 	_tmp_camera_position.z += _camera_offset.z
-						
-						# self._managerReferences["cameraManager"].request_new_position(_tmp_camera_position)
-						
 					self._managerReferences["hexGridManager"].request_floating_tile_movement(value)
 
 
