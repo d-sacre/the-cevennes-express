@@ -1,10 +1,12 @@
 .vs/
 .vscode/
-build/
+build_*/
 *.o
 *.a
 *.exe
 *.lib
+*.pdb
+*.exp
 *.dll
 *.so
 *.wasm
