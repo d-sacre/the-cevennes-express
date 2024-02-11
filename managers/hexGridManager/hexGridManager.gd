@@ -75,13 +75,19 @@ var _rotation_persistence : Dictionary = {
 }
 
 # REMARK: Should be outsourced with complete floating tile logic into own scene
-var _floating_tile_position_current : Vector3 = Vector3(0,0,0)
-var _floating_tile_position_requested : Vector3 = Vector3(0,0,0)
-var _floating_tile_asmr : Vector2 = Vector2(0,0)
-var _floating_tile_movement_by_asmr_allowed : bool = true
-var _last_floating_tile_asmr : Vector2 = Vector2(0,0)
+## var _floating_tile_position_current : Vector3 = Vector3(0,0,0)
+## var _floating_tile_position_requested : Vector3 = Vector3(0,0,0)
+# var _floating_selector_movement_by_asmr_allowed : bool = true
+# var _floating_selector_asmr : Vector2 = Vector2(0,0)
+# var _last_floating_selector_asmr : Vector2 = Vector2(0,0)
 
 var _managerReferences : Dictionary = {}
+
+################################################################################
+#### ONREADY MEMBER VARIABLES ##################################################
+################################################################################
+onready var _floatingCursor : Spatial = get_parent().get_node("floatingCursor")
+onready var _gridObjects : Node = get_parent().get_parent().find_node("tiles")
 
 ################################################################################
 ################################################################################
@@ -105,7 +111,42 @@ func _manage_rotation_persistence() -> void:
 				self.floating_tile_rotation = 0
 				print("Error: Floating Tile does not exist")
 
-func _move_floating_tile_by_action_strength(asmr : Vector2) -> void:
+# func _move_floating_selector_by_action_strength(asmr : Vector2) -> void:
+# 	var _tmp_current_index : int 
+
+# 	if asmr != Vector2(0,0):
+# 		if not self.is_current_grid_index_out_of_bounds():
+# 			_tmp_current_index = self._current_grid_index
+# 		else:
+# 			_tmp_current_index = self._last_index_within_grid_boundary
+
+# 		var _tmp_index2D : Vector2 = self._managerReferences["cppBridge"]._convert_1D_index_to_2D(_tmp_current_index)
+# 		_tmp_index2D += asmr
+# 		var _tmp_index1D : int = self._managerReferences["cppBridge"]._convert_2D_index_to_1D(_tmp_index2D)
+
+# 		# DESCRIPTION: Check whether new index is valid
+# 		# REMARK: Simplified case for a "square" grid; must be generalized!
+# 		if _tmp_index1D <= self._hex_grid_size_x * self._hex_grid_size_y - 1: # DESCRIPTION: To prevent exceeding boundaries at the top
+# 			if _tmp_index1D >= 0: # DESCRIPTION: To prevent exceeding boundaries at the bottom
+# 				if _tmp_index1D != self._current_grid_index:
+# 					# DESCRIPTION: To prevent jumping from one edge of the grid to the other
+# 					if not ((int(_tmp_index2D.x) == self._hex_grid_size_x) or (int(_tmp_index2D.x) == -1)):
+# 						self.set_last_grid_index_to_current()
+# 						self.set_current_grid_index(_tmp_index1D)
+# 						self._last_index_within_grid_boundary = _tmp_index1D
+
+# 						var _tmp_camera_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
+# 						var _camera_offset : Vector3 = self._managerReferences["cameraManager"].CAMERA_POSITION_DEFAULT
+
+# 						_tmp_camera_target_position.y += _camera_offset.y
+# 						_tmp_camera_target_position.z += _camera_offset.z
+
+# 						self._managerReferences["cameraManager"].request_new_position(_tmp_camera_target_position)
+
+# 						if self.floating_tile_reference != self:
+# 							self.move_floating_selector_and_highlight()
+
+func calculate_new_floating_selector_postion_by_action_strength(asmr : Vector2) -> Vector3:
 	var _tmp_current_index : int 
 
 	if asmr != Vector2(0,0):
@@ -129,16 +170,11 @@ func _move_floating_tile_by_action_strength(asmr : Vector2) -> void:
 						self.set_current_grid_index(_tmp_index1D)
 						self._last_index_within_grid_boundary = _tmp_index1D
 
-						var _tmp_camera_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
-						var _camera_offset : Vector3 = self._managerReferences["cameraManager"].CAMERA_POSITION_DEFAULT
+						var _tmp_floating_selector_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
+						
+						return _tmp_floating_selector_target_position
 
-						_tmp_camera_target_position.y += _camera_offset.y
-						_tmp_camera_target_position.z += _camera_offset.z
-
-						self._managerReferences["cameraManager"].request_new_position(_tmp_camera_target_position)
-
-						if self.floating_tile_reference != self:
-							self.move_floating_tile_and_highlight()
+	return Vector3.INF
 
 ################################################################################
 ################################################################################
@@ -169,7 +205,7 @@ func generate_grid(x : int, y : int) -> void:
 		_is_tile_offset_y = !_is_tile_offset_y
 
 		var _tile = PLACEHOLDER_TILE.instance()
-		add_child(_tile)
+		self._gridObjects.add_child(_tile) # REMARK: Not very pretty/safe; might have to find another way
 		self.tile_reference.append({"type": "placeholder", "reference": _tile})
 		_tile.translate(Vector3(_tile_coordinates.x, 0, _tile_coordinates.y))
 		_tile.initial_placeholder_configuration()
@@ -211,6 +247,14 @@ func set_last_index_within_grid_boundary_to_current() -> void:
 func set_current_grid_index_out_of_bounds() -> void:
 	self.set_current_grid_index(self.INDEX_OUT_OF_BOUNDS)
 
+func get_current_grid_element_information() -> Dictionary:
+	var _return : Dictionary = {}
+
+	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
+		_return = self.tile_reference[self._current_grid_index]
+
+	return _return
+
 # FUTURE: Needs to be extended to accept more parameters and not necessarily a fixed amount!
 func set_highlight_persistence(mode : String, status : bool) -> void: 
 	self._highlight_persistence[mode]["persistence"] = status
@@ -234,16 +278,11 @@ func is_current_grid_index_out_of_bounds() -> bool:
 func is_highlight_persistence_void() -> bool:
 	return self._highlight_persistence["void"]["persistence"]
 
-################################################################################
-#### PUBLIC MEMBER FUNCTIONS: GRID INFORMATION #################################
-################################################################################
-func get_current_grid_element_information() -> Dictionary:
-	var _return : Dictionary = {}
+func is_floating_tile_reference_valid() -> bool:
+	if self.floating_tile_reference != self:
+		return true
 
-	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
-		_return = self.tile_reference[self._current_grid_index]
-
-	return _return
+	return false
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: GRID CELL HIGHLIGHTING ###########################
@@ -300,34 +339,61 @@ func set_status_placeholder(_possible : bool, _impossible : bool) -> void:
 	self.set_status_placeholder_at_index(self._current_grid_index, _possible, _impossible)
 
 ################################################################################
+#### PUBLIC MEMBER FUNCTIONS: FLOATING SELECTOR ################################
+################################################################################
+# func enable_floating_selector_movement_by_asmr() -> void:
+# 	# self._floating_tile_position_current = self.floating_tile_reference.transform.origin
+# 	# self._floating_tile_position_requested = self._floating_tile_position_current
+# 	self._floating_selector_movement_by_asmr_allowed = true
+
+# func disable_floating_selector_movement_by_asmr() -> void:
+# 	self._floating_selector_movement_by_asmr_allowed = false
+
+# func request_floating_selector_movement(asmr : Vector2) -> void:
+# 	self._last_floating_selector_asmr = asmr
+# 	print(asmr)
+# 	self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
+
+func enable_floating_selector_movement_by_asmr() -> void:
+	self._floatingCursor.enable_movement_by_asmr()
+
+func disable_floating_selector_movement_by_asmr() -> void:
+	self._floatingCursor.disable_movement_by_asmr()
+
+func request_floating_selector_movement(asmr : Vector2) -> void:
+	self._floatingCursor.request_movement_by_action_strength(asmr)
+
+func request_floating_selector_position(position : Vector3) -> void:
+	self._floatingCursor.request_new_position(position)
+
+func move_floating_selector_to(index : int) -> void:
+	if index != self.INDEX_OUT_OF_BOUNDS: # ensures that tile does not move if cursor is over an area outside the allowed grid area
+		var _grid_reference = self.tile_reference[index]["reference"]
+		var _grid_position_physical = _grid_reference.transform.origin
+		self._floatingCursor.set_global_translation(_grid_position_physical)
+		
+		if self.floating_tile_reference != self:
+			# var _grid_reference = self.tile_reference[index]["reference"]
+			# var _grid_position_physical = _grid_reference.transform.origin
+			# var _tmp_translation : Vector3 = Vector3(_grid_position_physical.x, FLOATING_TILE_DISTANCE_ABOVE_GRID, _grid_position_physical.z)
+			# self.floating_tile_reference.set_global_translation(_tmp_translation) # translate to above the desired grid position
+			self.floating_tile_reference.grid_index = index		
+			self.floating_tile_reference.transform.origin = Vector3(0, self.FLOATING_TILE_DISTANCE_ABOVE_GRID,0)
+
+func move_floating_selector_to_and_highlight(next : int) -> void:
+	self.manage_highlighting_due_to_cursor()
+	self.move_floating_selector_to(next)
+
+func move_floating_selector_and_highlight() -> void:
+	self.move_floating_selector_to_and_highlight(self._current_grid_index)
+
+################################################################################
 #### PUBLIC MEMBER FUNCTIONS: FLOATING TILE ####################################
 ################################################################################
-func enable_floating_tile_movement_by_asmr() -> void:
-	self._floating_tile_position_current = self.floating_tile_reference.transform.origin
-	self._floating_tile_position_requested = self._floating_tile_position_current
-	self._floating_tile_movement_by_asmr_allowed = true
-
-func disable_floating_tile_movement_by_asmr() -> void:
-	self._floating_tile_movement_by_asmr_allowed = false
-
-func request_floating_tile_movement(asmr : Vector2) -> void:
-	self._last_floating_tile_asmr = asmr
-	print(asmr)
-	self._move_floating_tile_by_action_strength(self._last_floating_tile_asmr)
-
-func move_floating_tile_to(index : int) -> void:
-	if index != self.INDEX_OUT_OF_BOUNDS: # ensures that tile does not move if cursor is over an area outside the allowed grid area
-		if self.floating_tile_reference != self:
-			var _grid_reference = self.tile_reference[index]["reference"]
-			var _grid_position_physical = _grid_reference.transform.origin
-			var _tmp_translation : Vector3 = Vector3(_grid_position_physical.x, FLOATING_TILE_DISTANCE_ABOVE_GRID, _grid_position_physical.z)
-			self.floating_tile_reference.set_global_translation(_tmp_translation) # translate to above the desired grid position
-			self.floating_tile_reference.grid_index = index			
-
 func create_floating_tile_at_index(index : int, tile_definition : Dictionary) -> void:
 	# create tile and add it to the scene tree
 	var _tile = BASE_TILE.instance()
-	add_child(_tile)
+	self._floatingCursor.add_child(_tile) # REMARK: Not very pretty/safe; might have to find another way
 
 	self.floating_tile_reference = _tile
 
@@ -341,7 +407,7 @@ func create_floating_tile_at_index(index : int, tile_definition : Dictionary) ->
 	# DESCRIPTION: Reset rotation according to rules if necessary, apply rotation and move to new position
 	self._manage_rotation_persistence()
 	self.floating_tile_reference.rotation_degrees = Vector3(0,self.floating_tile_rotation,0)
-	self.move_floating_tile_to(index)
+	self.move_floating_selector_to(index)
 
 func create_floating_tile(tile_definition : Dictionary) -> void:
 	self.create_floating_tile_at_index(self._last_index_within_grid_boundary, tile_definition) # Change
@@ -378,13 +444,6 @@ func rotate_floating_tile_clockwise() -> void:
 		self.floating_tile_rotation = self.floating_tile_rotation % 360
 		self.floating_tile_reference.rotation_degrees = Vector3(0,self.floating_tile_rotation,0)
 
-func move_floating_tile_to_and_highlight(next : int) -> void:
-	self.manage_highlighting_due_to_cursor()
-	self.move_floating_tile_to(next)
-
-func move_floating_tile_and_highlight() -> void:
-	self.move_floating_tile_to_and_highlight(self._current_grid_index)
-
 func replace_grid_object_at_index_with(index : int, replacement : Object, replacement_object_type : String) -> void:
 	var _grid_element : Object = self.tile_reference[index]["reference"]
 	var _grid_physical_position : Vector3 = _grid_element.transform.origin
@@ -398,12 +457,19 @@ func replace_grid_object_at_index_with(index : int, replacement : Object, replac
 	self.tile_reference[index]["reference"] = replacement
 	self.tile_reference[index]["type"] = replacement_object_type
 
+	# DESCRIPTION: Reparent replacement object to logicially conclusive parent
+	# soure: https://forum.godotengine.org/t/reparent-node-at-runtime/31124/4
+	var _old_parent : Object = replacement.get_parent()
+	var _new_parent : Object = _grid_element.get_parent()
+	_old_parent.remove_child(replacement)
+	_new_parent.add_child(replacement)
+
 	# DESCRIPTION: Remove old grid element
 	_grid_element.queue_free()
 
 func place_floating_tile_at_index(index : int) -> void:
 	# var _grid_element : Object = self.tile_reference[index]["reference"]
-	var _ft_starting_position : Vector3 = floating_tile_reference.transform.origin
+	var _ft_starting_position : Vector3 =  self._floatingCursor.transform.origin #self.floating_tile_reference.transform.origin
 	var _grid_physical_position : Vector3 = self.tile_reference[index]["reference"].transform.origin
 
 	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
@@ -452,26 +518,30 @@ func delete_tile() -> void:
 
 		# DESCRIPTION: Instantiate a placeholder object 
 		var _tile = PLACEHOLDER_TILE.instance()
-		add_child(_tile)
+		self._gridObjects.add_child(_tile)
 		_tile.initial_placeholder_configuration()
 
 		self.replace_grid_object_at_index_with(_tmp_index, _tile, "placeholder")
+		self.manage_highlighting_due_to_cursor()
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################	
-func _process(_delta : float) -> void:
-	if self._floating_tile_movement_by_asmr_allowed:
+# func _ready():
+# 	print(_floatingCursor)
 
-		if self._last_floating_tile_asmr != Vector2(0,0):
-			self._floating_tile_asmr += Vector2(abs(self._last_floating_tile_asmr.x), abs(self._last_floating_tile_asmr.y))
-			if (int(self._floating_tile_asmr.x) % 64 == 63) and (int(self._floating_tile_asmr.y) % 64 != 63):
-				self._move_floating_tile_by_action_strength(self._last_floating_tile_asmr)
-			elif (int(self._floating_tile_asmr.x) % 64 != 63) and (int(self._floating_tile_asmr.y) % 64 == 63):
-				self._move_floating_tile_by_action_strength(self._last_floating_tile_asmr)
-			elif (int(self._floating_tile_asmr.x) % 64 == 63) and (int(self._floating_tile_asmr.y) % 64 == 63):
-				self._move_floating_tile_by_action_strength(self._last_floating_tile_asmr)
+# func _process(_delta : float) -> void:
+# 	if self._floating_selector_movement_by_asmr_allowed:
+
+# 		if self._last_floating_selector_asmr != Vector2(0,0):
+# 			self._floating_selector_asmr += Vector2(abs(self._last_floating_selector_asmr.x), abs(self._last_floating_selector_asmr.y))
+# 			if (int(self._floating_selector_asmr.x) % 64 == 63) and (int(self._floating_selector_asmr.y) % 64 != 63):
+# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
+# 			elif (int(self._floating_selector_asmr.x) % 64 != 63) and (int(self._floating_selector_asmr.y) % 64 == 63):
+# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
+# 			elif (int(self._floating_selector_asmr.x) % 64 == 63) and (int(self._floating_selector_asmr.y) % 64 == 63):
+# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
 			
-		else:
-			self._floating_tile_asmr = Vector2(0,0)
+# 		else:
+# 			self._floating_selector_asmr = Vector2(0,0)
 			

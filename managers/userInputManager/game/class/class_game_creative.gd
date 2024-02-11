@@ -72,7 +72,7 @@ func _hide_gui(status : bool) -> void:
 			self._guiLayerReferences["hidden"].add_child(_instance)
 
 			# DESCRIPTION: Remove floating tile if existing
-			if self._managerReferences["hexGridManager"].floating_tile_reference != self._managerReferences["hexGridManager"]:
+			if self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
 				self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
 				self._managerReferences["hexGridManager"].delete_floating_tile()
@@ -89,7 +89,7 @@ func _hide_gui(status : bool) -> void:
 		self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
 		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date
 
-		if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
+		if self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 			var _tmp_tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(self._last_tile_definition_uuid)
 			self._managerReferences["hexGridManager"].create_floating_tile(_tmp_tile_definition)
 		
@@ -140,21 +140,21 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 			self._selectorOperationMode = "place"
 			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 
-			if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
+			if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				self._create_new_floating_tile()
 
 		if self._is_tile_action_mode_changed_to_replace(tce_signaling_uuid):
 			self._selectorOperationMode = "replace"
 			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 			
-			if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
+			if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				self._create_new_floating_tile()
 
 		if self._is_tile_action_mode_changed_to_pick(tce_signaling_uuid):
 			self._selectorOperationMode = "pick"
 			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 
-			if self._managerReferences["hexGridManager"].floating_tile_reference == self._managerReferences["hexGridManager"]:
+			if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				self._create_new_floating_tile()
 
 		if self._is_tile_action_mode_changed_to_delete(tce_signaling_uuid):
@@ -162,7 +162,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 			_creativeModeOverlay.deactivate_and_hide_tile_selector()
 
 			# remove floating tile if existing
-			if self._managerReferences["hexGridManager"].floating_tile_reference != self._managerReferences["hexGridManager"]:
+			if self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
 				self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
 				self._managerReferences["hexGridManager"].delete_floating_tile()
@@ -284,13 +284,20 @@ func _is_correct_context_for_deleting_tile(tce_signaling_uuid : String) -> bool:
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: TOOLS ###########################################
 ################################################################################
+# FUTURE: Make sure that this is only called in the appropriate Input Method modes
+# (mouse, touch?)
 func _manage_grid_to_gui_transition(tce_signaling_uuid : String, value : String) -> void:
 	if value == "entered":
 		self._currentGuiMouseContext = tce_signaling_uuid
 		self._managerReferences["cameraManager"].disable_zooming()
 		self._managerReferences["cameraManager"].disable_raycasting()
 	else:
-		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
+		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator 
+		if tce_signaling_uuid != "game::creative::gui::hud::selector::action":
+			self._currentGuiMouseContext += "grid"
+		else:
+			self._currentGuiMouseContext += "void"
+
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()
 

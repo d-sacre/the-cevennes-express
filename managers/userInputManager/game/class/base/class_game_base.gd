@@ -215,7 +215,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 				if UserInputManager._currentInputMethod.match("*mouse*"):
 					self._managerReferences["cameraManager"].request_movement(value)
 				else: # REMARK: Temporary solution; it would be better to outsource floating tile into own dedicated scene
-					self._managerReferences["hexGridManager"].request_floating_tile_movement(value)
+					self._managerReferences["hexGridManager"].request_floating_selector_movement(value)
 
 
 		if self._is_input_event_modifier(tce_signaling_uuid):
@@ -266,7 +266,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 
 					if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
 						audioManager.play_sfx(["game", "tile", "move"])
-						self._managerReferences["hexGridManager"].move_floating_tile_and_highlight()
+						self._managerReferences["hexGridManager"].move_floating_selector_and_highlight()
 	else:
 		pass
 		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing

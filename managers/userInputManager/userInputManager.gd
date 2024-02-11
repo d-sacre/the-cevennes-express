@@ -163,9 +163,9 @@ func set_current_input_method(method : String) -> void:
 	print("Current Input Method changed to ", self._currentInputMethod)
 
 	if method == "keyboard::only":
-		self._managerReferences["hexGridManager"].enable_floating_tile_movement_by_asmr()
+		self._managerReferences["hexGridManager"].enable_floating_selector_movement_by_asmr()
 	else:
-		self._managerReferences["hexGridManager"].disable_floating_tile_movement_by_asmr()
+		self._managerReferences["hexGridManager"].disable_floating_selector_movement_by_asmr()
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

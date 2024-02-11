@@ -41,7 +41,7 @@ var _error : int
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
-onready var hexGridManager : Object = $hexGridManager
+onready var hexGridManager : Object = $grid/hexGridManager
 onready var cameraManager : Object = $cameraManager
 onready var tileDefinitionManager : Object = $tileDefinitionManager
 onready var cppBridge : Object = $cppBridge
