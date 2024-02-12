@@ -77,7 +77,7 @@ func can_tile_be_placed_here(grid_index : int, tile_definition_uuid : String, ro
 	return _is_placeable
 
 # REMARK: Currently just placeholder (until C++ Backend is updated)
-func replace_tile_at_index_with(grid_index : int, tduuid : String) -> void:
+func replace_tile_at_index_with(grid_index : int, tduuid : String, rotation : int) -> void:
 	var _index2D = self._convert_1D_index_to_2D(grid_index)
 	print("cppBridge: Replace tile function not yet implemented in C++ Backend")
 

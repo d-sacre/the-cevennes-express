@@ -89,7 +89,7 @@ func _hide_gui(status : bool) -> void:
 		self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
 		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date
 
-		if self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
+		if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 			var _tmp_tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(self._last_tile_definition_uuid)
 			self._managerReferences["hexGridManager"].create_floating_tile(_tmp_tile_definition)
 		
@@ -307,12 +307,12 @@ func replace_tile() -> void:
 		var _is_placeable : bool = false
 		
 		if _floating_tile_status.has("TILE_DEFINITION_UUID"): # required to prevent issues when no floating tile exists
-			_is_placeable = self._managerReferences["hexGridManager"].tile_reference[self._managerReferences["hexGridManager"].get_current_grid_index()]["type"] != "placeholder"
+			_is_placeable = not self._managerReferences["hexGridManager"].is_current_grid_element_placeholder() #(self._managerReferences["hexGridManager"].get_current_grid_element_information())["type"] != "placeholder"
 
 		if _is_placeable:
 			var _tmp_tduuid : String = _floating_tile_status["TILE_DEFINITION_UUID"]
 			var _tmp_index : int = self._managerReferences["hexGridManager"].get_current_grid_index()
-			self._managerReferences["cppBridge"].replace_tile_at_index_with(_tmp_index, _tmp_tduuid) # DESCRIPTION: Pass change of tile definition to C++ Backend
+			self._managerReferences["cppBridge"].replace_tile_at_index_with(_tmp_index, _tmp_tduuid, _floating_tile_status["rotation"]) # DESCRIPTION: Pass change of tile definition to C++ Backend
 			self._managerReferences["hexGridManager"].replace_tile()
 			audioManager.play_sfx(["game", "tile", "success"])
 

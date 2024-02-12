@@ -32,7 +32,7 @@ script = ExtResource( 4 )
 
 [node name="floatingCursor" parent="grid" instance=ExtResource( 12 )]
 
-[node name="tiles" type="Node" parent="grid"]
+[node name="objects" type="Node" parent="grid"]
 
 [node name="lightingSetup" type="Node" parent="."]
 

@@ -35,3 +35,21 @@ func request_movement_by_action_strength(asmr: Vector2) -> void:
 
 func request_new_position(position : Vector3) -> void:
 	self._position_requested = position
+
+func force_move_to(position : Vector3) -> void:
+	self.set_global_translation(position)
+
+# func _process(_delta : float) -> void:
+# 	if self._floating_selector_movement_by_asmr_allowed:
+
+# 		if self._last_floating_selector_asmr != Vector2(0,0):
+# 			self._floating_selector_asmr += Vector2(abs(self._last_floating_selector_asmr.x), abs(self._last_floating_selector_asmr.y))
+# 			if (int(self._floating_selector_asmr.x) % 64 == 63) and (int(self._floating_selector_asmr.y) % 64 != 63):
+# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
+# 			elif (int(self._floating_selector_asmr.x) % 64 != 63) and (int(self._floating_selector_asmr.y) % 64 == 63):
+# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
+# 			elif (int(self._floating_selector_asmr.x) % 64 == 63) and (int(self._floating_selector_asmr.y) % 64 == 63):
+# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
+			
+# 		else:
+# 			self._floating_selector_asmr = Vector2(0,0)

@@ -1,4 +1,4 @@
-tool
+# tool
 extends Spatial
 
 ################################################################################
@@ -38,26 +38,21 @@ const _rotation_persistence_defaults : Dictionary = {
 
 ################################################################################
 ################################################################################
-#### PUBLIC MEMBER VARIABLES ###################################################
-################################################################################
-################################################################################
-var tile_reference : Array = []
-var floating_tile_reference = self # REMARK: Always needs a reference, even when no floating tile
-var floating_tile_rotation : int = 0 # REMARK: Angle in degree, but only allowing 60° increments!
-
-################################################################################
-################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 ################################################################################
 var _hex_grid_size_x : int = 10
 var _hex_grid_size_y : int = 10
 
+var _gridReferenceArray : Array = []
+
 var _current_grid_index : int = self.INDEX_OUT_OF_BOUNDS
 var _last_grid_index : int = self.INDEX_OUT_OF_BOUNDS
 var _last_index_within_grid_boundary : int = 0
 var _last_index_within_grid_boundary_highlight : int = 0
 
+var _floatingTileReference = self # REMARK: Always needs a reference, even when no floating tile
+var _floatingTileRotation : int = 0 # REMARK: Angle in degree, but only allowing 60° increments!
 var _lastTileDefinitionUuid : String = ""
 
 # FUTURE: Add more contexts, allow for highlight intensity modulation/mixing with
@@ -74,20 +69,15 @@ var _rotation_persistence : Dictionary = {
 	"mode": "always" # Available Options: "always", "type"
 }
 
-# REMARK: Should be outsourced with complete floating tile logic into own scene
-## var _floating_tile_position_current : Vector3 = Vector3(0,0,0)
-## var _floating_tile_position_requested : Vector3 = Vector3(0,0,0)
-# var _floating_selector_movement_by_asmr_allowed : bool = true
-# var _floating_selector_asmr : Vector2 = Vector2(0,0)
-# var _last_floating_selector_asmr : Vector2 = Vector2(0,0)
-
 var _managerReferences : Dictionary = {}
 
 ################################################################################
+################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
+################################################################################
 onready var _floatingCursor : Spatial = get_parent().get_node("floatingCursor")
-onready var _gridObjects : Node = get_parent().get_parent().find_node("tiles")
+onready var _gridObjects : Node = get_parent().get_parent().find_node("objects")
 
 ################################################################################
 ################################################################################
@@ -96,85 +86,20 @@ onready var _gridObjects : Node = get_parent().get_parent().find_node("tiles")
 ################################################################################
 func _manage_rotation_persistence() -> void:
 	if not self._rotation_persistence["persistence"]:
-		self.floating_tile_rotation = 0
+		self._floatingTileRotation = 0
 	else:
 		if str(self._rotation_persistence["mode"]) == "always":
 			pass
 		elif str(self._rotation_persistence["mode"]) == "type":
-			if self.floating_tile_reference != self: # REMARK: Safety
-				if self._lastTileDefinitionUuid == self.floating_tile_reference.tile_definition_uuid:
+			if self.is_floating_tile_reference_valid(): # REMARK: Safety
+				if self._lastTileDefinitionUuid == self._floatingTileReference.tile_definition_uuid:
 					pass
 				else:
-					self.floating_tile_rotation = 0
-					self._lastTileDefinitionUuid = self.floating_tile_reference.tile_definition_uuid
+					self._floatingTileRotation = 0
+					self._lastTileDefinitionUuid = self._floatingTileReference.tile_definition_uuid
 			else:
-				self.floating_tile_rotation = 0
+				self._floatingTileRotation = 0
 				print("Error: Floating Tile does not exist")
-
-# func _move_floating_selector_by_action_strength(asmr : Vector2) -> void:
-# 	var _tmp_current_index : int 
-
-# 	if asmr != Vector2(0,0):
-# 		if not self.is_current_grid_index_out_of_bounds():
-# 			_tmp_current_index = self._current_grid_index
-# 		else:
-# 			_tmp_current_index = self._last_index_within_grid_boundary
-
-# 		var _tmp_index2D : Vector2 = self._managerReferences["cppBridge"]._convert_1D_index_to_2D(_tmp_current_index)
-# 		_tmp_index2D += asmr
-# 		var _tmp_index1D : int = self._managerReferences["cppBridge"]._convert_2D_index_to_1D(_tmp_index2D)
-
-# 		# DESCRIPTION: Check whether new index is valid
-# 		# REMARK: Simplified case for a "square" grid; must be generalized!
-# 		if _tmp_index1D <= self._hex_grid_size_x * self._hex_grid_size_y - 1: # DESCRIPTION: To prevent exceeding boundaries at the top
-# 			if _tmp_index1D >= 0: # DESCRIPTION: To prevent exceeding boundaries at the bottom
-# 				if _tmp_index1D != self._current_grid_index:
-# 					# DESCRIPTION: To prevent jumping from one edge of the grid to the other
-# 					if not ((int(_tmp_index2D.x) == self._hex_grid_size_x) or (int(_tmp_index2D.x) == -1)):
-# 						self.set_last_grid_index_to_current()
-# 						self.set_current_grid_index(_tmp_index1D)
-# 						self._last_index_within_grid_boundary = _tmp_index1D
-
-# 						var _tmp_camera_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
-# 						var _camera_offset : Vector3 = self._managerReferences["cameraManager"].CAMERA_POSITION_DEFAULT
-
-# 						_tmp_camera_target_position.y += _camera_offset.y
-# 						_tmp_camera_target_position.z += _camera_offset.z
-
-# 						self._managerReferences["cameraManager"].request_new_position(_tmp_camera_target_position)
-
-# 						if self.floating_tile_reference != self:
-# 							self.move_floating_selector_and_highlight()
-
-func calculate_new_floating_selector_postion_by_action_strength(asmr : Vector2) -> Vector3:
-	var _tmp_current_index : int 
-
-	if asmr != Vector2(0,0):
-		if not self.is_current_grid_index_out_of_bounds():
-			_tmp_current_index = self._current_grid_index
-		else:
-			_tmp_current_index = self._last_index_within_grid_boundary
-
-		var _tmp_index2D : Vector2 = self._managerReferences["cppBridge"]._convert_1D_index_to_2D(_tmp_current_index)
-		_tmp_index2D += asmr
-		var _tmp_index1D : int = self._managerReferences["cppBridge"]._convert_2D_index_to_1D(_tmp_index2D)
-
-		# DESCRIPTION: Check whether new index is valid
-		# REMARK: Simplified case for a "square" grid; must be generalized!
-		if _tmp_index1D <= self._hex_grid_size_x * self._hex_grid_size_y - 1: # DESCRIPTION: To prevent exceeding boundaries at the top
-			if _tmp_index1D >= 0: # DESCRIPTION: To prevent exceeding boundaries at the bottom
-				if _tmp_index1D != self._current_grid_index:
-					# DESCRIPTION: To prevent jumping from one edge of the grid to the other
-					if not ((int(_tmp_index2D.x) == self._hex_grid_size_x) or (int(_tmp_index2D.x) == -1)):
-						self.set_last_grid_index_to_current()
-						self.set_current_grid_index(_tmp_index1D)
-						self._last_index_within_grid_boundary = _tmp_index1D
-
-						var _tmp_floating_selector_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
-						
-						return _tmp_floating_selector_target_position
-
-	return Vector3.INF
 
 ################################################################################
 ################################################################################
@@ -206,7 +131,7 @@ func generate_grid(x : int, y : int) -> void:
 
 		var _tile = PLACEHOLDER_TILE.instance()
 		self._gridObjects.add_child(_tile) # REMARK: Not very pretty/safe; might have to find another way
-		self.tile_reference.append({"type": "placeholder", "reference": _tile})
+		self._gridReferenceArray.append({"type": "placeholder", "reference": _tile})
 		_tile.translate(Vector3(_tile_coordinates.x, 0, _tile_coordinates.y))
 		_tile.initial_placeholder_configuration()
 		_tile.grid_index = _grid_index
@@ -232,6 +157,12 @@ func set_last_index_within_grid_boundary(value : int) -> void:
 func get_last_index_within_grid_boundary() -> int:
 	return self._last_index_within_grid_boundary
 
+func set_last_index_within_grid_boundary_highlight(value : int):
+	self._last_index_within_grid_boundary_highlight = value
+
+func get_last_index_within_grid_boundary_highlight() -> int:
+	return self._last_index_within_grid_boundary_highlight
+
 func set_current_and_last_grid_index(current : int, last : int) -> void:
 	self.set_current_grid_index(current)
 	self.set_last_grid_index(last)
@@ -247,13 +178,27 @@ func set_last_index_within_grid_boundary_to_current() -> void:
 func set_current_grid_index_out_of_bounds() -> void:
 	self.set_current_grid_index(self.INDEX_OUT_OF_BOUNDS)
 
-func get_current_grid_element_information() -> Dictionary:
-	var _return : Dictionary = {}
+func set_last_grid_index_within_boundary_highlight_to_last_grid_index_within_boundary() -> void:
+	self.set_last_index_within_grid_boundary_highlight(self.get_last_index_within_grid_boundary())
 
-	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
-		_return = self.tile_reference[self._current_grid_index]
+func set_grid_element_information_at_index(index : int, type : String, ref : Object) -> void:
+	if not self.is_index_out_of_bounds(index):
+		self._gridReferenceArray[index]["type"] = type
+		self._gridReferenceArray[index]["reference"] = ref
+
+func get_grid_element_information_from_index(index : int) -> Dictionary:
+	var _return : Dictionary = {}
+	
+	if not self.is_index_out_of_bounds(index):
+		_return = self._gridReferenceArray[index]
 
 	return _return
+
+func get_grid_element_reference_from_index(index : int) -> Spatial:
+	return (self.get_grid_element_information_from_index(index))["reference"]
+
+func get_current_grid_element_information() -> Dictionary:
+	return get_grid_element_information_from_index(self.get_current_grid_index())
 
 # FUTURE: Needs to be extended to accept more parameters and not necessarily a fixed amount!
 func set_highlight_persistence(mode : String, status : bool) -> void: 
@@ -269,17 +214,44 @@ func set_rotation_persistence(status : bool, mode : String) -> void:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: BOOL EXPRESSIONS #################################
 ################################################################################
+func is_index_out_of_bounds(index : int) -> bool:
+	return index == self.INDEX_OUT_OF_BOUNDS
+
 func is_last_grid_index_equal_current() -> bool:
-	return self._current_grid_index == self._last_grid_index
+	return self.get_current_grid_index() == self.get_last_grid_index()
 
 func is_current_grid_index_out_of_bounds() -> bool:
-	return self._current_grid_index == self.INDEX_OUT_OF_BOUNDS
+	return self.is_index_out_of_bounds(self.get_current_grid_index())
+
+func is_last_grid_index_equal_last_grid_index_within_boundary_highlight() -> bool:
+	return self.get_last_grid_index() == self.get_last_index_within_grid_boundary_highlight()
+
+func is_last_grid_index_out_of_bounds() -> bool:
+	return self.is_index_out_of_bounds(self.get_last_grid_index())
+
+func is_last_index_within_grid_boundary_equal_current_grid_index() -> bool: 
+	return self.get_last_index_within_grid_boundary() == self.get_current_grid_index()
+
+func is_last_index_within_grid_boundary_highlight_equal_last_index_within_grid_boundary() -> bool: 
+	return self.get_last_index_within_grid_boundary_highlight() == self.get_last_index_within_grid_boundary()
+
+func is_last_index_within_grid_boundary_highlight_equal_current_index() -> bool:
+	return self.get_last_index_within_grid_boundary_highlight() == self.get_current_grid_index()
+
+func is_grid_element_type_at_index_equal(index : int, type : String) -> bool:
+	return (self.get_grid_element_information_from_index(index))["type"] == type
+
+func is_grid_element_type_tile_at_index(index):
+	return self.is_grid_element_type_at_index_equal(index, "tile")
+
+func is_current_grid_element_placeholder() -> bool:
+	return (self.get_current_grid_element_information())["type"] == "placeholder"
 
 func is_highlight_persistence_void() -> bool:
 	return self._highlight_persistence["void"]["persistence"]
 
 func is_floating_tile_reference_valid() -> bool:
-	if self.floating_tile_reference != self:
+	if self._floatingTileReference != self:
 		return true
 
 	return false
@@ -288,72 +260,59 @@ func is_floating_tile_reference_valid() -> bool:
 #### PUBLIC MEMBER FUNCTIONS: GRID CELL HIGHLIGHTING ###########################
 ################################################################################
 func set_single_grid_cell_highlight(index : int, highlight_status : bool) -> void:
-	var _tile = self.tile_reference[index]["reference"]
+	var _tile = self.get_grid_element_reference_from_index(index)
 	_tile.highlight = highlight_status
 	_tile.change_material = true
 
 # REMARK: Requires more logic to not interfer with chain highlighting set by the logic
 func manage_highlighting_due_to_cursor() -> void:
-	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
-		self.set_single_grid_cell_highlight(self._current_grid_index, true)
+	if not self.is_current_grid_index_out_of_bounds():
+		self.set_single_grid_cell_highlight(self.get_current_grid_index(), true)
 
-	if self._last_grid_index != self.INDEX_OUT_OF_BOUNDS: # REMARK: This on its own erases the highlight of the last cursor position when cursor in void -> undesirable behavior if floating tile!
+	if not self.is_last_grid_index_out_of_bounds(): # REMARK: This on its own erases the highlight of the last cursor position when cursor in void -> undesirable behavior if floating tile!
 		# REMARK: Approach a bit hacky and unflexible for potential changes in the future
 		if self.is_highlight_persistence_void(): # DESCRIPTION: When highlight persistence enabled, use last valid position for cursor highlight
-			if self._last_index_within_grid_boundary != self.get_current_grid_index(): # DESCRIPTION: When the last valid grid position is not identical to the current one
+			if not self.is_last_index_within_grid_boundary_equal_current_grid_index():  # DESCRIPTION: When the last valid grid position is not identical to the current one
 				# DESCRIPTION: Copy the last index within grid boundaries to a storage variable and highlight
 				# the tile at the corresponding position
-				self._last_index_within_grid_boundary_highlight = self._last_index_within_grid_boundary 
-				self.set_single_grid_cell_highlight(self._last_index_within_grid_boundary_highlight, true)
+				self.set_last_grid_index_within_boundary_highlight_to_last_grid_index_within_boundary()
+				self.set_single_grid_cell_highlight(self.get_last_index_within_grid_boundary_highlight(), true)
 			else: # DESCRIPTION: If the last valid index within grid boundaries is identical to the current grid position
 				# DESCRIPTION: If the highlighted cell is not identical with the currently valid last index within the boundaries,
 				# than remove the highlight
-				if self._last_index_within_grid_boundary_highlight != self._last_index_within_grid_boundary:
-					self.set_single_grid_cell_highlight(self._last_index_within_grid_boundary_highlight, false)
+				if not self.is_last_index_within_grid_boundary_highlight_equal_last_index_within_grid_boundary():
+					self.set_single_grid_cell_highlight(self.get_last_index_within_grid_boundary_highlight(), false)
 			
 			# DESCRIPTION: If last grid index is not identical to last index within grid boundaries,
 			# than remove the highlight of the tile at last index to prevent leaving tiles highlighted
 			# which should not be
-			if self._last_grid_index != self._last_index_within_grid_boundary_highlight:
-				self.set_single_grid_cell_highlight(self._last_grid_index, false)
+			if not self.is_last_grid_index_equal_last_grid_index_within_boundary_highlight():
+				self.set_single_grid_cell_highlight(self.get_last_grid_index(), false)
 		
 		else:
-			self.set_single_grid_cell_highlight(self._last_grid_index, false)
+			self.set_single_grid_cell_highlight(self.get_last_grid_index(), false)
 	else:
 		if self.is_highlight_persistence_void(): # DESCRIPTION: When highlight persistence avtivated
 			# DESCRIPTION: User did not move the cursor to the last highlighted tile
-			if self._last_index_within_grid_boundary_highlight != self.get_current_grid_index():
-				self.set_single_grid_cell_highlight(self._last_index_within_grid_boundary_highlight, false)
+			if not self.is_last_index_within_grid_boundary_highlight_equal_current_index():
+				self.set_single_grid_cell_highlight(self.get_last_index_within_grid_boundary_highlight(), false)
 
 func set_status_placeholder_at_index(index : int, _possible : bool, _impossible : bool) -> void: # needs more arguments in the future to pass status
-	var _tile = self.tile_reference[index]["reference"]
+	var _tile = self.get_grid_element_reference_from_index(index)
 
 	# only temporary to test possible/impossible texture change
-	if self.tile_reference[index]["type"] == "placeholder":
+	if self.is_grid_element_type_at_index_equal(index, "placeholder"):
 		_tile.placement_possible = _possible
 		_tile.placement_impossible = _impossible
 	
 	_tile.change_material = true
 
 func set_status_placeholder(_possible : bool, _impossible : bool) -> void:
-	self.set_status_placeholder_at_index(self._current_grid_index, _possible, _impossible)
+	self.set_status_placeholder_at_index(self.get_current_grid_index(), _possible, _impossible)
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: FLOATING SELECTOR ################################
 ################################################################################
-# func enable_floating_selector_movement_by_asmr() -> void:
-# 	# self._floating_tile_position_current = self.floating_tile_reference.transform.origin
-# 	# self._floating_tile_position_requested = self._floating_tile_position_current
-# 	self._floating_selector_movement_by_asmr_allowed = true
-
-# func disable_floating_selector_movement_by_asmr() -> void:
-# 	self._floating_selector_movement_by_asmr_allowed = false
-
-# func request_floating_selector_movement(asmr : Vector2) -> void:
-# 	self._last_floating_selector_asmr = asmr
-# 	print(asmr)
-# 	self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
-
 func enable_floating_selector_movement_by_asmr() -> void:
 	self._floatingCursor.enable_movement_by_asmr()
 
@@ -363,39 +322,64 @@ func disable_floating_selector_movement_by_asmr() -> void:
 func request_floating_selector_movement(asmr : Vector2) -> void:
 	self._floatingCursor.request_movement_by_action_strength(asmr)
 
+func calculate_new_floating_selector_postion_by_action_strength(asmr : Vector2) -> Vector3:
+	var _tmp_current_index : int 
+
+	if asmr != Vector2(0,0):
+		if not self.is_current_grid_index_out_of_bounds():
+			_tmp_current_index = self.get_current_grid_index()
+		else:
+			_tmp_current_index = self.get_last_index_within_grid_boundary()
+
+		var _tmp_index2D : Vector2 = self._managerReferences["cppBridge"]._convert_1D_index_to_2D(_tmp_current_index)
+		_tmp_index2D += asmr
+		var _tmp_index1D : int = self._managerReferences["cppBridge"]._convert_2D_index_to_1D(_tmp_index2D)
+
+		# DESCRIPTION: Check whether new index is valid
+		# REMARK: Simplified case for a "square" grid; must be generalized!
+		if _tmp_index1D <= self._hex_grid_size_x * self._hex_grid_size_y - 1: # DESCRIPTION: To prevent exceeding boundaries at the top
+			if _tmp_index1D >= 0: # DESCRIPTION: To prevent exceeding boundaries at the bottom
+				if _tmp_index1D != self.get_current_grid_index():
+					# DESCRIPTION: To prevent jumping from one edge of the grid to the other
+					if not ((int(_tmp_index2D.x) == self._hex_grid_size_x) or (int(_tmp_index2D.x) == -1)):
+						self.set_last_grid_index_to_current()
+						self.set_current_grid_index(_tmp_index1D)
+						self.set_last_index_within_grid_boundary(_tmp_index1D)
+
+						var _tmp_floating_selector_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
+						
+						return _tmp_floating_selector_target_position
+
+	return Vector3.INF
+
 func request_floating_selector_position(position : Vector3) -> void:
 	self._floatingCursor.request_new_position(position)
 
 func move_floating_selector_to(index : int) -> void:
-	if index != self.INDEX_OUT_OF_BOUNDS: # ensures that tile does not move if cursor is over an area outside the allowed grid area
-		var _grid_reference = self.tile_reference[index]["reference"]
+	if not self.is_index_out_of_bounds(index): # ensures that tile does not move if cursor is over an area outside the allowed grid area
+		var _grid_reference = self.get_grid_element_reference_from_index(index)
 		var _grid_position_physical = _grid_reference.transform.origin
-		self._floatingCursor.set_global_translation(_grid_position_physical)
+		self._floatingCursor.force_move_to(_grid_position_physical)
 		
-		if self.floating_tile_reference != self:
-			# var _grid_reference = self.tile_reference[index]["reference"]
-			# var _grid_position_physical = _grid_reference.transform.origin
-			# var _tmp_translation : Vector3 = Vector3(_grid_position_physical.x, FLOATING_TILE_DISTANCE_ABOVE_GRID, _grid_position_physical.z)
-			# self.floating_tile_reference.set_global_translation(_tmp_translation) # translate to above the desired grid position
-			self.floating_tile_reference.grid_index = index		
-			self.floating_tile_reference.transform.origin = Vector3(0, self.FLOATING_TILE_DISTANCE_ABOVE_GRID,0)
+		if self.is_floating_tile_reference_valid():
+			self._floatingTileReference.grid_index = index		
+			self._floatingTileReference.transform.origin = Vector3(0, self.FLOATING_TILE_DISTANCE_ABOVE_GRID,0)
 
 func move_floating_selector_to_and_highlight(next : int) -> void:
 	self.manage_highlighting_due_to_cursor()
 	self.move_floating_selector_to(next)
 
 func move_floating_selector_and_highlight() -> void:
-	self.move_floating_selector_to_and_highlight(self._current_grid_index)
+	self.move_floating_selector_to_and_highlight(self.get_current_grid_index())
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: FLOATING TILE ####################################
 ################################################################################
 func create_floating_tile_at_index(index : int, tile_definition : Dictionary) -> void:
-	# create tile and add it to the scene tree
+	# DESCRIPTION: Instance tile, add it to the scene tree and update reference
 	var _tile = BASE_TILE.instance()
-	self._floatingCursor.add_child(_tile) # REMARK: Not very pretty/safe; might have to find another way
-
-	self.floating_tile_reference = _tile
+	self._floatingCursor.add_child(_tile)
+	self._floatingTileReference = _tile
 
 	# DESCRIPTION: Configure the tile
 	_tile.initial_tile_configuration(tile_definition)
@@ -406,7 +390,7 @@ func create_floating_tile_at_index(index : int, tile_definition : Dictionary) ->
 
 	# DESCRIPTION: Reset rotation according to rules if necessary, apply rotation and move to new position
 	self._manage_rotation_persistence()
-	self.floating_tile_reference.rotation_degrees = Vector3(0,self.floating_tile_rotation,0)
+	self._floatingTileReference.rotation_degrees = Vector3(0,self._floatingTileRotation,0)
 	self.move_floating_selector_to(index)
 
 func create_floating_tile(tile_definition : Dictionary) -> void:
@@ -415,37 +399,37 @@ func create_floating_tile(tile_definition : Dictionary) -> void:
 func get_floating_tile_definition_uuid_and_rotation() -> Dictionary:
 	var _tmp_uuid_and_rotation : Dictionary = {}
 
-	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
-		_tmp_uuid_and_rotation["TILE_DEFINITION_UUID"] = self.floating_tile_reference.tile_definition_uuid
-		var _floating_tile_rotation : int = self.floating_tile_reference.get_rotation_degrees().y
-		_tmp_uuid_and_rotation["rotation"] = _floating_tile_rotation
+	if self.is_floating_tile_reference_valid(): # REMARK: Safety to prevent issues when no floating tile exists
+		_tmp_uuid_and_rotation["TILE_DEFINITION_UUID"] = self._floatingTileReference.tile_definition_uuid
+		var _tmp_floating_tile_rotation : int = self._floatingTileReference.get_rotation_degrees().y
+		_tmp_uuid_and_rotation["rotation"] = _tmp_floating_tile_rotation
 	
 	return _tmp_uuid_and_rotation
 
 func delete_floating_tile() -> void:
-	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
+	if self.is_floating_tile_reference_valid(): # REMARK: Safety to prevent issues when no floating tile exists
 		# DESCRIPTION: Reset rotation according to rules if necessary;
 		# REMARK: Has to be called before floating tile is queued free (will not work otherwise)
 		self._manage_rotation_persistence()
 
 		# DESCRIPTION: Delete the floating tile and reset the reference variable
-		self.floating_tile_reference.queue_free()
-		self.floating_tile_reference = self
+		self._floatingTileReference.queue_free()
+		self._floatingTileReference = self
 
 func change_floating_tile_type(tile_definition : Dictionary) -> void:
-	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
-		var _index = self.floating_tile_reference.grid_index
+	if self.is_floating_tile_reference_valid(): # REMARK: Safety to prevent issues when no floating tile exists
+		var _index = self._floatingTileReference.grid_index
 		self.delete_floating_tile()
 		self.create_floating_tile_at_index(_index, tile_definition) # REMARK: Seems to be the fix for "placement and removal of floating tile at index 0 when new tile definition is selected" bug
 			
 func rotate_floating_tile_clockwise() -> void:
-	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
-		self.floating_tile_rotation -= 60
-		self.floating_tile_rotation = self.floating_tile_rotation % 360
-		self.floating_tile_reference.rotation_degrees = Vector3(0,self.floating_tile_rotation,0)
+	if self.is_floating_tile_reference_valid(): # REMARK: Safety to prevent issues when no floating tile exists
+		self._floatingTileRotation -= 60
+		self._floatingTileRotation = self._floatingTileRotation % 360
+		self._floatingTileReference.rotation_degrees = Vector3(0,self._floatingTileRotation,0)
 
 func replace_grid_object_at_index_with(index : int, replacement : Object, replacement_object_type : String) -> void:
-	var _grid_element : Object = self.tile_reference[index]["reference"]
+	var _grid_element : Object = self.get_grid_element_reference_from_index(index)
 	var _grid_physical_position : Vector3 = _grid_element.transform.origin
 
 	# DESCRIPTION: Set replacement object grid index and physically place it on grid layer 
@@ -454,8 +438,7 @@ func replace_grid_object_at_index_with(index : int, replacement : Object, replac
 	replacement.transform.origin = _grid_physical_position 
 
 	# DESCRIPTION: Replace reference and type with new data
-	self.tile_reference[index]["reference"] = replacement
-	self.tile_reference[index]["type"] = replacement_object_type
+	self.set_grid_element_information_at_index(index, replacement_object_type, replacement)
 
 	# DESCRIPTION: Reparent replacement object to logicially conclusive parent
 	# soure: https://forum.godotengine.org/t/reparent-node-at-runtime/31124/4
@@ -468,80 +451,54 @@ func replace_grid_object_at_index_with(index : int, replacement : Object, replac
 	_grid_element.queue_free()
 
 func place_floating_tile_at_index(index : int) -> void:
-	# var _grid_element : Object = self.tile_reference[index]["reference"]
-	var _ft_starting_position : Vector3 =  self._floatingCursor.transform.origin #self.floating_tile_reference.transform.origin
-	var _grid_physical_position : Vector3 = self.tile_reference[index]["reference"].transform.origin
+	var _ft_starting_position : Vector3 =  self._floatingCursor.transform.origin 
+	var _grid_physical_position : Vector3 = self.get_grid_element_reference_from_index(index).transform.origin
 
-	if self.floating_tile_reference != self: # REMARK: Safety to prevent issues when no floating tile exists
+	if self.is_floating_tile_reference_valid(): # REMARK: Safety to prevent issues when no floating tile exists
 		# for safety: check whether floating tile is still at the correct position
 		if (_ft_starting_position.x == _grid_physical_position.x) and (_ft_starting_position.z == _grid_physical_position.z):
-			self.replace_grid_object_at_index_with(index, self.floating_tile_reference, "tile")
+			self.replace_grid_object_at_index_with(index, self._floatingTileReference, "tile")
 
 			# Description: Collision needs to be switched on again on all child elements, 
 			# otherwise the raycast will not detect the placed tile; 
 			# includes all the assets that will be placed on the tile!
 			# TO-DO: Write for loop to obtain all collision objects and re-enable them
-			self.floating_tile_reference.get_node("hexCollider/CollisionShape2").disabled = false
+			self._floatingTileReference.get_node("hexCollider/CollisionShape2").disabled = false
 
 			# DESCRIPTION: Reset rotation according to rules if necessary and free the floating tile reference
 			# REMARK: has to be called before floating tile is queued free (will not work otherwise)
 			self._manage_rotation_persistence()
-			self.floating_tile_reference = self # clear the floating tile reference
+			self._floatingTileReference = self # clear the floating tile reference
 
 func place_floating_tile() -> void:
-	if self._current_grid_index != self.INDEX_OUT_OF_BOUNDS:
-		self.place_floating_tile_at_index(self._current_grid_index)
+	if not self.is_current_grid_index_out_of_bounds():
+		self.place_floating_tile_at_index(self.get_current_grid_index())
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: PLACED TILE MANIPULATION #########################
 ################################################################################
 func replace_tile() -> void:
-	var _tmp_index : int = self.get_current_grid_index()
-	if  _tmp_index != self.INDEX_OUT_OF_BOUNDS:
+	if  not self.is_current_grid_index_out_of_bounds(): 
 		self.place_floating_tile()
 
-func get_tile_definition_uuid_from_tile_at_grid_index(index: int) -> String:
+func get_tile_definition_uuid_from_tile_at_index(index: int) -> String:
 	var _tmp_string : String = ""
 
-	if index != self.INDEX_OUT_OF_BOUNDS:
-		if self.tile_reference[index]["type"] == "tile":
-			_tmp_string = self.tile_reference[index]["reference"].tile_definition_uuid
+	if not self.is_index_out_of_bounds(index):
+		if self.is_grid_element_type_tile_at_index(index):
+			_tmp_string = self.get_grid_element_reference_from_index(index).tile_definition_uuid
 
 	return _tmp_string
 
 func get_tile_definition_uuid_from_current_grid_index() -> String:
-	return self.get_tile_definition_uuid_from_tile_at_grid_index(self._current_grid_index)
+	return self.get_tile_definition_uuid_from_tile_at_index(self.get_current_grid_index())
 
 func delete_tile() -> void:
-	var _tmp_index : int = self.get_current_grid_index()
-	if  _tmp_index != self.INDEX_OUT_OF_BOUNDS:
-
+	if not self.is_current_grid_index_out_of_bounds():
 		# DESCRIPTION: Instantiate a placeholder object 
 		var _tile = PLACEHOLDER_TILE.instance()
 		self._gridObjects.add_child(_tile)
 		_tile.initial_placeholder_configuration()
 
-		self.replace_grid_object_at_index_with(_tmp_index, _tile, "placeholder")
+		self.replace_grid_object_at_index_with(self.get_current_grid_index(), _tile, "placeholder")
 		self.manage_highlighting_due_to_cursor()
-
-################################################################################
-#### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
-################################################################################	
-# func _ready():
-# 	print(_floatingCursor)
-
-# func _process(_delta : float) -> void:
-# 	if self._floating_selector_movement_by_asmr_allowed:
-
-# 		if self._last_floating_selector_asmr != Vector2(0,0):
-# 			self._floating_selector_asmr += Vector2(abs(self._last_floating_selector_asmr.x), abs(self._last_floating_selector_asmr.y))
-# 			if (int(self._floating_selector_asmr.x) % 64 == 63) and (int(self._floating_selector_asmr.y) % 64 != 63):
-# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
-# 			elif (int(self._floating_selector_asmr.x) % 64 != 63) and (int(self._floating_selector_asmr.y) % 64 == 63):
-# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
-# 			elif (int(self._floating_selector_asmr.x) % 64 == 63) and (int(self._floating_selector_asmr.y) % 64 == 63):
-# 				self._move_floating_selector_by_action_strength(self._last_floating_selector_asmr)
-			
-# 		else:
-# 			self._floating_selector_asmr = Vector2(0,0)
-			
