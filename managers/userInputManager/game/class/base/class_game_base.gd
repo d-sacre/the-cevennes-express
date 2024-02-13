@@ -189,28 +189,39 @@ func _create_new_floating_tile() -> void:
 func _camera_zooming_handler(operation: String, signalStatus : String) -> void:
 	var _tmp_function_name : String = ""
 
+	# DESCRIPTION: Determine by the operation name which cameraManager function name
+	# has to be called
 	if operation == "decrement":
 		_tmp_function_name = "request_zoom_out"
 	elif operation == "increment":
 		_tmp_function_name = "request_zoom_in"
 
 	if signalStatus is String:
-		if _tmp_function_name != "":
+		if _tmp_function_name != "": # DESCRIPTION: Safety to ensure that the logic continues only when valid function name is given
+			# DESCRIPTION: If the previous Input Status is not undefined 
 			if self._deInCrementStatus != "NONE":
-				if signalStatus == "just_released" and self._deInCrementStatus == "pressed":
+				# DESCRIPTION: If the Input had been previously in the "pressed" state and is
+				# now "just_released" -> remove "pressed" status and disable asr zooming
+				if self._deInCrementStatus == "pressed" and signalStatus == "just_released":
 					self._deInCrementStatus = "NONE"
-					print("set to ", self._deInCrementStatus)
 					self._managerReferences["cameraManager"].disable_asr_zooming()
 
+				# DESCRIPTION: If the Input is now in the "pressed" state and before was not
+				# -> set status to "pressed" and enable asr zooming with the correct operation
 				elif signalStatus == "pressed" and self._deInCrementStatus != "pressed":
 					self._deInCrementStatus = "pressed"
-					print("set to pressed")
 					self._managerReferences["cameraManager"].enable_asr_zooming(operation)
 
+				# DESCRIPTION: If the Input has been "just_released" and previously was not "pressed"
+				# -> Trigger one increment of zooming 
+				# REMARK: This case should in theory only occur when the Mouse Wheel is used for zooming,
+				# since it only provides the "just_released" method and no others.
 				elif signalStatus == "just_released" and self._deInCrementStatus != "pressed":
 					self._managerReferences["cameraManager"].call(_tmp_function_name)
 
-			else:
+			# DESCRIPTION: If the previous Input Status is undefined, set the status and trigger
+			# one zooming increment
+			else:  
 				self._deInCrementStatus = signalStatus
 				self._managerReferences["cameraManager"].call(_tmp_function_name)
 
