@@ -11,3 +11,5 @@ script = ExtResource( 1 )
 
 [node name="CSGMesh" type="CSGMesh" parent="."]
 mesh = SubResource( 1 )
+
+[node name="asmrRepetitionDelayTimer" type="Timer" parent="."]

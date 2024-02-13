@@ -39,11 +39,13 @@ func _is_current_gui_mouse_context_grid() -> bool:
 
 func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
 	if ._is_correct_context_for_placing_tile(tce_signaling_uuid):
-		if (self._is_current_gui_mouse_context_grid()):  # REMARK: Already in base class definition?
-			if self._selectorOperationMode == "place":
-				if not self._is_gui_hidden:
+		if self._selectorOperationMode == "place":
+			if not self._is_gui_hidden:
+				if UserInputManager._currentInputMethod.match("*mouse*"):
+					if (self._is_current_gui_mouse_context_grid()):  # REMARK: Already in base class definition?
+						return true
+				else:
 					return true
-
 	return false
 
 func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:

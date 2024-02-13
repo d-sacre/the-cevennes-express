@@ -92,14 +92,30 @@ func _is_input_event_cancel(tce_signaling_uuid: String) -> bool:
 #### PRIVATE MEMBER FUNCTIONS: BOOL CONTEXT ####################################
 ################################################################################
 func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
-	return self._is_input_event_confirm(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	var _condition : bool = false
+	if UserInputManager._currentInputMethod.match("*mouse*"):
+		_condition = self._is_input_event_confirm(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	elif (UserInputManager._currentInputMethod == "keyboard::only") or (UserInputManager._currentInputMethod == "controller::only"):
+		_condition = self._is_input_event_confirm(tce_signaling_uuid)
+
+	return _condition
 
 func _is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid : String) -> bool:
-	return self._is_input_event_option_general(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	var _condition : bool = false
+
+	if UserInputManager._currentInputMethod.match("*mouse*"):
+		_condition =  self._is_input_event_option_general(tce_signaling_uuid) and self._is_current_gui_context_grid()
+	elif (UserInputManager._currentInputMethod == "keyboard::only") or (UserInputManager._currentInputMethod == "controller::only"):
+		_condition = self._is_input_event_option_general(tce_signaling_uuid)
+
+	return _condition
 
 func _is_correct_context_for_zooming(tce_signaling_uuid : String) -> bool:
 	if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "scroll", "*"]):
+		var _cond_zoom_out : bool = self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "decrement"])
+		var _cond_zoom_in : bool = self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "increment"])
+	
+		if _cond_zoom_out or _cond_zoom_in:
 			return true
 
 	return false
@@ -226,9 +242,10 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 					self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 
 		if self._is_correct_context_for_zooming(tce_signaling_uuid):
-			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "up"]):
+			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "decrement"]):
 				self._managerReferences["cameraManager"].request_zoom_out()
-			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "down"]):
+				
+			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "increment"]):
 				self._managerReferences["cameraManager"].request_zoom_in()
 
 		if self._is_input_event_cancel(tce_signaling_uuid):

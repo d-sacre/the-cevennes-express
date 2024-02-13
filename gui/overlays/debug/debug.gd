@@ -10,8 +10,8 @@ extends PanelContainer
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const _controls_description_lut : Dictionary = {
-	"MOUSE_KEYBOARD_MIXED": """12345 = Select Tile Action Mode, \nWASD = Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out,\nRight Click: Rotate Tile,\nLeft Click: Request Tile Action""",
-	"KEYBOARD_ONLY": "12345 = Select Tile Action Mode, \nNot implemented yet!"
+	"MOUSE_KEYBOARD_MIXED": """12345: Select Tile Action Mode, \nWASD: Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out,\nRight Click: Rotate Tile,\nLeft Click: Request Tile Action,\nESC/BACKSPACE: Menu""",
+	"KEYBOARD_ONLY": "12345 = Select Tile Action Mode, \nWASD: Move Floating Cursor,\nPOINT: Zoom in,\nCOMMA: Zoom out\nE: Rotate Tile,\nQ/ENTER: Request Tile Action,\nESC/BACKSPACE: Menu"
 }
 
 ################################################################################

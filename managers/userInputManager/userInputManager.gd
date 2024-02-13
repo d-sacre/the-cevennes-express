@@ -56,10 +56,12 @@ const TCE_SIGNALING_UUID_INPUT_EVENTS : Dictionary = {
 		"4": ["user", "interaction", "option", "4"],
 		"5": ["user", "interaction", "option", "5"]
 	},
-	"scroll": {
-		"up": ["user", "interaction", "scroll", "up"],
-		"down": ["user", "interaction", "scroll", "down"]
-	},
+	"increment" : ["user", "interaction", "increment"],
+	"decrement": ["user", "interaction", "decrement"],
+	# "scroll": {
+	# 	"up": ["user", "interaction", "scroll", "up"],
+	# 	"down": ["user", "interaction", "scroll", "down"]
+	# },
 	"modifier": ["user", "interaction", "modifier"],
 	"movement": {
 		"channel1": ["user", "interaction", "movement", "channel1"],
@@ -72,10 +74,14 @@ const TCE_SIGNALING_UUID_INPUT_EVENTS : Dictionary = {
 const GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT : Dictionary = {
 	"mouse_click_left": ["confirm"],
 	"mouse_click_right":  ["option", "general"],
-	"mouse_wheel_up" : ["scroll", "up"],
-	"mouse_wheel_down": ["scroll", "down"],
+	"mouse_wheel_up" : ["increment"], #["scroll", "up"],
+	"mouse_wheel_down": ["decrement"], #["scroll", "down"],
 	"keyboard_modifier": ["modifier"],
-	"keyboard_cancel": ["cancel"]
+	"keyboard_cancel": ["cancel"],
+	"keyboard_confirm": ["confirm"],
+	"keyboard_option_general": ["option", "general"],
+	"keyboard_increment": ["increment"],
+	"keyboard_decrement": ["decrement"]
 }
 
 ################################################################################
@@ -246,7 +252,7 @@ func _process(_delta : float) -> void:
 					else:
 						print("Error: Godot Input Event not found in LUT!")
 
-		_events = ["mouse_click_left", "mouse_click_right", "keyboard_modifier", "keyboard_cancel"]
+		_events = ["mouse_click_left", "mouse_click_right", "keyboard_modifier", "keyboard_cancel", "keyboard_confirm", "keyboard_option_general", "keyboard_increment", "keyboard_decrement"]
 		for _event in _events:
 			var _event_split : PoolStringArray = _event.split("_")
 
