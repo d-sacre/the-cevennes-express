@@ -1,6 +1,17 @@
 extends Spatial
 
 ################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
+
+################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
+signal floating_cursor_asmr_position_update(tce_signaling_uuid, position)
+
+################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 var _movement_by_asmr_allowed : bool = false
@@ -26,6 +37,8 @@ func _move_and_highlight() -> void:
 	var _tmp_position : Vector3 = self._hexGridManager.calculate_new_floating_selector_postion_by_action_strength(self._last_asmr)
 	if _tmp_position != Vector3.INF:
 		self._hexGridManager.move_floating_selector_and_highlight()
+		var _tmp_tce_signaling_uuid : String = UserInputManager.create_tce_signaling_uuid(UserInputManager.context, ["internal", "cursor", "floating", "position", "update"])
+		emit_signal("floating_cursor_asmr_position_update", _tmp_tce_signaling_uuid, _tmp_position)
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
@@ -81,3 +94,5 @@ func _on_asmr_repetition_timeout() -> void:
 func _ready() -> void:
 	self._asmrRepetitionDelayTimer.set_wait_time(self._asmr_repetition_delay)
 	self._error = self._asmrRepetitionDelayTimer.connect("timeout", self, "_on_asmr_repetition_timeout")
+
+	self._error = self.connect("floating_cursor_asmr_position_update", UserInputManager, "_on_user_selected")

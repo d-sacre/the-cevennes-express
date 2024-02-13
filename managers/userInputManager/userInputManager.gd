@@ -239,7 +239,7 @@ func _process(_delta : float) -> void:
 		# REMARK: Should be outsourced into function!
 		# REMARK: Mouse Wheel does only have the "just released" function
 		# source: https://forum.godotengine.org/t/how-do-i-get-input-from-the-mouse-wheel/27979/3
-		var _events : Array = ["mouse_wheel_up", "mouse_wheel_down", "keyboard_modifier"]
+		var _events : Array = ["mouse_wheel_up", "mouse_wheel_down", "keyboard_modifier", "keyboard_increment", "keyboard_decrement"]
 		for _event in _events:
 			var _event_split : PoolStringArray = _event.split("_")
 
@@ -262,6 +262,19 @@ func _process(_delta : float) -> void:
 						var _input_uuid_keychain : Array = self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT[_event]
 						var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, _input_uuid_keychain)
 						self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "just_pressed")
+					else:
+						print("Error: Godot Input Event not found in LUT!")
+
+		_events = ["keyboard_increment", "keyboard_decrement"]
+		for _event in _events:
+			var _event_split : PoolStringArray = _event.split("_")
+
+			if self._currentInputMethod.match("*" + _event_split[0] + "*"):
+				if Input.is_action_pressed(_event):
+					if self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT.has(_event):
+						var _input_uuid_keychain : Array = self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT[_event]
+						var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, _input_uuid_keychain)
+						self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "pressed")
 					else:
 						print("Error: Godot Input Event not found in LUT!")
 	

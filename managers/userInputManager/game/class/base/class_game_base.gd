@@ -32,6 +32,8 @@ var _menu_ingame_visible : bool = false
 
 const _separator : String = UserInputManager.TCE_SIGNALING_UUID_SEPERATOR
 
+var _deInCrementStatus : String = "NONE"
+
 ################################################################################
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -184,6 +186,34 @@ func _create_new_floating_tile() -> void:
 		var _tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(_tile_definition_uuid) 
 		self._managerReferences["hexGridManager"].create_floating_tile(_tile_definition)
 
+func _camera_zooming_handler(operation: String, signalStatus : String) -> void:
+	var _tmp_function_name : String = ""
+
+	if operation == "decrement":
+		_tmp_function_name = "request_zoom_out"
+	elif operation == "increment":
+		_tmp_function_name = "request_zoom_in"
+
+	if signalStatus is String:
+		if _tmp_function_name != "":
+			if self._deInCrementStatus != "NONE":
+				if signalStatus == "just_released" and self._deInCrementStatus == "pressed":
+					self._deInCrementStatus = "NONE"
+					print("set to ", self._deInCrementStatus)
+					self._managerReferences["cameraManager"].disable_asr_zooming()
+
+				elif signalStatus == "pressed" and self._deInCrementStatus != "pressed":
+					self._deInCrementStatus = "pressed"
+					print("set to pressed")
+					self._managerReferences["cameraManager"].enable_asr_zooming(operation)
+
+				elif signalStatus == "just_released" and self._deInCrementStatus != "pressed":
+					self._managerReferences["cameraManager"].call(_tmp_function_name)
+
+			else:
+				self._deInCrementStatus = signalStatus
+				self._managerReferences["cameraManager"].call(_tmp_function_name)
+
 ################################################################################
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
@@ -243,10 +273,10 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 
 		if self._is_correct_context_for_zooming(tce_signaling_uuid):
 			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "decrement"]):
-				self._managerReferences["cameraManager"].request_zoom_out()
+				self._camera_zooming_handler("decrement", value)
 				
 			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "increment"]):
-				self._managerReferences["cameraManager"].request_zoom_in()
+				self._camera_zooming_handler("increment", value)
 
 		if self._is_input_event_cancel(tce_signaling_uuid):
 			var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
@@ -284,6 +314,13 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 					if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
 						audioManager.play_sfx(["game", "tile", "move"])
 						self._managerReferences["hexGridManager"].move_floating_selector_and_highlight()
+		
+		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "internal", "cursor", "floating", "position", "update"]):
+			if value is Vector3:
+				var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "cursor", "floating", "position", "update"]
+				var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+				UserInputManager.send_public_command(_tmp_signaling_string, value)
+	
 	else:
 		pass
 		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
