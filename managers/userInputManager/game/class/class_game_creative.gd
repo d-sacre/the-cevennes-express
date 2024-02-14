@@ -100,6 +100,12 @@ func _hide_gui(status : bool) -> void:
 		self._managerReferences["hexGridManager"].set_highlight_persistence("void", true)
 
 	self._is_gui_hidden = status
+
+func _movement_channel2(asmr : Vector2) -> void:
+	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
+	var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+	UserInputManager.send_public_command(_tmp_signaling_string, asmr)
+
 ################################################################################
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES #############################
@@ -109,8 +115,8 @@ func _hide_gui(status : bool) -> void:
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES: GUI MANAGEMENT PIPELINE ####
 ################################################################################
-func gui_management_pipeline(tce_signaling_uuid : String, value) -> void:
-	.gui_management_pipeline(tce_signaling_uuid, value) # execute base class function definition
+func gui_context_management_pipeline(tce_signaling_uuid : String, value) -> void:
+	.gui_context_management_pipeline(tce_signaling_uuid, value) # execute base class function definition
 
 	# Extend base class functionality
 	if tce_signaling_uuid.match("game::*::gui::*"):
@@ -130,8 +136,8 @@ func gui_management_pipeline(tce_signaling_uuid : String, value) -> void:
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES USER INPUT PIPELINE #########
 ################################################################################
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
-func user_input_pipeline(tce_signaling_uuid : String, value) -> void: 
-	.user_input_pipeline(tce_signaling_uuid, value) # execute base class function definition
+func general_processing_pipeline(tce_signaling_uuid : String, value) -> void: 
+	.general_processing_pipeline(tce_signaling_uuid, value) # execute base class function definition
 
 	var _creativeModeOverlay : Object = self._guiLayerReferences["overlay"].get_node("creativeModeOverlay")
 

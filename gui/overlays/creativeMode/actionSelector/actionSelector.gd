@@ -130,5 +130,5 @@ func _ready() -> void:
 
 	# initialize signaling from/to User Input Manager
 	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")
-	self.connect("action_mode", UserInputManager, "_on_user_selected")
+	self.connect("action_mode", UserInputManager, "_on_special_user_input")
 	self.connect("gui_mouse_context", UserInputManager, "_on_gui_selector_context_changed")

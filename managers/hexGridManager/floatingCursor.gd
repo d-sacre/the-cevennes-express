@@ -111,4 +111,4 @@ func _ready() -> void:
 	self._asmrRepetitionDelayTimer.set_wait_time(self._asmr_repetition_delay)
 	self._error = self._asmrRepetitionDelayTimer.connect("timeout", self, "_on_asmr_repetition_timeout")
 
-	self._error = self.connect("floating_cursor_asmr_position_update", UserInputManager, "_on_user_selected")
+	self._error = self.connect("floating_cursor_asmr_position_update", UserInputManager, "_on_special_user_input")

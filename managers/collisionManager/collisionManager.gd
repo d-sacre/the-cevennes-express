@@ -61,4 +61,4 @@ func _on_raycast_result(current_collision_information : Array) -> void:
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready() -> void:
-	_error = self.connect("collision_detected", UserInputManager, "_on_user_selected")
+	_error = self.connect("collision_detected", UserInputManager, "_on_special_user_input")

@@ -246,7 +246,6 @@ func initialize(_base_context : String, cim: String, clr : Object, mr : Dictiona
 		if _tmp.has("TILE_DEFINITION_UUID"):
 			self._curentTileDefinitionUUID = _tmp["TILE_DEFINITION_UUID"]
 
-
 func create_tce_signaling_uuid(ctxt : String, keyChain : Array) -> String:
 	var _tmpString : String =  ctxt + self.TCE_SIGNALING_UUID_SEPERATOR
 	_tmpString += self._create_string_with_tce_signaling_uuid_seperator(keyChain)
@@ -263,7 +262,7 @@ func send_public_command(tce_signaling_uuid : String, value) -> void:
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func call_contextual_logic_with_signaling_keychain(keyChain : Array, value) -> void:
 	var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, keyChain)
-	self._logic.user_input_pipeline(_tmp_signaling_uuid, value)
+	self._logic.general_processing_pipeline(_tmp_signaling_uuid, value)
 
 func get_current_gui_context() -> String:
 	return self._currentGuiMouseContext
@@ -288,19 +287,16 @@ func set_current_input_method(method : String) -> void:
 
 	# DESCRIPTION: Update the misc input events to process according to current input method
 	self._create_dictionary_of_misc_current_input_events()
-	# REMARK: Currently required to ensure that tile placement after changing the Input Method via
-	
-	
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_gui_selector_context_changed(tce_signaling_uuid : String, interaction : String) -> void:
-	_logic.gui_management_pipeline(tce_signaling_uuid, interaction)
+	_logic.gui_context_management_pipeline(tce_signaling_uuid, interaction)
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
-func _on_user_selected(tce_signaling_uuid : String, value) -> void:
-	_logic.user_input_pipeline(tce_signaling_uuid, value)
+func _on_special_user_input(tce_signaling_uuid : String, value) -> void:
+	_logic.general_processing_pipeline(tce_signaling_uuid, value)
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

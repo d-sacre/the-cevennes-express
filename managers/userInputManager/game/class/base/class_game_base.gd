@@ -125,8 +125,8 @@ func _is_correct_context_for_zooming(tce_signaling_uuid : String) -> bool:
 func _is_current_gui_context_grid() -> bool:
 	return self._currentGuiMouseContext.match("*" + self._separator + "grid")
 
-func _is_correct_context_for_movement_channel1(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "movement", "channel1"])
+func _is_correct_context_for_movement_channelNumber(tce_signaling_uuid : String, channelNo : int) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "movement", "channel"+str(channelNo)])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: TILE MANIPULATION ###############################
@@ -225,6 +225,9 @@ func _camera_zooming_handler(operation: String, signalStatus : String) -> void:
 				self._deInCrementStatus = signalStatus
 				self._managerReferences["cameraManager"].call(_tmp_function_name)
 
+func _movement_channel2(_asmr : Vector2) -> void:
+	pass
+
 ################################################################################
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
@@ -243,7 +246,7 @@ func update_tile_definition_uuid(uuid : String) -> void:
 #### PUBLIC MEMBER FUNCTIONS: USER INPUT PIPELINE ##############################
 ################################################################################
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
-func user_input_pipeline(tce_signaling_uuid : String, value) -> void: 
+func general_processing_pipeline(tce_signaling_uuid : String, value) -> void: 
 	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["game", "*"]): # Safety to ensure that only valid requests are processed
 		if self._is_correct_context_for_placing_tile(tce_signaling_uuid):
 			self.place_tile()
@@ -265,7 +268,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 			else:
 				print("Error: Variable type does not match")
 
-		if self._is_correct_context_for_movement_channel1(tce_signaling_uuid):
+		if self._is_correct_context_for_movement_channelNumber(tce_signaling_uuid, 1):
 			if value is Vector2:
 				# DESCRIPTION: Request camera movement only in Input Mode which uses mouse information
 				# In all other cases: Manipulate the position of the floating tile
@@ -274,6 +277,9 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 				else: # REMARK: Temporary solution; it would be better to outsource floating tile into own dedicated scene
 					self._managerReferences["hexGridManager"].request_floating_selector_movement(value)
 
+		if self._is_correct_context_for_movement_channelNumber(tce_signaling_uuid, 2):
+			if value is Vector2:
+				self._movement_channel2(value)
 
 		if self._is_input_event_modifier(tce_signaling_uuid):
 			if value is String:
@@ -341,7 +347,7 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: GUI MANAGEMENT PIPELINE ##########################
 ################################################################################
-func gui_management_pipeline(tce_signaling_uuid : String, _value : String) -> void:
+func gui_context_management_pipeline(tce_signaling_uuid : String, _value : String) -> void:
 	if tce_signaling_uuid.match("game" + self._separator + "*" + self._separator + "gui" + self._separator + "*"):
 		pass
 	else:

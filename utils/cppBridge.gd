@@ -14,23 +14,21 @@ var _hex_grid_size_y : int
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
+
 # Conversion single array index to dual array index
-# maxWidth, maxHeight
-# x, y -> c
-# x + y * maxWidth = c
-
 # c -> x,y
-
 # x = c % maxWidth
 # y = c / maxWidth # normal integer division
 # y = c / (maxWidth - c % maxWidth) 
-
 func _convert_1D_index_to_2D(index : int) -> Vector2:
 	var x : int = index % self._hex_grid_size_x
 	var y : int = index / self._hex_grid_size_x # old (wrong, or only working for square grids!?): self._hex_grid_size_y
 
 	return Vector2(x,y)
 
+# Conversion of dual array index to single array index
+# x, y -> c
+# x + y * maxWidth = c
 func _convert_2D_index_to_1D(index2D : Vector2) -> int:
 	return int(index2D.x) + int(index2D.y) * self._hex_grid_size_y # old (wrong, or only working for square grids!?)
 

@@ -58,7 +58,7 @@ func _on_mouse_exited() -> void:
 ################################################################################
 func _ready():
 	_unhideGUIButton.connect("pressed", self, "_on_unhideGUIButton_pressed")
-	self.connect("hide_gui", UserInputManager, "_on_user_selected")
+	self.connect("hide_gui", UserInputManager, "_on_special_user_input")
 	_panelContainer.connect("mouse_entered", self, "_on_mouse_entered")
 	_panelContainer.connect("mouse_exited", self, "_on_mouse_exited")
 

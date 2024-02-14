@@ -46,6 +46,8 @@ var _tile_tduuid_to_list_index_lut : Dictionary = {}
 
 var _context : String 
 
+var _lastSelectionAsmr : Vector2 = Vector2(0,0)
+
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
@@ -100,6 +102,35 @@ func _create_icon_texture(fp : String) -> ImageTexture:
 
 	return _iconTexture
 
+func _select_item(index : int) -> void:
+	self.selectedTile = self._tileList.get_item_metadata(index)
+	emit_signal("new_tile_definition_selected", self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"], self.selectedTile)
+
+
+func _select_tile_definition_by_asmr(asmr : Vector2) -> void:
+	self._lastSelectionAsmr = asmr
+
+	if asmr != Vector2(0,0):
+		var _maxColumns : int = self._tileList.get_max_columns()
+		var _itemCount : int = self._tileList.get_item_count()
+		var _currentIndex : int = (self._tileList.get_selected_items())[0]
+		var ci : Object = convert_indices.new(_maxColumns)
+
+		var _tmp_index2D : Vector2 = ci.from_1D_to_2D(_currentIndex)
+		_tmp_index2D += asmr * Vector2(-1,-1)
+		var _tmp_index1D : int = ci.from_2D_to_1D(_tmp_index2D)
+
+		# DESCRIPTION: Manage out of bounds at beginning/end of list
+		if _tmp_index1D <= _itemCount - 1:
+			if _tmp_index1D >= 0:
+				pass
+			else:
+				_tmp_index1D = _itemCount - 1
+		else:
+			_tmp_index1D = 0
+
+		self._select_item(_tmp_index1D)
+	
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
@@ -150,8 +181,7 @@ func reactivate_and_unhide() -> void:
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_item_selected(index : int) -> void:
-	self.selectedTile = self._tileList.get_item_metadata(index)
-	emit_signal("new_tile_definition_selected", self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"], self.selectedTile)
+	self._select_item(index)
 
 func _on_mouse_entered() -> void:
 	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "entered")
@@ -168,6 +198,11 @@ func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) ->
 			self._tileList.select(_tmp_list_index)
 			self._tileList.ensure_current_is_visible()
 
+	_tmp_signaling_keychain = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
+	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+		if value is Vector2:
+			self._select_tile_definition_by_asmr(value)
+
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
@@ -181,7 +216,7 @@ func _ready() -> void:
 
 	# initialize signaling from/to User Input Manager
 	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")
-	self.connect("new_tile_definition_selected", UserInputManager, "_on_user_selected")
+	self.connect("new_tile_definition_selected", UserInputManager, "_on_special_user_input")
 	self.connect("gui_mouse_context", UserInputManager, "_on_gui_selector_context_changed")
 
 	# set icon size accordingly to amount of columns
