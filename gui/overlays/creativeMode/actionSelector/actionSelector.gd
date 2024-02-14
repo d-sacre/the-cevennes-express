@@ -86,7 +86,7 @@ func _on_item_selected(index : int) -> void:
 	self._item_selected(index)
 
 func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
-	var _tmp_signaling_keychain : Array  = ["*UserInputManager", "requesting", "global", "execution", "option*"]
+	var _tmp_signaling_keychain : Array  = ["game", "creative", "UserInputManager", "requesting", "global", "execution", "option*"]
 
 	# REMARK: Currently hardcoded to assume that the actionSelector.tscn will only 
 	# be used in the game::creative context. To make it more flexible/less 
@@ -97,6 +97,31 @@ func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) ->
 			self._actionItemList.unselect_all()
 			self._actionItemList.select(_tmp_index)
 			self._item_selected(_tmp_index)
+
+	_tmp_signaling_keychain = ["game", "creative", "UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
+	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+		if value is int:
+			var _itemCount : int = self._actionItemList.get_item_count()
+			var _currentIndex : int = (self._actionItemList.get_selected_items())[0]
+
+			var _tmp_index : int = _currentIndex + value
+
+			if _tmp_index > _itemCount - 1:
+				_tmp_index = 0
+			if _tmp_index < 0:
+				_tmp_index = _itemCount - 1
+
+			self._actionItemList.unselect_all()
+			self._actionItemList.select(_tmp_index)
+			self._item_selected(_tmp_index)
+
+			# REMARK: DOES NOT WORK
+			if _tmp_index != 4:
+				_tmp_signaling_keychain = ["user", "selected", "gui", "show"]
+				var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+				print("unhide gui if hidden: ", _tmp_signaling_string)
+				
+				UserInputManager._logic.general_processing_pipeline(tce_signaling_uuid, "true")
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

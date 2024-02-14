@@ -54,8 +54,7 @@ func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:
 ################################################################################
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: TOOLS #####################
 ################################################################################
-func _hide_gui(status : bool) -> void:
-	
+func _hide_gui_creative_mode(status : bool) -> void:
 	# REMARK: Should be implemented properly at a later date
 	self._selectorOperationMode = "NONE" 
 
@@ -63,6 +62,7 @@ func _hide_gui(status : bool) -> void:
 
 	if status:
 		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
+		
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()
 
@@ -100,6 +100,9 @@ func _hide_gui(status : bool) -> void:
 		self._managerReferences["hexGridManager"].set_highlight_persistence("void", true)
 
 	self._is_gui_hidden = status
+
+func _hide_gui(status : bool) -> void:
+	self._hide_gui_creative_mode(status)
 
 func _movement_channel2(asmr : Vector2) -> void:
 	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
@@ -143,6 +146,16 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 
 	# Extend base class functionality
 	if tce_signaling_uuid.match("game::creative::*"): # Safety to ensure that only valid requests are processed
+		if self._is_next_action_mode_requested(tce_signaling_uuid):
+			var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
+			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+			UserInputManager.send_public_command(_tmp_signaling_string, 1)
+
+		if self._is_previous_action_mode_requested(tce_signaling_uuid):
+			var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
+			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+			UserInputManager.send_public_command(_tmp_signaling_string, -1)
+		
 		# DESCRIPTION: Handling of setting the different action mode
 		if self._is_tile_action_mode_changed_to_place(tce_signaling_uuid):
 			self._selectorOperationMode = "place"
@@ -249,6 +262,12 @@ func _is_tile_action_mode_changed_to_pick(tce_signaling_uuid : String) -> bool:
 
 func _is_tile_action_mode_changed_to_delete(tce_signaling_uuid : String) -> bool:
 	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "tile", "action", "delete"])
+
+func _is_next_action_mode_requested(tce_signaling_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "option", "next"])
+
+func _is_previous_action_mode_requested(tce_signaling_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "option", "previous"])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: BOOL CONTEXT ####################################

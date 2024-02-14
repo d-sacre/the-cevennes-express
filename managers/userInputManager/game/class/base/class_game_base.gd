@@ -97,8 +97,10 @@ func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
 	var _condition : bool = false
 	if UserInputManager._currentInputMethod.match("*mouse*"):
 		_condition = self._is_input_event_confirm(tce_signaling_uuid) and self._is_current_gui_context_grid()
-	elif (UserInputManager._currentInputMethod == "keyboard::only") or (UserInputManager._currentInputMethod == "controller::only"):
+	elif (UserInputManager._currentInputMethod == "keyboard::only"): 
 		_condition = self._is_input_event_confirm(tce_signaling_uuid)
+	elif (UserInputManager._currentInputMethod == "controller::only"):
+		_condition = self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "perform", "tile", "action"])
 
 	return _condition
 
@@ -107,8 +109,10 @@ func _is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid : String
 
 	if UserInputManager._currentInputMethod.match("*mouse*"):
 		_condition =  self._is_input_event_option_general(tce_signaling_uuid) and self._is_current_gui_context_grid()
-	elif (UserInputManager._currentInputMethod == "keyboard::only") or (UserInputManager._currentInputMethod == "controller::only"):
+	elif (UserInputManager._currentInputMethod == "keyboard::only"):
 		_condition = self._is_input_event_option_general(tce_signaling_uuid)
+	elif (UserInputManager._currentInputMethod == "controller::only"):
+		_condition = self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "rotate", "tile", "clockwise"])
 
 	return _condition
 

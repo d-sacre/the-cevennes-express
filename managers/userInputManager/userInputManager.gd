@@ -37,7 +37,7 @@ const INPUT_METHOD_MODES : Dictionary = {
 	"CONTROLLER_ONLY": {
 		"TEXT": "Controller (only)",
 		"TCE_INPUT_METHOD_UUID": "controller" + TCE_SIGNALING_UUID_SEPERATOR + "only",
-		"AVAILABLE": false
+		"AVAILABLE": true
 	},
 	"TOUCH_ONLY": {
 		"TEXT": "Touch (only)",
@@ -64,7 +64,11 @@ const TCE_SIGNALING_UUID_INPUT_EVENTS_LUT : Dictionary = {
 		"channel2": ["user", "interaction", "movement", "channel2"],
 		"channel3": ["user", "interaction", "movement", "channel3"]
 	},
-	"cancel": ["user", "interaction", "cancel"]
+	"cancel": ["user", "interaction", "cancel"],
+	"perform_tile_action" : ["user", "interaction", "perform", "tile", "action"],
+	"rotate_tile_clockwise": ["user", "interaction", "rotate", "tile", "clockwise"],
+	"next_option": ["user", "interaction", "option", "next"],
+	"previous_option": ["user", "interaction", "option", "previous"]
 }
 
 const GODOT_MISC_INPUT_EVENT_LUT : Dictionary = {
@@ -107,6 +111,22 @@ const GODOT_MISC_INPUT_EVENT_LUT : Dictionary = {
 	"keyboard_decrement": {
 		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
 		"SIGNALING_UUID_LUT_KEYCHAIN": ["decrement"]
+	},
+	"controller_L1": {
+		"PROCESS_MODE": ["just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["rotate_tile_clockwise"]
+	},
+	"controller_L2": {
+		"PROCESS_MODE": ["just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["perform_tile_action"]
+	},
+	"controller_R1": {
+		"PROCESS_MODE": ["just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["next_option"]
+	},
+	"controller_R2": {
+		"PROCESS_MODE": ["just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["previous_option"]
 	}
 }
 
@@ -296,6 +316,7 @@ func _on_gui_selector_context_changed(tce_signaling_uuid : String, interaction :
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func _on_special_user_input(tce_signaling_uuid : String, value) -> void:
+	print(tce_signaling_uuid)
 	_logic.general_processing_pipeline(tce_signaling_uuid, value)
 
 ################################################################################
@@ -335,6 +356,13 @@ func _process(_delta : float) -> void:
 			# DESCRIPTION: Checking for movement requests on all channels
 			for _channelNo in range(1,3): 
 				self._process_movement_request_on_device_channel("keyboard", _channelNo)
+
+	if self._currentInputMethod.match("*controller*"):
+		if self.base == "game":
+			# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
+			# after Main Menu has been replaced
+			for _channelNo in range(1,3): 
+				self._process_movement_request_on_device_channel("controller", _channelNo)
 	
 	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
 	if self.base == "game":
