@@ -332,8 +332,11 @@ func calculate_new_floating_selector_postion_by_action_strength(asmr : Vector2) 
 			_tmp_current_index = self.get_last_index_within_grid_boundary()
 
 		var _tmp_index2D : Vector2 = self._managerReferences["cppBridge"]._convert_1D_index_to_2D(_tmp_current_index)
-		_tmp_index2D += asmr
+		var _debug : Vector2 = _tmp_index2D
+		_tmp_index2D += Vector2(int(asmr.x), int(asmr.y))
 		var _tmp_index1D : int = self._managerReferences["cppBridge"]._convert_2D_index_to_1D(_tmp_index2D)
+
+		# print("\t-> hexGridManager:\n\t\t-> Calculate: Tmp current index: ", _tmp_current_index,", Tmp Index 2D (before):", _debug,", asmr: ", asmr ,", Tmp Index 2D (after): ", _tmp_index2D, ", Tmp Index 1D: ", _tmp_index1D)
 
 		# DESCRIPTION: Check whether new index is valid
 		# REMARK: Simplified case for a "square" grid; must be generalized!
@@ -342,13 +345,15 @@ func calculate_new_floating_selector_postion_by_action_strength(asmr : Vector2) 
 				if _tmp_index1D != self.get_current_grid_index():
 					# DESCRIPTION: To prevent jumping from one edge of the grid to the other
 					if not ((int(_tmp_index2D.x) == self._hex_grid_size_x) or (int(_tmp_index2D.x) == -1)):
-						self.set_last_grid_index_to_current()
-						self.set_current_grid_index(_tmp_index1D)
-						self.set_last_index_within_grid_boundary(_tmp_index1D)
+						if not ((int(_tmp_index2D.y) == self._hex_grid_size_y) or (int(_tmp_index2D.y) == -1)): # new for testing
+							self.set_last_grid_index_to_current()
+							self.set_current_grid_index(_tmp_index1D)
+							self.set_last_index_within_grid_boundary(_tmp_index1D)
+							# print("\t\t-> Calculate: Result: current: ", self.get_current_grid_index(), ", last: ", self.get_last_grid_index(),", last within boundary: ",self.get_last_index_within_grid_boundary())
 
-						var _tmp_floating_selector_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
-						
-						return _tmp_floating_selector_target_position
+							var _tmp_floating_selector_target_position : Vector3 = (self.get_current_grid_element_information())["reference"].transform.origin
+							
+							return _tmp_floating_selector_target_position
 
 	return Vector3.INF
 
@@ -370,6 +375,7 @@ func move_floating_selector_to_and_highlight(next : int) -> void:
 	self.move_floating_selector_to(next)
 
 func move_floating_selector_and_highlight() -> void:
+	# print("\t-> hexGridManager: Move floating selector: current index: ", self.get_current_grid_index())
 	self.move_floating_selector_to_and_highlight(self.get_current_grid_index())
 
 ################################################################################

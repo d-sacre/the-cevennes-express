@@ -46,7 +46,7 @@ const INPUT_METHOD_MODES : Dictionary = {
 	}
 }
 
-const TCE_SIGNALING_UUID_INPUT_EVENTS : Dictionary = {
+const TCE_SIGNALING_UUID_INPUT_EVENTS_LUT : Dictionary = {
 	"confirm": ["user", "interaction", "confirm"],
 	"option": {
 		"general": ["user", "interaction", "option", "general"],
@@ -67,20 +67,7 @@ const TCE_SIGNALING_UUID_INPUT_EVENTS : Dictionary = {
 	"cancel": ["user", "interaction", "cancel"]
 }
 
-# const GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT : Dictionary = {
-# 	"mouse_click_left": ["confirm"],
-# 	"mouse_click_right":  ["option", "general"],
-# 	"mouse_wheel_up" : ["increment"], 
-# 	"mouse_wheel_down": ["decrement"], 
-# 	"keyboard_modifier": ["modifier"],
-# 	"keyboard_cancel": ["cancel"],
-# 	"keyboard_confirm": ["confirm"],
-# 	"keyboard_option_general": ["option", "general"],
-# 	"keyboard_increment": ["increment"],
-# 	"keyboard_decrement": ["decrement"]
-# }
-
-const GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT : Dictionary = {
+const GODOT_MISC_INPUT_EVENT_LUT : Dictionary = {
 	"mouse_click_left": {
 		"PROCESS_MODE": ["just_pressed"],
 		"SIGNALING_UUID_LUT_KEYCHAIN": ["confirm"]
@@ -140,8 +127,6 @@ var _currentGuiMouseContext : String
 var _currentInputMethod : String
 var _miscInputEventsToProcess : Dictionary = {}
 
-# var _lastMovementRequestChannel1 : Vector2 = Vector2(0,0) # REMARK: only temporary; has to be replaced with proper logic
-
 var _lastMovementRequest : Dictionary = {
 	"channel1": Vector2(0,0),
 	"channel2": Vector2(0,0),
@@ -167,7 +152,7 @@ func _create_string_with_tce_signaling_uuid_seperator(keyChain : Array) -> Strin
 	return _tmpString
 
 func _create_dictionary_of_misc_current_input_events() -> void:
-	var _db : Dictionary = self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT
+	var _db : Dictionary = self.GODOT_MISC_INPUT_EVENT_LUT
 	var _events : Array = _db.keys()
 	var _eventsSortedByType : Dictionary = {
 		"just_pressed" : [],
@@ -203,15 +188,15 @@ func _process_movement_request_on_device_channel(device : String, channelNo : in
 	# one grid per key press. Keeping a key pressed does not allow for moving multiple grids at a time. The solution
 	# was to add a timer based retrigger system to the receiving component
 	if self._lastMovementRequest["channel" + str(channelNo)] != _movementRequest:
-		var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, ["movement", "channel"+str(channelNo)])
+		var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS_LUT, ["movement", "channel"+str(channelNo)])
 		self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, _movementRequest)
 		self._lastMovementRequest["channel" + str(channelNo)] = _movementRequest
 
 func _process_input_event_by_method_name(event : String, methodName : String) -> void:
 	if Input.call("is_action_" + methodName,event):
-		if self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT.has(event):
-			var _input_uuid_keychain : Array = self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT[event]["SIGNALING_UUID_LUT_KEYCHAIN"]
-			var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, _input_uuid_keychain)
+		if self.GODOT_MISC_INPUT_EVENT_LUT.has(event):
+			var _input_uuid_keychain : Array = self.GODOT_MISC_INPUT_EVENT_LUT[event]["SIGNALING_UUID_LUT_KEYCHAIN"]
+			var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS_LUT, _input_uuid_keychain)
 			self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, methodName)
 		else:
 			print("Error: Godot Input Event not found in LUT!")
@@ -248,7 +233,12 @@ func initialize(_base_context : String, cim: String, clr : Object, mr : Dictiona
 	if self.base == "game":
 		self.variant = _base_context_list[1]
 		self._managerReferences["cameraManager"].enable_raycasting()
-		self._currentGuiMouseContext = self.context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR+ "grid"	
+		self._currentGuiMouseContext = self.context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR
+		
+		if self._currentInputMethod.match("*mouse*"):
+			self._currentGuiMouseContext += "void"
+		else:
+			self._currentGuiMouseContext += "grid"	
 
 		# REMARK: Only temporary, until proper tile definition contextual logic is implemented
 		# Could it cause the issue of overwriting other settings?
@@ -282,16 +272,25 @@ func set_current_input_method(method : String) -> void:
 	self._currentInputMethod = method
 	print("Current Input Method changed to ", self._currentInputMethod)
 
-	if method == "keyboard::only":
-		self._managerReferences["hexGridManager"].enable_floating_selector_movement_by_asmr()
-	else:
-		self._managerReferences["hexGridManager"].disable_floating_selector_movement_by_asmr()
+	if self.context.match("game*"):
+		if method == "keyboard::only":
+			self._managerReferences["hexGridManager"].enable_floating_selector_movement_by_asmr()
+			self._managerReferences["cameraManager"].disable_raycasting()
+			
+			# Debug Panel is possible. Might be only temporarily required.
+			self._managerReferences["hexGridManager"].set_current_grid_index(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary())
+			self._currentGuiMouseContext = self.context + self.TCE_SIGNALING_UUID_SEPERATOR + "game"	
+
+		else:
+			self._managerReferences["hexGridManager"].disable_floating_selector_movement_by_asmr()
+			self._managerReferences["cameraManager"].enable_raycasting()
+			self._currentGuiMouseContext = self.context + self.TCE_SIGNALING_UUID_SEPERATOR + "void"
 
 	# DESCRIPTION: Update the misc input events to process according to current input method
 	self._create_dictionary_of_misc_current_input_events()
 	# REMARK: Currently required to ensure that tile placement after changing the Input Method via
-	# Debug Panel is possible. Might be only temporarily required.
-	self._managerReferences["hexGridManager"].set_current_grid_index(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary())
+	
+	
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -329,7 +328,7 @@ func _process(_delta : float) -> void:
 	if self._currentInputMethod.match("*keyboard*"):
 		for _i in range(1,6):
 			if Input.is_action_just_pressed("keyboard_option" + str(_i)):
-				var _tmp_signaling_keychain : Array = self.TCE_SIGNALING_UUID_INPUT_EVENTS["option"][str(_i)]#["user", "interaction", "keyboard", "option"+str(_i)]
+				var _tmp_signaling_keychain : Array = self.TCE_SIGNALING_UUID_INPUT_EVENTS_LUT["option"][str(_i)]#["user", "interaction", "keyboard", "option"+str(_i)]
 				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "just_pressed")
 
 		# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
@@ -340,22 +339,6 @@ func _process(_delta : float) -> void:
 			# DESCRIPTION: Checking for movement requests on all channels
 			for _channelNo in range(1,3): 
 				self._process_movement_request_on_device_channel("keyboard", _channelNo)
-
-			# # DESCRIPTION: Checking for movement request on movement channel 1
-			# var _movementRequestChannel1 : Vector2 = Vector2(
-			# 	Input.get_action_strength("keyboard_move_channel1_left") - Input.get_action_strength("keyboard_move_channel1_right"),
-			# 		Input.get_action_strength("keyboard_move_channel1_up") - Input.get_action_strength("keyboard_move_channel1_down")
-			# )
-
-			# # DESCRIPTION: To reduce the amount of unnecessary function calls when no camera movement is requested, check whether
-			# # current request is identical to previous request
-			# # REMARK: Does not work in the case of keyboard/controller only input, as the tile can only be moved
-			# # one grid per key press. Keeping a key pressed does not allow for moving multiple grids at a time. The solution
-			# # was to add a timer based retrigger system to the receiving component
-			# if self._lastMovementRequestChannel1 != _movementRequestChannel1:
-			# 	var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, ["movement", "channel1"])
-			# 	self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, _movementRequestChannel1)
-			#   self._lastMovementRequestChannel1 = _movementRequestChannel1
 	
 	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
 	if self.base == "game":
@@ -363,46 +346,4 @@ func _process(_delta : float) -> void:
 		# after Main Menu has been replaced
 
 		self._process_misc_input_events()
-		
-		# REMARK: Should be outsourced into function!
-		# REMARK: Mouse Wheel does only have the "just released" function
-		# source: https://forum.godotengine.org/t/how-do-i-get-input-from-the-mouse-wheel/27979/3
-		# var _events : Array = ["mouse_wheel_up", "mouse_wheel_down", "keyboard_modifier", "keyboard_increment", "keyboard_decrement"]
-		# for _event in _events:
-		# 	var _event_split : PoolStringArray = _event.split("_")
-
-		# 	if self._currentInputMethod.match("*" + _event_split[0] + "*"):
-		# 		if Input.is_action_just_released(_event):
-		# 			if self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT.has(_event):
-		# 				var _input_uuid_keychain : Array = self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT[_event]["SIGNALING_UUID_LUT_KEYCHAIN"]
-		# 				var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, _input_uuid_keychain)
-		# 				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "just_released")
-		# 			else:
-		# 				print("Error: Godot Input Event not found in LUT!")
-		
-		# _events = ["mouse_click_left", "mouse_click_right", "keyboard_modifier", "keyboard_cancel", "keyboard_confirm", "keyboard_option_general", "keyboard_increment", "keyboard_decrement"]
-		# for _event in _events:
-		# 	var _event_split : PoolStringArray = _event.split("_")
-
-		# 	if self._currentInputMethod.match("*" + _event_split[0] + "*"):
-		# 		if Input.is_action_just_pressed(_event):
-		# 			if self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT.has(_event):
-		# 				var _input_uuid_keychain : Array = self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT[_event]["SIGNALING_UUID_LUT_KEYCHAIN"]
-		# 				var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, _input_uuid_keychain)
-		# 				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "just_pressed")
-		# 			else:
-		# 				print("Error: Godot Input Event not found in LUT!")
-
-		# _events = ["keyboard_increment", "keyboard_decrement"]
-		# for _event in _events:
-		# 	var _event_split : PoolStringArray = _event.split("_")
-
-		# 	if self._currentInputMethod.match("*" + _event_split[0] + "*"):
-		# 		if Input.is_action_pressed(_event):
-		# 			if self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT.has(_event):
-		# 				var _input_uuid_keychain : Array = self.GODOT_INPUT_EVENT_TO_TCE_SIGNALING_UUID_LUT[_event]["SIGNALING_UUID_LUT_KEYCHAIN"]
-		# 				var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS, _input_uuid_keychain)
-		# 				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "pressed")
-		# 			else:
-		# 				print("Error: Godot Input Event not found in LUT!")
 	

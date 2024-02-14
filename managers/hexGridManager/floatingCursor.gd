@@ -34,17 +34,24 @@ onready var _asmrRepetitionDelayTimer : Timer = $asmrRepetitionDelayTimer
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
 func _move_and_highlight() -> void:
+	# print("=> floatingCursor: Move and highlight:")
 	var _tmp_position : Vector3 = self._hexGridManager.calculate_new_floating_selector_postion_by_action_strength(self._last_asmr)
 	if _tmp_position != Vector3.INF:
 		self._hexGridManager.move_floating_selector_and_highlight()
 		var _tmp_tce_signaling_uuid : String = UserInputManager.create_tce_signaling_uuid(UserInputManager.context, ["internal", "cursor", "floating", "position", "update"])
 		emit_signal("floating_cursor_asmr_position_update", _tmp_tce_signaling_uuid, _tmp_position)
+	# 	print("\t=> Valid request")
+	# else:
+	# 	print("\t=> Invalid request")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func set_last_asmr(asmr : Vector2) -> void:
 	self._last_asmr = asmr
+
+func get_last_asmr() -> Vector2:
+	return self._last_asmr
 
 func enable_movement_by_asmr() -> void:
 	self._movement_by_asmr_allowed = true
@@ -58,23 +65,32 @@ func disable_movement_by_asmr() -> void:
 	self._asmrRepetitionDelayTimer.stop()
 
 func request_movement_by_action_strength(asmr: Vector2) -> void:
-	# DESCRIPTION: Store the last action strength movement request value
-	self.set_last_asmr(asmr)
-
 	# DESCRIPTION: Move floating cursor one step
 	self._move_and_highlight()
 
 	# DESCRIPTION: Setup the timer for the repetition in the case that the user continues
 	# the input or changes it
+	# print("floatingCursor: asmr request: ", asmr, ", last:", self.get_last_asmr())
 	if asmr == Vector2(0,0):
 		if not self._asmrRepetitionDelayTimer.is_stopped():
+			# print("floatingCursor: asmr request (0,0), timer needs to be stopped")
 			self._asmrRepetitionDelayTimer.stop()
 	else:
 		if self._asmrRepetitionDelayTimer.is_stopped():
+			# print("floatingCursor: asmr request not zero, timer needs to be started")
 			self._asmrRepetitionDelayTimer.start(self._asmr_repetition_delay)
 		else:
-			self._asmrRepetitionDelayTimer.stop()
-			self._asmrRepetitionDelayTimer.start(self._asmr_repetition_delay)
+			# DESCRIPTION: Compare current asmr request to last request
+			if asmr != self.get_last_asmr():
+				# print("floatingCursor: asmr request not equal to zero or last, timer needs to be restarted, time remaining (before restart): ", self._asmrRepetitionDelayTimer.get_time_left())
+				self._asmrRepetitionDelayTimer.stop()
+				self._asmrRepetitionDelayTimer.start(self._asmr_repetition_delay)
+			else:
+				pass
+				# print("floatingCursor: asmr request not equal to zero, but equal to last; nothing to do")
+
+	# DESCRIPTION: Store the last action strength movement request value
+	self.set_last_asmr(asmr)
 
 func request_new_position(position : Vector3) -> void:
 	self._position_requested = position

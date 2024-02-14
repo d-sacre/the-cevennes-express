@@ -304,27 +304,28 @@ func user_input_pipeline(tce_signaling_uuid : String, value) -> void:
 			self._menu_ingame_visible = !self._menu_ingame_visible
 
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","internal", "collision", "detected"]):
-			if value is Dictionary:
-				if value.has("colliding"):
-					var _tmp_collision_status = value["colliding"]["status"]
+			if UserInputManager._currentInputMethod.match("*mouse*"): # REMARK: Without if, culprit for movement issues in keyboard::only mode?
+				if value is Dictionary:
+					if value.has("colliding"):
+						var _tmp_collision_status = value["colliding"]["status"]
 
-					# REMARK: Required to set highlighting correctly. But might this be the culprit 
-					# for the "placement and removal of floating tile at index 0 when new tile definition is selected" bug?
-					self._managerReferences["hexGridManager"].set_last_grid_index_to_current()
+						# REMARK: Required to set highlighting correctly. But might this be the culprit 
+						# for the "placement and removal of floating tile at index 0 when new tile definition is selected" bug?
+						self._managerReferences["hexGridManager"].set_last_grid_index_to_current()
 
-					# REMARK: Hardcoded for the case of only hitting a hex tile. 
-					# Other collisions like with trains have to be implemented differently!
-					if _tmp_collision_status:
-						self._managerReferences["hexGridManager"].set_current_grid_index(value["grid_index"])
-						self._managerReferences["hexGridManager"].set_last_index_within_grid_boundary_to_current()
-						self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
-					else:
-						self._managerReferences["hexGridManager"].set_current_grid_index_out_of_bounds()
-						self._currentGuiMouseContext = self._context + self._separator + "void"
+						# REMARK: Hardcoded for the case of only hitting a hex tile. 
+						# Other collisions like with trains have to be implemented differently!
+						if _tmp_collision_status:
+							self._managerReferences["hexGridManager"].set_current_grid_index(value["grid_index"])
+							self._managerReferences["hexGridManager"].set_last_index_within_grid_boundary_to_current()
+							self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
+						else:
+							self._managerReferences["hexGridManager"].set_current_grid_index_out_of_bounds()
+							self._currentGuiMouseContext = self._context + self._separator + "void"
 
-					if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
-						audioManager.play_sfx(["game", "tile", "move"])
-						self._managerReferences["hexGridManager"].move_floating_selector_and_highlight()
+						if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
+							audioManager.play_sfx(["game", "tile", "move"])
+							self._managerReferences["hexGridManager"].move_floating_selector_and_highlight() 
 		
 		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "internal", "cursor", "floating", "position", "update"]):
 			if value is Vector3:

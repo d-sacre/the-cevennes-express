@@ -27,12 +27,12 @@ var _hex_grid_size_y : int
 
 func _convert_1D_index_to_2D(index : int) -> Vector2:
 	var x : int = index % self._hex_grid_size_x
-	var y : int = index / self._hex_grid_size_y
+	var y : int = index / self._hex_grid_size_x # old (wrong, or only working for square grids!?): self._hex_grid_size_y
 
 	return Vector2(x,y)
 
 func _convert_2D_index_to_1D(index2D : Vector2) -> int:
-	return int(index2D.x) + int(index2D.y) * self._hex_grid_size_x
+	return int(index2D.x) + int(index2D.y) * self._hex_grid_size_y # old (wrong, or only working for square grids!?)
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
