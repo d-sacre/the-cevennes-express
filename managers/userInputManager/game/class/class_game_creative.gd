@@ -89,7 +89,7 @@ func _hide_gui_creative_mode(status : bool) -> void:
 			self._guiLayerReferences["hidden"].get_node("hiddenGUI").queue_free()
 
 		self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
-		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date
+		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date to reflect the actually selected mode
 
 		if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 			var _tmp_tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(self._last_tile_definition_uuid)

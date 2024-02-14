@@ -111,17 +111,22 @@ func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) ->
 			if _tmp_index < 0:
 				_tmp_index = _itemCount - 1
 
+			# REMARK: Has to be placed here, because placing it later in the chain would overwrite
+			# the correct action mode
+			if _tmp_index != 4:
+				# Approach 2: Execute gui show directly via game class
+				UserInputManager._logic._hide_gui_creative_mode(false)
+
 			self._actionItemList.unselect_all()
 			self._actionItemList.select(_tmp_index)
 			self._item_selected(_tmp_index)
 
-			# REMARK: DOES NOT WORK
-			if _tmp_index != 4:
-				_tmp_signaling_keychain = ["user", "selected", "gui", "show"]
-				var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-				print("unhide gui if hidden: ", _tmp_signaling_string)
-				
-				UserInputManager._logic.general_processing_pipeline(tce_signaling_uuid, "true")
+			# # REMARK: DOES NOT WORK
+			# if _tmp_index != 4:
+			# 	## Approach 1: Execute gui show via UserInputManager (does not work)
+			# 	# _tmp_signaling_keychain = ["user", "selected", "gui", "show"]
+			# 	# var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+			# 	# UserInputManager._logic.general_processing_pipeline(tce_signaling_uuid, "actionSelector")
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
