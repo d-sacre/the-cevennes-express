@@ -10,9 +10,9 @@ extends PanelContainer
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const _controls_description_lut : Dictionary = {
-	"MOUSE_KEYBOARD_MIXED": """12345: Select Tile Action Mode, \nWASD: Move Camera along X and Z,\nMOUSE WHEEL: Zoom in/out,\nSHIFT: Increase Camera/Zoom Speed,\nRIGHT CLICK: Rotate Tile,\nLEFT CLICK: Request Tile Action,\nESC/BACKSPACE: Menu""",
-	"KEYBOARD_ONLY": "12345 = Select Tile Action Mode, \nWASD: Move Floating Cursor, \nE: Rotate Tile,\nQ/ENTER: Request Tile Action, \nARROWS: Select New Tile Definition, \nSHIFT: Increase Movement/Zoom Speed, \nPOINT: Zoom in,\nCOMMA: Zoom out, \nESC/BACKSPACE: Menu",
-	"CONTROLLER_ONLY" : "LEFT STICK: Move Floating Cursor, \nL1: Rotate Tile Clockwise,\nL2: Tile Action, \nRIGHT STICK: Select New Tile Definition,\nY: Previous Tile Action, \nA: Next Tile Action, \nR1/R2: Zoom in/out, \nHOME: Menu"
+	"MOUSE_KEYBOARD_MIXED": """ (QWERTZ Keyboard & Mouse)\n\n12345: Select Tile Action Mode, \nWASD: Move Camera along X and Z,\nMOUSE WHEEL: Zoom in/out,\nSHIFT: Increase Camera/Zoom Speed,\nRIGHT CLICK: Rotate Tile,\nLEFT CLICK: Request Tile Action,\nESC/BACKSPACE: Menu""",
+	"KEYBOARD_ONLY": " (QWERTZ Keyboard)\n\n12345 = Select Tile Action Mode, \nWASD: Move Floating Cursor, \nE: Rotate Tile,\nQ/ENTER: Request Tile Action, \nARROWS: Select New Tile Definition, \nSHIFT: Increase Movement/Zoom Speed, \nPOINT: Zoom in,\nCOMMA: Zoom out, \nESC/BACKSPACE: Menu",
+	"CONTROLLER_ONLY" : " (Nitendo Style Controller)\n\nLEFT STICK: Move Floating Cursor, \nL1: Rotate Tile Clockwise,\nL2: Tile Action, \nRIGHT STICK: Select New Tile Definition,\nY: Previous Tile Action, \nA: Next Tile Action, \nR1/R2: Zoom in/out, \nHOME: Menu"
 }
 
 ################################################################################
@@ -84,6 +84,6 @@ func _process(_delta : float) -> void:
 	_debug_info_string += "\n\n[u]Geometry[/u]\n\n" + self._geometry_info_prefix + _rendered_vertices + " Vertices, "
 
 	_debug_info_string += "\n\n Camera Zoom = " + str(self._managerReferences["cameraManager"]._zoom_current.x)
-	_debug_info_string += "\n\n[u]Controls[/u]\n\n" + self._controls_description_lut[self._inputMethod]
+	_debug_info_string += "\n\n[u]Controls[/u]" + self._controls_description_lut[self._inputMethod]
 
 	_debugText.set_bbcode(_debug_info_string)
