@@ -1,0 +1,69 @@
+    
+- # Current  
+	- ## Mouse & Keyboard  
+		- ### Remarks:  
+			- Key names are for **QWERTZ** keyboards  
+			- Mouse should have a scroll wheel, but zooming can also be done with the  [keyboard shortcut](65ce0c5e-858f-41d6-9e0c-3b46d797320c) `,` and `.`  
+			- Most of the keyboard shortcuts defined in [Keyboard only](65ce0c5e-858f-41d6-9e0c-3b46d797320c) will also work  
+		- ### Input Map  
+			- #### General:  
+				- `MOUSE_CLICK_LEFT`: Confirm  
+				- `MOUSE_CLICK_RIGHT`: Option General  
+			- #### Game:  
+				- ##### All Modes:  
+					- `MOUSE_CLICK_LEFT`: Execute *Tile Action* (default: *"Place Tile"*, creative: depending on *Tile Action Mode*)  
+					- `MOUSE_CLICK_RIGHT`: Rotate Tile Clockwise by 60°  
+					- `W`, `A`, `S`, `D`: Move Camera along Grid (x-z-Plane)  
+					- `MOUSE_WHEEL_UP`/`MOUSE_WHEEL_DOWN`: Zoom Camera in/out  
+					- `SHIFT`: Increases Camera Movement/Zoom Speed as long as it is pressed  
+					- `ESC`/`BACKSPACE`: Toggle In-game Menu  
+				- ##### Creative:  
+					- `1`, `2`, `3`, `4`, `5`: Select *Tile Action Mode*  
+					- `NUM1`, `NUM2`, `NUM3`, `NUM4`, `NUM5`:  Alternate for `1`, `2`, `3`, `4`, `5`  
+				-  
+	- ## Keyboard only  
+		- ### Remarks:  
+			- Key names are for **QWERTZ** keyboards  
+		- ### Input Map  
+			- #### General:  
+				- `Q`/`ENTER`: Confirm  
+				- `E`: Option General  
+			- #### Game:  
+				- ##### All Modes:  
+					- `Q`/`ENTER`: Execute *Tile Action* (default: *"Place Tile"*, creative: depending on *Tile Action Mode*)  
+					- `E`: Rotate Tile Clockwise by 60°  
+					- `W`, `A`, `S`, `D`: Move Floating Selector along Grid (x-z-Plane)  
+					- `ARROW_UP`, `ARROW_DOWN`, `ARROW_LEFT`, `ARROW_RIGHT`:  Select New Tile Definition  
+					- `.`/`,`: Zoom Camera in/out  
+					- `SHIFT`: Increases Camera Movement/Zoom Speed as long as it is pressed  
+					- `ESC`/`BACKSPACE`: Toggle In-game Menu  
+				- ##### Creative:  
+					- `1`, `2`, `3`, `4`, `5`: Select *Tile Action Mode*  
+					- `NUM1`, `NUM2`, `NUM3`, `NUM4`, `NUM5`:  Alternate for `1`, `2`, `3`, `4`, `5`  
+	-  
+	- ## Controller only  
+		- ### Remarks:  
+			- Method/key names are for **Nitendo** style controllers  
+			- For debugging purposes, Keyboard Alternates have been defined  
+			- Keyboard Alternate key names are for **QWERTZ** keyboards  
+		- ### Input Map  
+			- #### Game:  
+				- ##### All Modes:  
+					- `L2`: Execute *Tile Action* (default: *"Place Tile"*, creative: depending on *Tile Action Mode*)  
+					- `L1`: Rotate Tile Clockwise by 60°  
+					- `LEFT_STICK`: Move Floating Selector along Grid (x-z-Plane)  
+					- `RIGHT_STICK`: Select New Tile Definition  
+					- `R1`/`R2`: Zoom Camera in/out  
+					- `HOME`: Toggle In-game Menu  
+				- ##### Creative:  
+					- `Y`: Move *Tile Action Mode* Selector one step to the left  
+					- `A`: Move *Tile Action Mode* Selector one step to the right  
+		- ### Keyboard Alternates  
+			- `I` -> `L2`: Execute *Tile Action* (default: *"Place Tile"*, creative: depending on *Tile Action Mode*)  
+			- `Z` -> `L1`: Rotate Tile Clockwise by 60°  
+			- `X`/`Y` -> `R1`/`R2`: Zoom Camera in/out  
+			- `U`, `H`, `J`, `K` -> `LEFT_STICK`: Move Floating Selector along Grid (x-z-Plane)  
+			- `Ü`, `Ö`, `Ä`, `#` -> `RIGHT_STICK`: Select New Tile Definition  
+			- `TAB` -> `HOME`: Toggle In-game Menu  
+			- `C` -> `Y`: Move *Tile Action Mode* Selector one step to the left  
+			- `V` -> `A`: Move *Tile Action Mode* Selector one step to the right  
