@@ -112,6 +112,18 @@ const GODOT_MISC_INPUT_EVENT_LUT : Dictionary = {
 		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
 		"SIGNALING_UUID_LUT_KEYCHAIN": ["decrement"]
 	},
+	"controller_home": {
+		"PROCESS_MODE": ["just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["cancel"]
+	},
+	"controller_action_button_y": {
+		"PROCESS_MODE": ["just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["previous_option"]
+	},
+	"controller_action_button_a": {
+		"PROCESS_MODE": ["just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["next_option"]
+	},
 	"controller_L1": {
 		"PROCESS_MODE": ["just_released"],
 		"SIGNALING_UUID_LUT_KEYCHAIN": ["rotate_tile_clockwise"]
@@ -121,12 +133,12 @@ const GODOT_MISC_INPUT_EVENT_LUT : Dictionary = {
 		"SIGNALING_UUID_LUT_KEYCHAIN": ["perform_tile_action"]
 	},
 	"controller_R1": {
-		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["next_option"]
+		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["increment"]
 	},
 	"controller_R2": {
-		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["previous_option"]
+		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
+		"SIGNALING_UUID_LUT_KEYCHAIN": ["decrement"]
 	}
 }
 
@@ -289,7 +301,7 @@ func get_current_gui_context() -> String:
 
 func set_current_input_method(method : String) -> void:
 	self._currentInputMethod = method
-	print("Current Input Method changed to ", self._currentInputMethod)
+	print("=> UserInputManager: Current Input Method changed to ", self._currentInputMethod)
 
 	if self.context.match("game*"):
 		if method == "keyboard::only":

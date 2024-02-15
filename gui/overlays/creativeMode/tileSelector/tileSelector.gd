@@ -47,6 +47,15 @@ var _tile_tduuid_to_list_index_lut : Dictionary = {}
 var _context : String 
 
 var _lastSelectionAsmr : Vector2 = Vector2(0,0)
+var _asmrRepetitionAllowed : bool = false
+var _asmr_repetition_delay : float = 0.75
+
+var _error : int 
+
+################################################################################
+#### ONREADY MEMBER VARIABLES ##################################################
+################################################################################
+onready var _asmrRepetitionDelayTimer : Timer = $asmrRepetitionDelayTimer
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -108,9 +117,22 @@ func _select_item(index : int) -> void:
 
 
 func _select_tile_definition_by_asmr(asmr : Vector2) -> void:
-	self._lastSelectionAsmr = asmr
+	if self._lastSelectionAsmr != asmr:
+		self._lastSelectionAsmr = asmr
 
-	if asmr != Vector2(0,0):
+		if self._lastSelectionAsmr != Vector2(0,0):
+			self._asmrRepetitionAllowed = true
+
+			if self._asmrRepetitionDelayTimer.is_stopped():
+				self._asmrRepetitionDelayTimer.start(self._asmr_repetition_delay)
+		else:
+			self._asmrRepetitionAllowed = false
+
+			if not self._asmrRepetitionDelayTimer.is_stopped():
+				self._asmrRepetitionDelayTimer.stop()
+			
+
+	if self._lastSelectionAsmr != Vector2(0,0):
 		var _maxColumns : int = self._tileList.get_max_columns()
 		var _itemCount : int = self._tileList.get_item_count()
 		var _currentIndex : int = (self._tileList.get_selected_items())[0]
@@ -130,7 +152,7 @@ func _select_tile_definition_by_asmr(asmr : Vector2) -> void:
 			_tmp_index1D = 0
 
 		self._select_item(_tmp_index1D)
-	
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
@@ -189,6 +211,10 @@ func _on_mouse_entered() -> void:
 func _on_mouse_exited() -> void:
 	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "exited")
 
+func _on_asmr_repetition_timeout() -> void:
+	if self._asmrRepetitionAllowed:
+		self._select_tile_definition_by_asmr(self._lastSelectionAsmr)
+
 func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
 	var _tmp_signaling_keychain : Array = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
 	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
@@ -213,6 +239,10 @@ func _ready() -> void:
 	self._tileList.connect("item_selected", self, "_on_item_selected")
 	self._tileList.connect("mouse_entered", self, "_on_mouse_entered")
 	self._tileList.connect("mouse_exited", self, "_on_mouse_exited")
+
+	# internal for asmr repetition
+	self._asmrRepetitionDelayTimer.set_wait_time(self._asmr_repetition_delay)
+	self._error = self._asmrRepetitionDelayTimer.connect("timeout", self, "_on_asmr_repetition_timeout")
 
 	# initialize signaling from/to User Input Manager
 	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")

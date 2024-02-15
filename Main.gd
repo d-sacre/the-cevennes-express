@@ -116,3 +116,5 @@ func _ready() -> void:
 
 	# Initialize debug
 	$guiPopupCanvasLayer/debugPanelContainer.initialize(self._managerReferences)
+
+	print("\n<GAME>")

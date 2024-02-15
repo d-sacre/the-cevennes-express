@@ -114,7 +114,7 @@ func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) ->
 
 	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
 		if value is Vector3:
-			self._position_requested = value + Vector3(-1.5, self.CAMERA_POSITION_DEFAULT.y, self.CAMERA_POSITION_DEFAULT.z)
+			self._position_requested = value + Vector3(-0.75, self.CAMERA_POSITION_DEFAULT.y, self.CAMERA_POSITION_DEFAULT.z-2)
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

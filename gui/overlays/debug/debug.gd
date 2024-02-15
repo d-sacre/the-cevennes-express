@@ -10,9 +10,9 @@ extends PanelContainer
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const _controls_description_lut : Dictionary = {
-	"MOUSE_KEYBOARD_MIXED": """12345: Select Tile Action Mode, \nWASD: Move Camera along X and Z,\nShift: Increase Camera Speed\nMouse Wheel: Zoom in/out,\nRight Click: Rotate Tile,\nLeft Click: Request Tile Action,\nESC/BACKSPACE: Menu""",
-	"KEYBOARD_ONLY": "12345 = Select Tile Action Mode, \nWASD: Move Floating Cursor,\nPOINT: Zoom in,\nCOMMA: Zoom out\nE: Rotate Tile,\nQ/ENTER: Request Tile Action,\nESC/BACKSPACE: Menu",
-	"CONTROLLER_ONLY" : "LEFT STICK: Move Tile on Grid, \nL1: Rotate Tile Clockwise,\nL2: Place Tile, \nRIGHT STICK: Select New Tile Definition, \nR1: Next Tile Action, \nR2: Previous Tile Action"
+	"MOUSE_KEYBOARD_MIXED": """12345: Select Tile Action Mode, \nWASD: Move Camera along X and Z,\nMOUSE WHEEL: Zoom in/out,\nSHIFT: Increase Camera/Zoom Speed,\nRIGHT CLICK: Rotate Tile,\nLEFT CLICK: Request Tile Action,\nESC/BACKSPACE: Menu""",
+	"KEYBOARD_ONLY": "12345 = Select Tile Action Mode, \nWASD: Move Floating Cursor, \nE: Rotate Tile,\nQ/ENTER: Request Tile Action, \nARROWS: Select New Tile Definition, \nSHIFT: Increase Movement/Zoom Speed, \nPOINT: Zoom in,\nCOMMA: Zoom out, \nESC/BACKSPACE: Menu",
+	"CONTROLLER_ONLY" : "LEFT STICK: Move Floating Cursor, \nL1: Rotate Tile Clockwise,\nL2: Tile Action, \nRIGHT STICK: Select New Tile Definition,\nY: Previous Tile Action, \nA: Next Tile Action, \nR1/R2: Zoom in/out, \nHOME: Menu"
 }
 
 ################################################################################
