@@ -243,7 +243,7 @@ func initialize_floating_tile() -> void:
 		var tile_definition = self._managerReferences["tileDefinitionManager"].get_tile_definition_database_entry(tile_definition_uuid) 
 		self._managerReferences["hexGridManager"].create_floating_tile(tile_definition)
 
-func update_tile_definition_uuid(uuid : String) -> void:
+func _update_tile_definition_uuid(uuid : String) -> void:
 	self._tileDefinitionUuid = uuid
 
 ################################################################################

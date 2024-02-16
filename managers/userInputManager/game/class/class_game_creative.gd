@@ -15,8 +15,8 @@ extends game_base
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES ############################
 ################################################################################
 ################################################################################
-func update_tile_definition_uuid(uuid : String) -> void:
-	.update_tile_definition_uuid(uuid)
+func _update_tile_definition_uuid(uuid : String) -> void:
+	._update_tile_definition_uuid(uuid)
 	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
 	var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
 	UserInputManager.send_public_command(_tmp_signaling_string, self._tileDefinitionUuid)
@@ -136,7 +136,7 @@ func gui_context_management_pipeline(tce_signaling_uuid : String, value) -> void
 		# print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
 
 ################################################################################
-#### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES USER INPUT PIPELINE #########
+#### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES GENERAL PROCESSING PIPELINE #
 ################################################################################
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func general_processing_pipeline(tce_signaling_uuid : String, value) -> void: 
@@ -207,7 +207,7 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 		# DESCRIPTION: Handling of selections
 		if self._is_correct_context_for_obtaining_new_tile_definition(tce_signaling_uuid):
 			if value is String:
-				self.update_tile_definition_uuid(value)
+				self._update_tile_definition_uuid(value)
 				self.change_floating_tile_type()
 
 		# DESCRIPTION: Handling of grid interaction
@@ -221,8 +221,14 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 			var _tmp_tduuid : String = self._managerReferences["hexGridManager"].get_tile_definition_uuid_from_current_grid_index()
 			
 			if _tmp_tduuid != "":
-				self.update_tile_definition_uuid(_tmp_tduuid)
+				self._update_tile_definition_uuid(_tmp_tduuid)
 				audioManager.play_sfx(["game", "tile", "pick"])
+
+				# DESCRIPTION: Change automatically to "place" mode as a quality of life measure
+				var _tmp_signaling_keychain : Array  = ["UserInputManager", "requesting", "global", "execution", "option1"]
+				var _tmp_signaling_string : String  = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
+				UserInputManager.send_public_command(_tmp_signaling_string, 1)
+
 			else:
 				self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
 				audioManager.play_sfx(["game", "tile", "fail"])
@@ -326,7 +332,7 @@ func _manage_grid_to_gui_transition(tce_signaling_uuid : String, value : String)
 			self._currentGuiMouseContext += "void"
 
 		self._managerReferences["cameraManager"].enable_zooming()
-		self._managerReferences["cameraManager"].enable_raycasting()
+		self._managerReferences["cameraManager"].enable_raycasting() # REMARK: Should only be called in "*mouse*" Input Method Modes
 
 func replace_tile() -> void:
 	if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():
@@ -377,5 +383,5 @@ func delete_tile() -> void:
 # REMARK: It is necessary to call the base class _init function
 # source: https://forum.godotengine.org/t/how-do-i-pass-in-arguments-to-parent-script-when-extending-a-script/24883/2
 func _init(ctxt, mr, glr).(ctxt, mr, glr) -> void:
-	self.update_tile_definition_uuid(UserInputManager._curentTileDefinitionUUID)
+	self._update_tile_definition_uuid(UserInputManager._curentTileDefinitionUUID)
 

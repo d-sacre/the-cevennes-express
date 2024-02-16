@@ -9,7 +9,7 @@ extends Node
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal user_input_manager_send_public_command(tce_signaling_uuid, value)
+signal transmit_global_command(tce_signaling_uuid, value)
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
@@ -37,7 +37,7 @@ const INPUT_METHOD_MODES : Dictionary = {
 	"CONTROLLER_ONLY": {
 		"TEXT": "Controller (only)",
 		"TCE_INPUT_METHOD_UUID": "controller" + TCE_SIGNALING_UUID_SEPERATOR + "only",
-		"AVAILABLE": true
+		"AVAILABLE": false
 	},
 	"TOUCH_ONLY": {
 		"TEXT": "Touch (only)",
@@ -289,7 +289,7 @@ func match_tce_signaling_uuid(tce_signaling_uuid : String, keyChain : Array) -> 
 	return tce_signaling_uuid.match(_tmpString)
 
 func send_public_command(tce_signaling_uuid : String, value) -> void:
-	emit_signal("user_input_manager_send_public_command", tce_signaling_uuid, value)
+	emit_signal("transmit_global_command", tce_signaling_uuid, value)
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func call_contextual_logic_with_signaling_keychain(keyChain : Array, value) -> void:
@@ -323,13 +323,13 @@ func set_current_input_method(method : String) -> void:
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
-func _on_gui_selector_context_changed(tce_signaling_uuid : String, interaction : String) -> void:
+func _on_gui_context_changed(tce_signaling_uuid : String, interaction : String) -> void:
 	_logic.gui_context_management_pipeline(tce_signaling_uuid, interaction)
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func _on_special_user_input(tce_signaling_uuid : String, value) -> void:
 	# print(tce_signaling_uuid) # REMARK: For debugging purposes only
-	_logic.general_processing_pipeline(tce_signaling_uuid, value)
+	self._logic.general_processing_pipeline(tce_signaling_uuid, value)
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

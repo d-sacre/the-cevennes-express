@@ -10,7 +10,7 @@ extends Control
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
 signal new_tile_definition_selected(tce_signaling_uuid, tile_definition_uuid)
-signal gui_mouse_context(context, status)
+signal gui_mouse_context_changed(context, status)
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
@@ -206,16 +206,16 @@ func _on_item_selected(index : int) -> void:
 	self._select_item(index)
 
 func _on_mouse_entered() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "entered")
+	emit_signal("gui_mouse_context_changed", self.tce_signaling_uuid_lut["gui"]["string"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("gui_mouse_context", self.tce_signaling_uuid_lut["gui"]["string"], "exited")
+	emit_signal("gui_mouse_context_changed", self.tce_signaling_uuid_lut["gui"]["string"], "exited")
 
 func _on_asmr_repetition_timeout() -> void:
 	if self._asmrRepetitionAllowed:
 		self._select_tile_definition_by_asmr(self._lastSelectionAsmr)
 
-func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
+func _on_user_input_manager_global_command(tce_signaling_uuid : String, value) -> void:
 	var _tmp_signaling_keychain : Array = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
 	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
 		if value is String:
@@ -245,9 +245,9 @@ func _ready() -> void:
 	self._error = self._asmrRepetitionDelayTimer.connect("timeout", self, "_on_asmr_repetition_timeout")
 
 	# initialize signaling from/to User Input Manager
-	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")
+	UserInputManager.connect("transmit_global_command", self, "_on_user_input_manager_global_command")
 	self.connect("new_tile_definition_selected", UserInputManager, "_on_special_user_input")
-	self.connect("gui_mouse_context", UserInputManager, "_on_gui_selector_context_changed")
+	self.connect("gui_mouse_context_changed", UserInputManager, "_on_gui_context_changed")
 
 	# set icon size accordingly to amount of columns
 	var _tileListWidth = _tileList.get_size().x

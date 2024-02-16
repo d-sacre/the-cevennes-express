@@ -109,7 +109,7 @@ func set_movement_speed_mode(mode : String) -> void:
 func _on_camera_raycast_result(current_collision_information : Array) -> void:
 	emit_signal("raycast_result", current_collision_information)
 
-func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) -> void:
+func _on_user_input_manager_global_command(tce_signaling_uuid : String, value) -> void:
 	var _tmp_signaling_keychain : Array  = ["*UserInputManager", "requesting", "global", "execution", "cursor", "floating", "position", "update"]
 
 	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
@@ -121,7 +121,7 @@ func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, value) ->
 ################################################################################
 func _ready() -> void:
 	self._camera.connect("camera_raycast_result", self, "_on_camera_raycast_result")
-	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")
+	UserInputManager.connect("transmit_global_command", self, "_on_user_input_manager_global_command")
 
 ################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################

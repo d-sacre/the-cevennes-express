@@ -3,7 +3,7 @@ extends PanelContainer
 const BUTTON_SOURCES : Array = ["ingameMenu_buttons"]
 const BUTTON_SIGNALS : Array = ["button_pressed", "button_entered_hover", "button_exited_hover"]
 
-func _on_user_input_manager_is_requesting(tce_signaling_uuid : String, _value) -> void:
+func _on_user_input_manager_global_command(tce_signaling_uuid : String, _value) -> void:
 	var _tmp_signaling_keychain : Array = ["*", "UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
 
 	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
@@ -18,7 +18,7 @@ func _ready():
 	if OS.has_feature("JavaScript"):
 		$VBoxContainer/exitButtonHBox.visible = false
 
-	UserInputManager.connect("user_input_manager_send_public_command", self, "_on_user_input_manager_is_requesting")
+	UserInputManager.connect("transmit_global_command", self, "_on_user_input_manager_global_command")
 
 # func _process(delta):
 	# if Input.is_action_just_pressed("keyboard_cancel"):
