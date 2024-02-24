@@ -3,13 +3,13 @@
 void GodotTestClass::_init() {}
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void GodotTestClass::Print(const godot::String& str)
+void GodotTestClass::Print(godot::String str)
 {
 	std::cout << str.utf8().get_data() << "\n";
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void GodotTestClass::PrintGodot(const godot::String& str)
+void GodotTestClass::PrintGodot(godot::String str)
 {
 	godot::Godot::print(str);
 }

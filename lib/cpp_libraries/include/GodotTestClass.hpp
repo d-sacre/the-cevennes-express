@@ -20,8 +20,8 @@ class GodotTestClass : public godot::Reference
 		godot::register_method("Add", &GodotTestClass::Add);
 	}
 
-	void	Print(const godot::String& str);
-	void	PrintGodot(const godot::String& str);
+	void	Print(godot::String str);
+	void	PrintGodot(godot::String str);
 	int32_t Double(int32_t toDouble);
 	float	Add(float first, float second);
 };
