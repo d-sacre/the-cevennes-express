@@ -9,7 +9,7 @@ extends Control
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal new_tile_definition_selected(tce_signaling_uuid, tile_definition_uuid)
+signal new_tile_definition_selected(tce_event_uuid, tile_definition_uuid)
 signal gui_mouse_context_changed(context, status)
 
 ################################################################################
@@ -181,8 +181,8 @@ func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 func initialize(context : String, tdm : Object) -> void:
 	self.initialize_tile_list(tdm)
 	self._context = context
-	self.tce_signaling_uuid_lut["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid_lut["gui"]["list"])
-	self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["list"])
+	self.tce_signaling_uuid_lut["gui"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_signaling_uuid_lut["gui"]["list"])
+	self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["list"])
 
 	# SESCRIPTION: Required to set proper initialization value of _curentTileDefinitionUUID
 	# REMARK: Hopefully a temporary solution? Perhaps use UserInputManager command bus?
@@ -215,17 +215,17 @@ func _on_asmr_repetition_timeout() -> void:
 	if self._asmrRepetitionAllowed:
 		self._select_tile_definition_by_asmr(self._lastSelectionAsmr)
 
-func _on_user_input_manager_global_command(tce_signaling_uuid : String, value) -> void:
-	var _tmp_signaling_keychain : Array = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
-	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+func _on_user_input_manager_global_command(tce_event_uuid : String, value) -> void:
+	var _tmp_eventKeychain : Array = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
+	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
 		if value is String:
 			var _tmp_list_index : int = self._tile_tduuid_to_list_index_lut[value]
 			self._tileList.unselect_all()
 			self._tileList.select(_tmp_list_index)
 			self._tileList.ensure_current_is_visible()
 
-	_tmp_signaling_keychain = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
-	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+	_tmp_eventKeychain = ["game", "creative", "UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
+	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
 		if value is Vector2:
 			self._select_tile_definition_by_asmr(value)
 
@@ -245,7 +245,7 @@ func _ready() -> void:
 	self._error = self._asmrRepetitionDelayTimer.connect("timeout", self, "_on_asmr_repetition_timeout")
 
 	# initialize signaling from/to User Input Manager
-	UserInputManager.connect("transmit_global_command", self, "_on_user_input_manager_global_command")
+	UserInputManager.connect("transmit_global_event", self, "_on_user_input_manager_global_command")
 	self.connect("new_tile_definition_selected", UserInputManager, "_on_special_user_input")
 	self.connect("gui_mouse_context_changed", UserInputManager, "_on_gui_context_changed")
 

@@ -9,44 +9,44 @@ extends Node
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal transmit_global_command(tce_signaling_uuid, value)
+signal transmit_global_event(tce_event_uuid, value)
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 # TO-DO: should be moved into another autoload, so that other parts can access
 # it in a more logical/orderly manner
-const TCE_SIGNALING_UUID_SEPERATOR : String = "::" 
+const TCE_EVENT_UUID_SEPERATOR : String = "::" 
 
 const INPUT_METHOD_MODES : Dictionary = {
 	"MOUSE_ONLY": {
 		"TEXT": "Mouse (only)",
-		"TCE_INPUT_METHOD_UUID": "mouse" + TCE_SIGNALING_UUID_SEPERATOR + "only",
+		"TCE_INPUT_METHOD_UUID": "mouse" + TCE_EVENT_UUID_SEPERATOR + "only",
 		"AVAILABLE": false
 	},
 	"MOUSE_KEYBOARD_MIXED": {
 		"TEXT": "Mouse & Keyboard (mixed)",
-		"TCE_INPUT_METHOD_UUID": "mouse" + TCE_SIGNALING_UUID_SEPERATOR + "keyboard" + TCE_SIGNALING_UUID_SEPERATOR + "mixed",
+		"TCE_INPUT_METHOD_UUID": "mouse" + TCE_EVENT_UUID_SEPERATOR + "keyboard" + TCE_EVENT_UUID_SEPERATOR + "mixed",
 		"AVAILABLE": true
 	},
 	"KEYBOARD_ONLY": {
 		"TEXT": "Keyboard (only)",
-		"TCE_INPUT_METHOD_UUID": "keyboard" + TCE_SIGNALING_UUID_SEPERATOR + "only",
+		"TCE_INPUT_METHOD_UUID": "keyboard" + TCE_EVENT_UUID_SEPERATOR + "only",
 		"AVAILABLE": true
 	},
 	"CONTROLLER_ONLY": {
 		"TEXT": "Controller (only)",
-		"TCE_INPUT_METHOD_UUID": "controller" + TCE_SIGNALING_UUID_SEPERATOR + "only",
+		"TCE_INPUT_METHOD_UUID": "controller" + TCE_EVENT_UUID_SEPERATOR + "only",
 		"AVAILABLE": false
 	},
 	"TOUCH_ONLY": {
 		"TEXT": "Touch (only)",
-		"TCE_INPUT_METHOD_UUID": "touch" + TCE_SIGNALING_UUID_SEPERATOR + "only",
+		"TCE_INPUT_METHOD_UUID": "touch" + TCE_EVENT_UUID_SEPERATOR + "only",
 		"AVAILABLE": false
 	}
 }
 
-const TCE_SIGNALING_UUID_INPUT_EVENTS_LUT : Dictionary = {
+const TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT : Dictionary = {
 	"confirm": ["user", "interaction", "confirm"],
 	"option": {
 		"general": ["user", "interaction", "option", "general"],
@@ -71,74 +71,74 @@ const TCE_SIGNALING_UUID_INPUT_EVENTS_LUT : Dictionary = {
 	"previous_option": ["user", "interaction", "option", "previous"]
 }
 
-const GODOT_MISC_INPUT_EVENT_LUT : Dictionary = {
+const GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT : Dictionary = {
 	"mouse_click_left": {
 		"PROCESS_MODE": ["just_pressed"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["confirm"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["confirm"]
 	},
 	"mouse_click_right":  {
 		"PROCESS_MODE": ["just_pressed"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["option", "general"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["option", "general"]
 	},
 	"mouse_wheel_up" : {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["increment"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["increment"]
 	}, 
 	"mouse_wheel_down": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["decrement"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["decrement"]
 	}, 
 	"keyboard_modifier": {
 		"PROCESS_MODE": ["just_pressed", "just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["modifier"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["modifier"]
 	},
 	"keyboard_cancel": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["cancel"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["cancel"]
 	},
 	"keyboard_confirm": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["confirm"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["confirm"]
 	},
 	"keyboard_option_general": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["option", "general"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["option", "general"]
 	},
 	"keyboard_increment": {
 		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["increment"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["increment"]
 	},
 	"keyboard_decrement": {
 		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["decrement"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["decrement"]
 	},
 	"controller_home": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["cancel"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["cancel"]
 	},
 	"controller_action_button_y": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["previous_option"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["previous_option"]
 	},
 	"controller_action_button_a": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["next_option"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["next_option"]
 	},
 	"controller_L1": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["rotate_tile_clockwise"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["rotate_tile_clockwise"]
 	},
 	"controller_L2": {
 		"PROCESS_MODE": ["just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["perform_tile_action"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["perform_tile_action"]
 	},
 	"controller_R1": {
 		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["increment"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["increment"]
 	},
 	"controller_R2": {
 		"PROCESS_MODE": ["just_pressed", "pressed", "just_released"],
-		"SIGNALING_UUID_LUT_KEYCHAIN": ["decrement"]
+		"TCE_EVENT_UUID_LUT_KEYCHAIN": ["decrement"]
 	}
 }
 
@@ -172,19 +172,19 @@ var _logic : Object
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
-func _create_string_with_tce_signaling_uuid_seperator(keyChain : Array) -> String:
+func _create_string_with_tce_event_uuid_seperator(keyChain : Array) -> String:
 	var _tmpString : String = ""
 	var _keyChainLength : int = len(keyChain)
 
 	for _i in range(_keyChainLength):
 		_tmpString += keyChain[_i]
 		if _i != _keyChainLength - 1:
-			_tmpString +=  self.TCE_SIGNALING_UUID_SEPERATOR
+			_tmpString +=  self.TCE_EVENT_UUID_SEPERATOR
 
 	return _tmpString
 
 func _create_dictionary_of_misc_current_input_events() -> void:
-	var _db : Dictionary = self.GODOT_MISC_INPUT_EVENT_LUT
+	var _db : Dictionary = self.GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT
 	var _events : Array = _db.keys()
 	var _eventsSortedByType : Dictionary = {
 		"just_pressed" : [],
@@ -220,16 +220,16 @@ func _process_movement_request_on_device_channel(device : String, channelNo : in
 	# one grid per key press. Keeping a key pressed does not allow for moving multiple grids at a time. The solution
 	# was to add a timer based retrigger system to the receiving component
 	if self._lastMovementRequest["channel" + str(channelNo)] != _movementRequest:
-		var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS_LUT, ["movement", "channel"+str(channelNo)])
-		self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, _movementRequest)
+		var _tmp_eventKeychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT, ["movement", "channel"+str(channelNo)])
+		self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, _movementRequest)
 		self._lastMovementRequest["channel" + str(channelNo)] = _movementRequest
 
 func _process_input_event_by_method_name(event : String, methodName : String) -> void:
 	if Input.call("is_action_" + methodName,event):
-		if self.GODOT_MISC_INPUT_EVENT_LUT.has(event):
-			var _input_uuid_keychain : Array = self.GODOT_MISC_INPUT_EVENT_LUT[event]["SIGNALING_UUID_LUT_KEYCHAIN"]
-			var _tmp_signaling_keychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_SIGNALING_UUID_INPUT_EVENTS_LUT, _input_uuid_keychain)
-			self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, methodName)
+		if self.GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT.has(event):
+			var _input_uuid_keychain : Array = self.GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT[event]["TCE_EVENT_UUID_LUT_KEYCHAIN"]
+			var _tmp_eventKeychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT, _input_uuid_keychain)
+			self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, methodName)
 		else:
 			print("Error: Godot Input Event not found in LUT!")
 
@@ -256,7 +256,7 @@ func initialize(_base_context : String, cim: String, clr : Object, mr : Dictiona
 	self._currentInputMethod = cim
 	self._logic = clr.logic 
 
-	var _base_context_list : Array = self.context.split(self.TCE_SIGNALING_UUID_SEPERATOR)
+	var _base_context_list : Array = self.context.split(self.TCE_EVENT_UUID_SEPERATOR)
 	self.base = _base_context_list[0]
 
 	# DESCRIPTION: Select the misc input events to process according to current input method
@@ -265,7 +265,7 @@ func initialize(_base_context : String, cim: String, clr : Object, mr : Dictiona
 	if self.base == "game":
 		self.variant = _base_context_list[1]
 		self._managerReferences["cameraManager"].enable_raycasting()
-		self._currentGuiMouseContext = self.context + UserInputManager.TCE_SIGNALING_UUID_SEPERATOR
+		self._currentGuiMouseContext = self.context + self.TCE_EVENT_UUID_SEPERATOR
 		
 		if self._currentInputMethod.match("*mouse*"):
 			self._currentGuiMouseContext += "void"
@@ -278,26 +278,32 @@ func initialize(_base_context : String, cim: String, clr : Object, mr : Dictiona
 		if _tmp.has("TILE_DEFINITION_UUID"):
 			self._curentTileDefinitionUUID = _tmp["TILE_DEFINITION_UUID"]
 
-func create_tce_signaling_uuid(ctxt : String, keyChain : Array) -> String:
-	var _tmpString : String =  ctxt + self.TCE_SIGNALING_UUID_SEPERATOR
-	_tmpString += self._create_string_with_tce_signaling_uuid_seperator(keyChain)
+func create_tce_event_uuid(ctxt : String, keyChain : Array) -> String:
+	var _tmpString : String =  ctxt + self.TCE_EVENT_UUID_SEPERATOR
+	_tmpString += self._create_string_with_tce_event_uuid_seperator(keyChain)
 
 	return _tmpString
 
-func match_tce_signaling_uuid(tce_signaling_uuid : String, keyChain : Array) -> bool:
-	var _tmpString = self._create_string_with_tce_signaling_uuid_seperator(keyChain)
-	return tce_signaling_uuid.match(_tmpString)
+func match_tce_event_uuid(tce_event_uuid : String, keyChain : Array) -> bool:
+	var _tmpString = self._create_string_with_tce_event_uuid_seperator(keyChain)
+	return tce_event_uuid.match(_tmpString)
 
-func send_public_command(tce_signaling_uuid : String, value) -> void:
-	emit_signal("transmit_global_command", tce_signaling_uuid, value)
+func transmit_global_event(tce_event_uuid : String, value) -> void:
+	emit_signal("transmit_global_event", tce_event_uuid, value)
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
-func call_contextual_logic_with_signaling_keychain(keyChain : Array, value) -> void:
-	var _tmp_signaling_uuid : String = self.create_tce_signaling_uuid(self.context, keyChain)
-	self._logic.general_processing_pipeline(_tmp_signaling_uuid, value)
+func call_contextual_logic_with_tce_event_keychain(keyChain : Array, value) -> void:
+	var _tmp_tce_event_uuid : String = self.create_tce_event_uuid(self.context, keyChain)
+	self._logic.general_processing_pipeline(_tmp_tce_event_uuid, value)
 
 func get_current_gui_context() -> String:
 	return self._currentGuiMouseContext
+
+func get_context() -> String:
+	return self.context
+
+func set_context(tce_context_uuid : String) -> void:
+	self.context = tce_context_uuid
 
 func set_current_input_method(method : String) -> void:
 	self._currentInputMethod = method
@@ -310,12 +316,12 @@ func set_current_input_method(method : String) -> void:
 			
 			# Debug Panel is possible. Might be only temporarily required.
 			self._managerReferences["hexGridManager"].set_current_grid_index(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary())
-			self._currentGuiMouseContext = self.context + self.TCE_SIGNALING_UUID_SEPERATOR + "game"	
+			self._currentGuiMouseContext = self.context + self.TCE_EVENT_UUID_SEPERATOR + "game"	
 
 		else:
 			self._managerReferences["hexGridManager"].disable_floating_selector_movement_by_asmr()
 			self._managerReferences["cameraManager"].enable_raycasting()
-			self._currentGuiMouseContext = self.context + self.TCE_SIGNALING_UUID_SEPERATOR + "void"
+			self._currentGuiMouseContext = self.context + self.TCE_EVENT_UUID_SEPERATOR + "void"
 
 	# DESCRIPTION: Update the misc input events to process according to current input method
 	self._create_dictionary_of_misc_current_input_events()
@@ -323,13 +329,13 @@ func set_current_input_method(method : String) -> void:
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
-func _on_gui_context_changed(tce_signaling_uuid : String, interaction : String) -> void:
-	_logic.gui_context_management_pipeline(tce_signaling_uuid, interaction)
+func _on_gui_context_changed(tce_event_uuid : String, interaction : String) -> void:
+	_logic.gui_context_management_pipeline(tce_event_uuid, interaction)
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
-func _on_special_user_input(tce_signaling_uuid : String, value) -> void:
-	# print(tce_signaling_uuid) # REMARK: For debugging purposes only
-	self._logic.general_processing_pipeline(tce_signaling_uuid, value)
+func _on_special_user_input(tce_event_uuid : String, value) -> void:
+	# print(tce_event_uuid) # REMARK: For debugging purposes only
+	self._logic.general_processing_pipeline(tce_event_uuid, value)
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
@@ -348,8 +354,8 @@ func _input(event : InputEvent) -> void:
 		if self._currentInputMethod.match("*mouse*"):
 			# mouse position (floating (tile) position)
 			if event is InputEventMouse:
-				var _tmp_signaling_keychain : Array = ["user", "interaction", "mouse", "movement"]
-				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, event.position)
+				var _tmp_eventKeychain : Array = ["user", "interaction", "mouse", "movement"]
+				self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, event.position)
 
 func _process(_delta : float) -> void:
 	# DESCRIPTION: General keyboard input handling
@@ -357,8 +363,8 @@ func _process(_delta : float) -> void:
 	if self._currentInputMethod.match("*keyboard*"):
 		for _i in range(1,6):
 			if Input.is_action_just_pressed("keyboard_option" + str(_i)):
-				var _tmp_signaling_keychain : Array = self.TCE_SIGNALING_UUID_INPUT_EVENTS_LUT["option"][str(_i)]#["user", "interaction", "keyboard", "option"+str(_i)]
-				self.call_contextual_logic_with_signaling_keychain(_tmp_signaling_keychain, "just_pressed")
+				var _tmp_eventKeychain : Array = self.TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT["option"][str(_i)]#["user", "interaction", "keyboard", "option"+str(_i)]
+				self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, "just_pressed")
 
 		# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
 		if self.base == "game":

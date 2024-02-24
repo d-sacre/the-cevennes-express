@@ -30,7 +30,7 @@ var _tileDefinitionUuid : String = "" # REMARK: Not a good solution; could crash
 var _currentGuiMouseContext : String 
 var _menu_ingame_visible : bool = false
 
-const _separator : String = UserInputManager.TCE_SIGNALING_UUID_SEPERATOR
+const _separator : String = UserInputManager.TCE_EVENT_UUID_SEPERATOR
 
 var _deInCrementStatus : String = "NONE"
 
@@ -65,61 +65,61 @@ func _is_tile_placeable() -> bool:
 func _is_tile_placeable_with_current_rotation() -> bool:
 	return false
 
-func _is_tce_signaling_uuid_matching(tce_signaling_uuid : String, keyChain : Array) -> bool:
-	return UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, keyChain)
+func _is_tce_signaling_uuid_matching(tce_event_uuid : String, keyChain : Array) -> bool:
+	return UserInputManager.match_tce_event_uuid(tce_event_uuid, keyChain)
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: BOOL EVENTS #####################################
 ################################################################################
-func _is_mouse_event(tce_signaling_uuid : String) -> bool: 
-	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "*"]):
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "mouse", "*"]):
+func _is_mouse_event(tce_event_uuid : String) -> bool: 
+	if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "*"]):
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "mouse", "*"]):
 			return true
 
 	return false
 
-func _is_input_event_confirm(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "confirm"])
+func _is_input_event_confirm(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "confirm"])
 
-func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "option", "general"])
+func _is_input_event_option_general(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "option", "general"])
 
-func _is_input_event_modifier(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","user", "interaction", "modifier"])
+func _is_input_event_modifier(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*","user", "interaction", "modifier"])
 
-func _is_input_event_cancel(tce_signaling_uuid: String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "cancel"])
+func _is_input_event_cancel(tce_event_uuid: String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "cancel"])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: BOOL CONTEXT ####################################
 ################################################################################
-func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
+func _is_correct_context_for_placing_tile(tce_event_uuid : String) -> bool:
 	var _condition : bool = false
 	if UserInputManager._currentInputMethod.match("*mouse*"):
-		_condition = self._is_input_event_confirm(tce_signaling_uuid) and self._is_current_gui_context_grid()
+		_condition = self._is_input_event_confirm(tce_event_uuid) and self._is_current_gui_context_grid()
 	elif (UserInputManager._currentInputMethod == "keyboard::only"): 
-		_condition = self._is_input_event_confirm(tce_signaling_uuid)
+		_condition = self._is_input_event_confirm(tce_event_uuid)
 	elif (UserInputManager._currentInputMethod == "controller::only"):
-		_condition = self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "perform", "tile", "action"])
+		_condition = self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "perform", "tile", "action"])
 
 	return _condition
 
-func _is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid : String) -> bool:
+func _is_correct_context_for_rotating_tile_clockwise(tce_event_uuid : String) -> bool:
 	var _condition : bool = false
 
 	if UserInputManager._currentInputMethod.match("*mouse*"):
-		_condition =  self._is_input_event_option_general(tce_signaling_uuid) and self._is_current_gui_context_grid()
+		_condition =  self._is_input_event_option_general(tce_event_uuid) and self._is_current_gui_context_grid()
 	elif (UserInputManager._currentInputMethod == "keyboard::only"):
-		_condition = self._is_input_event_option_general(tce_signaling_uuid)
+		_condition = self._is_input_event_option_general(tce_event_uuid)
 	elif (UserInputManager._currentInputMethod == "controller::only"):
-		_condition = self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "rotate", "tile", "clockwise"])
+		_condition = self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "rotate", "tile", "clockwise"])
 
 	return _condition
 
-func _is_correct_context_for_zooming(tce_signaling_uuid : String) -> bool:
+func _is_correct_context_for_zooming(tce_event_uuid : String) -> bool:
 	if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
-		var _cond_zoom_out : bool = self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "decrement"])
-		var _cond_zoom_in : bool = self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "increment"])
+		var _cond_zoom_out : bool = self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "decrement"])
+		var _cond_zoom_in : bool = self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "increment"])
 	
 		if _cond_zoom_out or _cond_zoom_in:
 			return true
@@ -129,8 +129,8 @@ func _is_correct_context_for_zooming(tce_signaling_uuid : String) -> bool:
 func _is_current_gui_context_grid() -> bool:
 	return self._currentGuiMouseContext.match("*" + self._separator + "grid")
 
-func _is_correct_context_for_movement_channelNumber(tce_signaling_uuid : String, channelNo : int) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid,["*", "user", "interaction", "movement", "channel"+str(channelNo)])
+func _is_correct_context_for_movement_channelNumber(tce_event_uuid : String, channelNo : int) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "movement", "channel"+str(channelNo)])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: TILE MANIPULATION ###############################
@@ -250,21 +250,21 @@ func _update_tile_definition_uuid(uuid : String) -> void:
 #### PUBLIC MEMBER FUNCTIONS: USER INPUT PIPELINE ##############################
 ################################################################################
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
-func general_processing_pipeline(tce_signaling_uuid : String, value) -> void: 
-	if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["game", "*"]): # Safety to ensure that only valid requests are processed
-		if self._is_correct_context_for_placing_tile(tce_signaling_uuid):
+func general_processing_pipeline(tce_event_uuid : String, value) -> void: 
+	if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["game", "*"]): # Safety to ensure that only valid requests are processed
+		if self._is_correct_context_for_placing_tile(tce_event_uuid):
 			self.place_tile()
 
-		if self._is_correct_context_for_rotating_tile_clockwise(tce_signaling_uuid):
+		if self._is_correct_context_for_rotating_tile_clockwise(tce_event_uuid):
 			self.rotate_tile_clockwise()
 
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "gui", "show"]):
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "gui", "show"]):
 			self._hide_gui(false)
 		
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "gui", "hide"]):
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "gui", "hide"]):
 			self._hide_gui(true)
 
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "mouse", "movement"]):
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "mouse", "movement"]):
 			if value is Vector2:
 				# DESCRIPTION: Only initiate raycast from camera when Input Mode uses mouse information
 				if UserInputManager._currentInputMethod.match("*mouse*"):
@@ -272,7 +272,7 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 			else:
 				print("Error: Variable type does not match")
 
-		if self._is_correct_context_for_movement_channelNumber(tce_signaling_uuid, 1):
+		if self._is_correct_context_for_movement_channelNumber(tce_event_uuid, 1):
 			if value is Vector2:
 				# DESCRIPTION: Request camera movement only in Input Mode which uses mouse information
 				# In all other cases: Manipulate the position of the floating tile
@@ -281,28 +281,28 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 				else: # REMARK: Temporary solution; it would be better to outsource floating tile into own dedicated scene
 					self._managerReferences["hexGridManager"].request_floating_selector_movement(value)
 
-		if self._is_correct_context_for_movement_channelNumber(tce_signaling_uuid, 2):
+		if self._is_correct_context_for_movement_channelNumber(tce_event_uuid, 2):
 			if value is Vector2:
 				self._movement_channel2(value)
 
-		if self._is_input_event_modifier(tce_signaling_uuid):
+		if self._is_input_event_modifier(tce_event_uuid):
 			if value is String:
 				if value == "just_pressed":
 					self._managerReferences["cameraManager"].set_movement_speed_mode("fast")
 				else:
 					self._managerReferences["cameraManager"].set_movement_speed_mode("slow")
 
-		if self._is_correct_context_for_zooming(tce_signaling_uuid):
-			if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "decrement"]):
+		if self._is_correct_context_for_zooming(tce_event_uuid):
+			if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "decrement"]):
 				self._camera_zooming_handler("decrement", value)
 				
-			elif self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "increment"]):
+			elif self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "increment"]):
 				self._camera_zooming_handler("increment", value)
 
-		if self._is_input_event_cancel(tce_signaling_uuid):
-			var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
-			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-			UserInputManager.send_public_command(_tmp_signaling_string, self._tileDefinitionUuid)
+		if self._is_input_event_cancel(tce_event_uuid):
+			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
+			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+			UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
 
 			# REMARK: Very simple logic. Will not behave as expected if user is in submenu!
 			# FUTURE: Should be extended to include all ingame menu subcontexts, especially settings!
@@ -313,7 +313,7 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 
 			self._menu_ingame_visible = !self._menu_ingame_visible
 
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*","internal", "collision", "detected"]):
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*","internal", "collision", "detected"]):
 			if UserInputManager._currentInputMethod.match("*mouse*"): # REMARK: Without if, culprit for movement issues in keyboard::only mode?
 				if value is Dictionary:
 					if value.has("colliding"):
@@ -337,27 +337,27 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 							audioManager.play_sfx(["game", "tile", "move"])
 							self._managerReferences["hexGridManager"].move_floating_selector_and_highlight() 
 		
-		if self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "internal", "cursor", "floating", "position", "update"]):
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "internal", "cursor", "floating", "position", "update"]):
 			if value is Vector3:
-				var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "cursor", "floating", "position", "update"]
-				var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-				UserInputManager.send_public_command(_tmp_signaling_string, value)
+				var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "cursor", "floating", "position", "update"]
+				var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+				UserInputManager.transmit_global_event(_tmp_eventString, value)
 	
 	else:
 		pass
 		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
-		# print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
+		# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: GUI MANAGEMENT PIPELINE ##########################
 ################################################################################
-func gui_context_management_pipeline(tce_signaling_uuid : String, _value : String) -> void:
-	if tce_signaling_uuid.match("game" + self._separator + "*" + self._separator + "gui" + self._separator + "*"):
+func gui_context_management_pipeline(tce_event_uuid : String, _value : String) -> void:
+	if tce_event_uuid.match("game" + self._separator + "*" + self._separator + "gui" + self._separator + "*"):
 		pass
 	else:
 		pass
 		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
-		# print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
+		# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
 
 ################################################################################
 ################################################################################

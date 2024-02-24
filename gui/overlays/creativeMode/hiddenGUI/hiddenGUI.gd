@@ -9,12 +9,12 @@ extends Control
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal hide_gui(tce_signaling_uuid, status)
+signal hide_gui(tce_event_uuid, status)
 
 ################################################################################
 #### PUBLIC MEMBER VARIABLES ###################################################
 ################################################################################
-var tce_signaling_uuid : Dictionary = {
+var tce_event_uuid : Dictionary = {
 	"gui": {
 		"list" : ["gui", "hud", "selector", "gui", "show"],
 		"string": ""
@@ -37,21 +37,21 @@ onready var _panelContainer : Object = $PanelContainer
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize(ctxt : String):
-	self.tce_signaling_uuid["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(ctxt, self.tce_signaling_uuid["gui"]["list"])
-	self.tce_signaling_uuid["actions"]["show_gui"]["string"] = UserInputManager.create_tce_signaling_uuid(ctxt, self.tce_signaling_uuid["actions"]["show_gui"]["list"])
+	self.tce_event_uuid["gui"]["string"] = UserInputManager.create_tce_event_uuid(ctxt, self.tce_event_uuid["gui"]["list"])
+	self.tce_event_uuid["actions"]["show_gui"]["string"] = UserInputManager.create_tce_event_uuid(ctxt, self.tce_event_uuid["actions"]["show_gui"]["list"])
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_unhideGUIButton_pressed() -> void:
-	emit_signal("hide_gui", self.tce_signaling_uuid["actions"]["show_gui"]["string"], "NONE")
+	emit_signal("hide_gui", self.tce_event_uuid["actions"]["show_gui"]["string"], "NONE")
 	self.queue_free()
 
 func _on_mouse_entered() -> void:
-	emit_signal("hide_gui", self.tce_signaling_uuid["gui"]["string"], "entered")
+	emit_signal("hide_gui", self.tce_event_uuid["gui"]["string"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("hide_gui", self.tce_signaling_uuid["gui"]["string"], "exited")
+	emit_signal("hide_gui", self.tce_event_uuid["gui"]["string"], "exited")
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

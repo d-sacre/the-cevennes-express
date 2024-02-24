@@ -17,9 +17,9 @@ extends game_base
 ################################################################################
 func _update_tile_definition_uuid(uuid : String) -> void:
 	._update_tile_definition_uuid(uuid)
-	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
-	var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-	UserInputManager.send_public_command(_tmp_signaling_string, self._tileDefinitionUuid)
+	var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "uuid"]
+	var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+	UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
 
 ################################################################################
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: BOOL EXPRESSIONS ##########
@@ -37,8 +37,8 @@ func _is_tile_placeable_with_current_rotation() -> bool:
 func _is_current_gui_mouse_context_grid() -> bool:
 	return self._currentGuiMouseContext.match("*grid")
 
-func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
-	if ._is_correct_context_for_placing_tile(tce_signaling_uuid):
+func _is_correct_context_for_placing_tile(tce_event_uuid : String) -> bool:
+	if ._is_correct_context_for_placing_tile(tce_event_uuid):
 		if self._selectorOperationMode == "place":
 			if not self._is_gui_hidden:
 				if UserInputManager._currentInputMethod.match("*mouse*"):
@@ -48,8 +48,8 @@ func _is_correct_context_for_placing_tile(tce_signaling_uuid : String) -> bool:
 					return true
 	return false
 
-func _is_input_event_option_general(tce_signaling_uuid : String) -> bool:
-	return ._is_input_event_option_general(tce_signaling_uuid) and not ((self._selectorOperationMode == "pick") or (self._selectorOperationMode == "delete") or self._is_gui_hidden)
+func _is_input_event_option_general(tce_event_uuid : String) -> bool:
+	return ._is_input_event_option_general(tce_event_uuid) and not ((self._selectorOperationMode == "pick") or (self._selectorOperationMode == "delete") or self._is_gui_hidden)
 
 ################################################################################
 #### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES: TOOLS #####################
@@ -105,9 +105,9 @@ func _hide_gui(status : bool) -> void:
 	self._hide_gui_creative_mode(status)
 
 func _movement_channel2(asmr : Vector2) -> void:
-	var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
-	var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-	UserInputManager.send_public_command(_tmp_signaling_string, asmr)
+	var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
+	var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+	UserInputManager.transmit_global_event(_tmp_eventString, asmr)
 
 ################################################################################
 ################################################################################
@@ -118,67 +118,67 @@ func _movement_channel2(asmr : Vector2) -> void:
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES: GUI MANAGEMENT PIPELINE ####
 ################################################################################
-func gui_context_management_pipeline(tce_signaling_uuid : String, value) -> void:
-	.gui_context_management_pipeline(tce_signaling_uuid, value) # execute base class function definition
+func gui_context_management_pipeline(tce_event_uuid : String, value) -> void:
+	.gui_context_management_pipeline(tce_event_uuid, value) # execute base class function definition
 
 	# Extend base class functionality
-	if tce_signaling_uuid.match("game::*::gui::*"):
-		if tce_signaling_uuid.match("*::sidepanel::right::selector::tile::definition"):
+	if tce_event_uuid.match("game::*::gui::*"):
+		if tce_event_uuid.match("*::sidepanel::right::selector::tile::definition"):
 			if value is String:
-				self._manage_grid_to_gui_transition(tce_signaling_uuid, value)
+				self._manage_grid_to_gui_transition(tce_event_uuid, value)
 
-		elif tce_signaling_uuid.match("*::hud::selector::action"):
+		elif tce_event_uuid.match("*::hud::selector::action"):
 			if value is String:
-				self._manage_grid_to_gui_transition(tce_signaling_uuid, value)
+				self._manage_grid_to_gui_transition(tce_event_uuid, value)
 	else:
 		pass
 		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
-		# print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
+		# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
 
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES GENERAL PROCESSING PIPELINE #
 ################################################################################
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
-func general_processing_pipeline(tce_signaling_uuid : String, value) -> void: 
-	.general_processing_pipeline(tce_signaling_uuid, value) # execute base class function definition
+func general_processing_pipeline(tce_event_uuid : String, value) -> void: 
+	.general_processing_pipeline(tce_event_uuid, value) # execute base class function definition
 
 	var _creativeModeOverlay : Object = self._guiLayerReferences["overlay"].get_node("creativeModeOverlay")
 
 	# Extend base class functionality
-	if tce_signaling_uuid.match("game::creative::*"): # Safety to ensure that only valid requests are processed
-		if self._is_next_action_mode_requested(tce_signaling_uuid):
-			var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
-			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-			UserInputManager.send_public_command(_tmp_signaling_string, 1)
+	if tce_event_uuid.match("game::creative::*"): # Safety to ensure that only valid requests are processed
+		if self._is_next_action_mode_requested(tce_event_uuid):
+			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
+			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+			UserInputManager.transmit_global_event(_tmp_eventString, 1)
 
-		if self._is_previous_action_mode_requested(tce_signaling_uuid):
-			var _tmp_signaling_keychain : Array = ["UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
-			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-			UserInputManager.send_public_command(_tmp_signaling_string, -1)
+		if self._is_previous_action_mode_requested(tce_event_uuid):
+			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
+			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+			UserInputManager.transmit_global_event(_tmp_eventString, -1)
 		
 		# DESCRIPTION: Handling of setting the different action mode
-		if self._is_tile_action_mode_changed_to_place(tce_signaling_uuid):
+		if self._is_tile_action_mode_changed_to_place(tce_event_uuid):
 			self._selectorOperationMode = "place"
 			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 
 			if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				self._create_new_floating_tile()
 
-		if self._is_tile_action_mode_changed_to_replace(tce_signaling_uuid):
+		if self._is_tile_action_mode_changed_to_replace(tce_event_uuid):
 			self._selectorOperationMode = "replace"
 			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 			
 			if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				self._create_new_floating_tile()
 
-		if self._is_tile_action_mode_changed_to_pick(tce_signaling_uuid):
+		if self._is_tile_action_mode_changed_to_pick(tce_event_uuid):
 			self._selectorOperationMode = "pick"
 			_creativeModeOverlay.reactivate_and_unhide_tile_selector()
 
 			if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
 				self._create_new_floating_tile()
 
-		if self._is_tile_action_mode_changed_to_delete(tce_signaling_uuid):
+		if self._is_tile_action_mode_changed_to_delete(tce_event_uuid):
 			self._selectorOperationMode = "delete"
 			_creativeModeOverlay.deactivate_and_hide_tile_selector()
 
@@ -190,9 +190,9 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 		
 		# DESCRIPTION: Checking for option key presses
 		for _i in range(1,6):
-			var _tmp_signaling_keychain : Array = ["user", "interaction", "option", str(_i)]
-			var _tmp_signaling_string : String = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-			if tce_signaling_uuid.match(_tmp_signaling_string):
+			var _tmp_eventKeychain : Array = ["user", "interaction", "option", str(_i)]
+			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+			if tce_event_uuid.match(_tmp_eventString):
 				# DESCRIPTION: Unhide GUI first if it should be hidden and the hide gui options has not been requested
 				if self._is_gui_hidden:
 					if _i!= 5:
@@ -200,24 +200,24 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 				
 				# DESCRIPTION: Send a execution request via the InputManager Command Signal to ensure that all relevant
 				# entities can react properly.
-				_tmp_signaling_keychain  = ["UserInputManager", "requesting", "global", "execution", "option", str(_i)]
-				_tmp_signaling_string  = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-				UserInputManager.send_public_command(_tmp_signaling_string, _i)
+				_tmp_eventKeychain  = ["UserInputManager", "requesting", "global", "execution", "option", str(_i)]
+				_tmp_eventString  = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+				UserInputManager.transmit_global_event(_tmp_eventString, _i)
 
 		# DESCRIPTION: Handling of selections
-		if self._is_correct_context_for_obtaining_new_tile_definition(tce_signaling_uuid):
+		if self._is_correct_context_for_obtaining_new_tile_definition(tce_event_uuid):
 			if value is String:
 				self._update_tile_definition_uuid(value)
 				self.change_floating_tile_type()
 
 		# DESCRIPTION: Handling of grid interaction
-		if self._is_correct_context_for_replacing_tile(tce_signaling_uuid):
+		if self._is_correct_context_for_replacing_tile(tce_event_uuid):
 			self.replace_tile()
 
-		if self._is_correct_context_for_deleting_tile(tce_signaling_uuid):
+		if self._is_correct_context_for_deleting_tile(tce_event_uuid):
 			self.delete_tile()
 
-		if self._is_correct_context_for_picking_tile_definition_uuid(tce_signaling_uuid):
+		if self._is_correct_context_for_picking_tile_definition_uuid(tce_event_uuid):
 			var _tmp_tduuid : String = self._managerReferences["hexGridManager"].get_tile_definition_uuid_from_current_grid_index()
 			
 			if _tmp_tduuid != "":
@@ -225,9 +225,9 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 				audioManager.play_sfx(["game", "tile", "pick"])
 
 				# DESCRIPTION: Change automatically to "place" mode as a quality of life measure
-				var _tmp_signaling_keychain : Array  = ["UserInputManager", "requesting", "global", "execution", "option1"]
-				var _tmp_signaling_string : String  = UserInputManager.create_tce_signaling_uuid(self._context, _tmp_signaling_keychain)
-				UserInputManager.send_public_command(_tmp_signaling_string, 1)
+				var _tmp_eventKeychain : Array  = ["UserInputManager", "requesting", "global", "execution", "option1"]
+				var _tmp_eventString : String  = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+				UserInputManager.transmit_global_event(_tmp_eventString, 1)
 
 			else:
 				self._managerReferences["hexGridManager"].set_status_placeholder(false, true)
@@ -237,7 +237,7 @@ func general_processing_pipeline(tce_signaling_uuid : String, value) -> void:
 	else:
 		pass
 		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
-		# print("Error: <TCE_SIGNALING_UUID|",tce_signaling_uuid, "> could not be processed!")
+		# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
 
 ################################################################################
 ################################################################################
@@ -257,58 +257,58 @@ var _last_tile_definition_uuid : String
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: BOOL ACTION MODE ################################
 ################################################################################
-func _is_tile_action_mode_changed_to_place(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "tile", "action", "place"])
+func _is_tile_action_mode_changed_to_place(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "tile", "action", "place"])
 
-func _is_tile_action_mode_changed_to_replace(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "tile", "action", "replace"])
+func _is_tile_action_mode_changed_to_replace(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "tile", "action", "replace"])
 
-func _is_tile_action_mode_changed_to_pick(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "tile", "action", "pick"])
+func _is_tile_action_mode_changed_to_pick(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "tile", "action", "pick"])
 
-func _is_tile_action_mode_changed_to_delete(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "selected", "tile", "action", "delete"])
+func _is_tile_action_mode_changed_to_delete(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "tile", "action", "delete"])
 
-func _is_next_action_mode_requested(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "option", "next"])
+func _is_next_action_mode_requested(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "option", "next"])
 
-func _is_previous_action_mode_requested(tce_signaling_uuid : String) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_signaling_uuid, ["*", "user", "interaction", "option", "previous"])
+func _is_previous_action_mode_requested(tce_event_uuid : String) -> bool:
+	return self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "option", "previous"])
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: BOOL CONTEXT ####################################
 ################################################################################
-func _is_correct_context_for_obtaining_new_tile_definition(tce_signaling_uuid : String) -> bool:
-	if tce_signaling_uuid.match("*::user::selected::tile::definition"):
+func _is_correct_context_for_obtaining_new_tile_definition(tce_event_uuid : String) -> bool:
+	if tce_event_uuid.match("*::user::selected::tile::definition"):
 		if (self._selectorOperationMode == "place") or (self._selectorOperationMode == "replace"):
 			return true
 
 	return false
 
-func _is_grid_interaction_permitted(tce_signaling_uuid : String) -> bool:
-	if ._is_correct_context_for_placing_tile(tce_signaling_uuid):
+func _is_grid_interaction_permitted(tce_event_uuid : String) -> bool:
+	if ._is_correct_context_for_placing_tile(tce_event_uuid):
 		if (self._is_current_gui_mouse_context_grid()):  
 			if not self._is_gui_hidden:
 				return true
 
 	return false
 
-func _is_correct_context_for_replacing_tile(tce_signaling_uuid : String) -> bool:
-	if self._is_grid_interaction_permitted(tce_signaling_uuid):
+func _is_correct_context_for_replacing_tile(tce_event_uuid : String) -> bool:
+	if self._is_grid_interaction_permitted(tce_event_uuid):
 		if self._selectorOperationMode == "replace":
 			return true
 
 	return false
 
-func _is_correct_context_for_picking_tile_definition_uuid(tce_signaling_uuid : String) -> bool:
-	if self._is_grid_interaction_permitted(tce_signaling_uuid):
+func _is_correct_context_for_picking_tile_definition_uuid(tce_event_uuid : String) -> bool:
+	if self._is_grid_interaction_permitted(tce_event_uuid):
 		if self._selectorOperationMode == "pick":
 			return true
 	
 	return false
 
-func _is_correct_context_for_deleting_tile(tce_signaling_uuid : String) -> bool:
-	if self._is_grid_interaction_permitted(tce_signaling_uuid):
+func _is_correct_context_for_deleting_tile(tce_event_uuid : String) -> bool:
+	if self._is_grid_interaction_permitted(tce_event_uuid):
 		if self._selectorOperationMode == "delete":
 			return true
 
@@ -319,14 +319,14 @@ func _is_correct_context_for_deleting_tile(tce_signaling_uuid : String) -> bool:
 ################################################################################
 # FUTURE: Make sure that this is only called in the appropriate Input Method modes
 # (mouse, touch?)
-func _manage_grid_to_gui_transition(tce_signaling_uuid : String, value : String) -> void:
+func _manage_grid_to_gui_transition(tce_event_uuid : String, value : String) -> void:
 	if value == "entered":
-		self._currentGuiMouseContext = tce_signaling_uuid
+		self._currentGuiMouseContext = tce_event_uuid
 		self._managerReferences["cameraManager"].disable_zooming()
 		self._managerReferences["cameraManager"].disable_raycasting()
 	else:
 		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator 
-		if tce_signaling_uuid != "game::creative::gui::hud::selector::action":
+		if tce_event_uuid != "game::creative::gui::hud::selector::action":
 			self._currentGuiMouseContext += "grid"
 		else:
 			self._currentGuiMouseContext += "void"

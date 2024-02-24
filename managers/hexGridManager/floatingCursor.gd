@@ -9,7 +9,7 @@ extends Spatial
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal floating_cursor_asmr_position_update(tce_signaling_uuid, position)
+signal floating_cursor_asmr_position_update(tce_event_uuid, position)
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -38,7 +38,7 @@ func _move_and_highlight() -> void:
 	var _tmp_position : Vector3 = self._hexGridManager.calculate_new_floating_selector_postion_by_action_strength(self._last_asmr)
 	if _tmp_position != Vector3.INF:
 		self._hexGridManager.move_floating_selector_and_highlight()
-		var _tmp_tce_signaling_uuid : String = UserInputManager.create_tce_signaling_uuid(UserInputManager.context, ["internal", "cursor", "floating", "position", "update"])
+		var _tmp_tce_signaling_uuid : String = UserInputManager.create_tce_event_uuid(UserInputManager.get_context(), ["internal", "cursor", "floating", "position", "update"])
 		emit_signal("floating_cursor_asmr_position_update", _tmp_tce_signaling_uuid, _tmp_position)
 	# 	print("\t=> Valid request")
 	# else:

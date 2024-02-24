@@ -11,8 +11,8 @@ extends Control
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal gui_mouse_context_changed(tce_signaling_uuid, value)
-signal action_mode_changed(tce_signaling_uuid, value)
+signal gui_mouse_context_changed(tce_event_uuid, value)
+signal action_mode_changed(tce_event_uuid, value)
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
@@ -83,8 +83,8 @@ func _item_selected(index : int) -> void:
 ################################################################################
 func initialize(context : String) -> void:
 	self._context = context
-	self.tce_signaling_uuid_lut["gui"]["string"] = UserInputManager.create_tce_signaling_uuid(self._context, self.tce_signaling_uuid_lut["gui"]["list"])
-	self.tce_signaling_uuid_lut["actions"]["prefix"] = UserInputManager.create_tce_signaling_uuid(self._context, [])
+	self.tce_signaling_uuid_lut["gui"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_signaling_uuid_lut["gui"]["list"])
+	self.tce_signaling_uuid_lut["actions"]["prefix"] = UserInputManager.create_tce_event_uuid(self._context, [])
 
 func initialize_selection_to_default() -> void:
 	var _index = 0 # TO-DO: Add logic to find the default
@@ -106,21 +106,21 @@ func _on_mouse_exited() -> void:
 func _on_item_selected(index : int) -> void:
 	self._item_selected(index)
 
-func _on_user_input_manager_global_command(tce_signaling_uuid : String, value) -> void:
-	var _tmp_signaling_keychain : Array  = ["game", "creative", "UserInputManager", "requesting", "global", "execution", "option*"]
+func _on_user_input_manager_global_command(tce_event_uuid : String, value) -> void:
+	var _tmp_eventKeychain : Array  = ["game", "creative", "UserInputManager", "requesting", "global", "execution", "option*"]
 
 	# REMARK: Currently hardcoded to assume that the actionSelector.tscn will only 
 	# be used in the game::creative context. To make it more flexible/less 
 	# susceptible to errors, the context should also be checked
-	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
 		if value is int:
 			var _tmp_index : int = value-1
 			self._actionItemList.unselect_all()
 			self._actionItemList.select(_tmp_index)
 			self._item_selected(_tmp_index)
 
-	_tmp_signaling_keychain = ["game", "creative", "UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
-	if UserInputManager.match_tce_signaling_uuid(tce_signaling_uuid, _tmp_signaling_keychain):
+	_tmp_eventKeychain = ["game", "creative", "UserInputManager", "requesting", "global", "execution", "change", "tile", "action", "mode", "index", "by"]
+	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
 		if value is int:
 			var _itemCount : int = self._actionItemList.get_item_count()
 			var _currentIndex : int = (self._actionItemList.get_selected_items())[0]
@@ -178,6 +178,6 @@ func _ready() -> void:
 	self._error = self._actionItemList.connect("item_selected", self, "_on_item_selected")
 
 	# DESCRIPTION: Initialize signaling from/to User Input Manager
-	self._error = UserInputManager.connect("transmit_global_command", self, "_on_user_input_manager_global_command")
+	self._error = UserInputManager.connect("transmit_global_event", self, "_on_user_input_manager_global_command")
 	self._error = self.connect("action_mode_changed", UserInputManager, "_on_special_user_input")
 	self._error = self.connect("gui_mouse_context_changed", UserInputManager, "_on_gui_context_changed")

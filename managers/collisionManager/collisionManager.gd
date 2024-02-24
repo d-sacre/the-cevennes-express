@@ -9,7 +9,7 @@ extends Node
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal collision_detected(tce_signaling_uuid, collision_information)
+signal collision_detected(tce_event_uuid, collision_information)
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -52,8 +52,8 @@ func _on_raycast_result(current_collision_information : Array) -> void:
 		}
 		_collisionInformation["grid_index"] = _collider_parent_object.grid_index
 
-	var _tmp_signaling_keychain : Array = ["internal", "collision", "detected"]
-	var _tmp_tce_signaling_uuid : String = UserInputManager.create_tce_signaling_uuid(self._context,  _tmp_signaling_keychain)
+	var _tmp_eventKeychain : Array = ["internal", "collision", "detected"]
+	var _tmp_tce_signaling_uuid : String = UserInputManager.create_tce_event_uuid(self._context,  _tmp_eventKeychain)
 
 	emit_signal("collision_detected", _tmp_tce_signaling_uuid, _collisionInformation)
 
