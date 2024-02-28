@@ -5,6 +5,7 @@ project(CevennaExpress_cpp)
 include(cmake/GodotBindings.cmake)
 include(cmake/GDNativeLibrary.cmake)
 include(cmake/ClangToolbox.cmake)
+include(cmake/GTest.cmake)
 
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
@@ -16,3 +17,5 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 AddGDNativeLibrary(testGDNative src/GodotTestClass.cpp)
+
+AddTest(TestTest tests/UnitTests/testTest.cpp)

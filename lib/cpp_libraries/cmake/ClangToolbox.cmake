@@ -2,7 +2,8 @@
 find_program(ClangFormatExecutable clang-format-14 clang-format)
 find_program(ClangTidyExecutable clang-tidy-14 clang-tidy)
 
-file(GLOB CheckingSources CONFIGURE_DEPENDS "src/*.cpp" "tests/*.cpp")
+file(GLOB CheckingSources CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB CheckingSourcesTests CONFIGURE_DEPENDS "tests/*.cpp")
 file(GLOB CheckingHeaders CONFIGURE_DEPENDS "include/*.hpp" "tests/*.hpp")
 
 if (${ClangFormatExecutable} STREQUAL "ClangFormatExecutable-NOTFOUND")
@@ -19,7 +20,7 @@ else()
     add_custom_target(
         ClangFormat
         DEPENDS ${GodotBindings}
-        COMMAND ${ClangFormatExecutable} --style=file -i ${CheckingSources} ${CheckingHeaders} --verbose
+        COMMAND ${ClangFormatExecutable} --style=file -i ${CheckingSources} ${CheckingSourcesTests} ${CheckingHeaders} --verbose
     )
     message("clang-format found!")
 endif()
