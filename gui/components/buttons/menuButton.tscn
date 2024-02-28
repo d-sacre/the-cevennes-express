@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://gui/components/buttons/menuButton.gd" type="Script" id=1]
+[ext_resource path="res://themes/fonts/lmodern_bold_64px.tres" type="DynamicFont" id=2]
+
+[node name="menuButton" type="Button"]
+margin_right = 38.0
+margin_bottom = 20.0
+custom_fonts/font = ExtResource( 2 )
+text = "Play"
+script = ExtResource( 1 )

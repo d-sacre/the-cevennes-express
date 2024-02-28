@@ -1,3 +1,5 @@
+extends Node
+
 class_name game_base
 
 ################################################################################
@@ -263,6 +265,14 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 		
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "gui", "hide"]):
 			self._hide_gui(true)
+
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "button", "resume", "pressed"]):
+			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
+			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+			UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
+
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "button", "exit", "pressed"]):
+			UserInputManager.exit_to_system()
 
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "mouse", "movement"]):
 			if value is Vector2:

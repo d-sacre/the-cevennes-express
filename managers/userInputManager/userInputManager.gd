@@ -326,6 +326,9 @@ func set_current_input_method(method : String) -> void:
 	# DESCRIPTION: Update the misc input events to process according to current input method
 	self._create_dictionary_of_misc_current_input_events()
 
+func exit_to_system() -> void:
+	get_tree().quit()
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################

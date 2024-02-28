@@ -9,12 +9,22 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Button",
+"class": "TCEButton",
+"language": "GDScript",
+"path": "res://gui/components/buttons/classes/class_tceButton.gd"
+}, {
+"base": "Control",
+"class": "TCEButtonCluster",
+"language": "GDScript",
+"path": "res://gui/components/clusters/classes/class_tceClusterButtons.gd"
+}, {
 "base": "Reference",
 "class": "convert_indices",
 "language": "GDScript",
 "path": "res://utils/conversions/class_convert_indices.gd"
 }, {
-"base": "Reference",
+"base": "Node",
 "class": "game_base",
 "language": "GDScript",
 "path": "res://managers/userInputManager/game/class/base/class_game_base.gd"
@@ -30,6 +40,8 @@ _global_script_classes=[ {
 "path": "res://managers/userInputManager/game/class/class_game_default.gd"
 } ]
 _global_script_class_icons={
+"TCEButton": "",
+"TCEButtonCluster": "",
 "convert_indices": "",
 "game_base": "",
 "game_creative": "",

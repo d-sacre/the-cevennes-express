@@ -6,13 +6,15 @@ const BUTTON_SIGNALS : Array = ["button_pressed", "button_entered_hover", "butto
 func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> void:
 	var _tmp_eventKeychain : Array = ["*", "UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
 
-	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
-		self.visible = !self.visible
-		get_tree().paused = !get_tree().paused
+#	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
+#		self.visible = !self.visible
+#		get_tree().paused = !get_tree().paused
+		
 
 func _ready():
 	self.visible = false
 	$VBoxContainer.visible = true
+	$VBoxContainer.visible = false
 	$settings_popup_panelContainer.visible = false
 	
 	if OS.has_feature("JavaScript"):
@@ -52,6 +54,6 @@ func _on_settingsButton_pressed():
 func _on_returnToInGameMenu_pressed():
 	$VBoxContainer.visible = true
 	$settings_popup_panelContainer.visible = false
-	
+
 func _on_button_hover():
 	pass

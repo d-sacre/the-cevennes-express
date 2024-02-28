@@ -30,6 +30,8 @@ var _audio_bus_aliases : Dictionary = {
 	"music":  "Music"
 }
 
+var _playing_allowed : bool = true
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
@@ -75,17 +77,26 @@ func set_volume_level(settingKeychain : Array, settingValue : float) -> void:
 	var _db = linear2db(settingValue/100)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(_audio_bus_name), _db)
 
+func enable_request_processing() -> void:
+	self._playing_allowed = true
+
+func disable_request_processing() -> void:
+	self._playing_allowed = false
+
 func play_sfx(keyChain : Array) -> void:
-	sfxManager.play_sound(keyChain)
+	if self._playing_allowed:
+		sfxManager.play_sound(keyChain)
 	
 func play_music_by_song_name(song : String) -> void:
-	musicManager.request_song(song)
+	if self._playing_allowed:
+		musicManager.request_song(song)
 	
 func set_playlist(_playlist : Dictionary, loop : bool = false, start_playback : bool = true) -> void:
-	musicManager.playlist = {"songs": _playlist, "loop": loop}
-	musicManager.playing_mode = "playlist"
-	musicManager.permission_to_play = start_playback
-	emit_signal("music_playlist_updated")
+	if self._playing_allowed:
+		musicManager.playlist = {"songs": _playlist, "loop": loop}
+		musicManager.playing_mode = "playlist"
+		musicManager.permission_to_play = start_playback
+		emit_signal("music_playlist_updated")
 
 func set_predefined_playlist(playlistId : String, _start_playback : bool = true) -> void:
 	var _tmp_playlist_dict = musicManager.predefined_playlists[playlistId]

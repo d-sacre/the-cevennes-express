@@ -67,6 +67,9 @@ func _ready() -> void:
 		"popup": get_node("guiPopupCanvasLayer")
 	}
 
+	# DESCRIPTION: Disable audio playback to prevent any issues during loading
+	audioManager.disable_request_processing()
+
 	# Initialize user settings
 	userSettingsManager.initialize_user_settings()
 
@@ -116,5 +119,8 @@ func _ready() -> void:
 
 	# Initialize debug
 	$guiPopupCanvasLayer/debugPanelContainer.initialize(self._managerReferences)
+
+	# Enable audio playback
+	audioManager.enable_request_processing()
 
 	print("\n<GAME>")
