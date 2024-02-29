@@ -267,7 +267,12 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 			self._hide_gui(true)
 
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "button", "resume", "pressed"]):
-			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
+			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "main", "context"]
+			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
+			UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
+
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "button", "settings", "pressed"]):
+			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "settings", "context"]
 			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
 			UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
 
@@ -310,7 +315,7 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 				self._camera_zooming_handler("increment", value)
 
 		if self._is_input_event_cancel(tce_event_uuid):
-			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
+			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "main", "context"]
 			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
 			UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
 

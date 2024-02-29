@@ -4,7 +4,7 @@ const BUTTON_SOURCES : Array = ["ingameMenu_buttons"]
 const BUTTON_SIGNALS : Array = ["button_pressed", "button_entered_hover", "button_exited_hover"]
 
 func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> void:
-	var _tmp_eventKeychain : Array = ["*", "UserInputManager", "requesting", "global", "execution", "toggle", "menu", "ingame", "root"]
+	var _tmp_eventKeychain : Array = ["*", "UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "main", "context"]
 
 #	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
 #		self.visible = !self.visible

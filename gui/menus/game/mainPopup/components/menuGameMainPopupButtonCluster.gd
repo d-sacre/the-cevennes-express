@@ -19,7 +19,7 @@ const buttons : Array = [
 		"text": "Settings",
 		"tce_event_uuid_suffix": "settings",
 		"default": false,
-		"disabled": true,
+		"disabled": false,
 		"export": {
 			"javascript": true
 		}
