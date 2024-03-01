@@ -2,9 +2,9 @@
 find_program(ClangFormatExecutable clang-format-14 clang-format)
 find_program(ClangTidyExecutable clang-tidy-14 clang-tidy)
 
-file(GLOB CheckingSources CONFIGURE_DEPENDS "src/*.cpp")
-file(GLOB CheckingSourcesTests CONFIGURE_DEPENDS "tests/*.cpp")
-file(GLOB CheckingHeaders CONFIGURE_DEPENDS "include/*.hpp" "tests/*.hpp")
+file(GLOB_RECURSE CheckingSources CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB_RECURSE CheckingSourcesTests CONFIGURE_DEPENDS "tests/*.cpp")
+file(GLOB_RECURSE CheckingHeaders CONFIGURE_DEPENDS "include/*.hpp" "tests/*.hpp")
 
 if (${ClangFormatExecutable} STREQUAL "ClangFormatExecutable-NOTFOUND")
     add_custom_target(
@@ -40,7 +40,6 @@ else()
         ClangTidy
         DEPENDS ${GodotBindings}
         COMMAND ${ClangTidyExecutable} --format-style=file -p ${CMAKE_BINARY_DIR} ${CheckingSources}
-        # COMMAND ${ClangTidyExecutable} --fix --format-style=file -p ${CMAKE_BINARY_DIR} ${CheckingSources}
     )
     message("clang-tidy found!")
 endif()

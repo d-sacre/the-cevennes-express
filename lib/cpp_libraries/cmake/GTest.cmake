@@ -14,19 +14,23 @@ set (GTestHeaderPath googletest_SOURCE_DIR)
 enable_testing()
 
 function (AddTest name)
+    if (DEFINED EMSCRIPTEN)
+    else ()
+        add_executable(${name} ${ARGN})
+        
+        target_include_directories(${name} PRIVATE
+            ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/tests
+            ${GTestHeaderPath}
+        )
 
-    add_executable(${name} ${ARGN})
-    
-    target_include_directories(${name} PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/tests
-        ${GTestHeaderPath}
-    )
+        target_compile_options(${name} PUBLIC ${CompileFlags})
 
-    target_link_libraries( ${name}
-      PRIVATE
-        GTest::GTest
-    )
+        target_link_libraries( ${name}
+        PRIVATE
+            GTest::GTest
+        )
 
-    add_test(NAME ${name} COMMAND ${name})
+        add_test(NAME ${name} COMMAND ${name})
+    endif ()
 endfunction()

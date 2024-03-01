@@ -5,7 +5,7 @@ function (AddGDNativeLibrary name)
         # add_dependencies(${name} GodotBindingsWindows)
         add_dependencies(${name} ClangFormat ClangTidy)
 
-        target_compile_options(${name} PUBLIC /W4 /WX)
+        target_compile_options(${name} PUBLIC ${CompileFlags})
 
         set_target_properties(${name} PROPERTIES SUFFIX ".dll")
 
@@ -17,8 +17,8 @@ function (AddGDNativeLibrary name)
 
         set_target_properties(${name} PROPERTIES SUFFIX ".wasm")
 
-        set_target_properties(${name} PROPERTIES COMPILE_FLAGS "-O3 -s SIDE_MODULE=1")
-	    set_target_properties(${name} PROPERTIES LINK_FLAGS    "-O3 -s WASM=1 -s SIDE_MODULE=1 -s STANDALONE_WASM --no-entry")
+        set_target_properties(${name} PROPERTIES COMPILE_FLAGS ${CompileFlags})
+	    set_target_properties(${name} PROPERTIES LINK_FLAGS "-O3 -sWASM=1 -sSIDE_MODULE=1 -sSTANDALONE_WASM --no-entry")
 
         target_link_libraries(${name} PRIVATE ${GodotHeadersPath}/bin/libgodot-cpp.javascript.${GodotBuild}.wasm.a)
         
@@ -27,7 +27,7 @@ function (AddGDNativeLibrary name)
         
         add_dependencies(${name} ClangFormat)
         
-        target_compile_options(${name} PUBLIC -Wall -Wextra -Wpedantic -Werror)
+        target_compile_options(${name} PUBLIC ${CompileFlags})
         
         if (WIN32)
             # add_dependencies(${name} GodotBindingsWindows)
