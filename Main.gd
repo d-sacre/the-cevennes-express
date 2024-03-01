@@ -115,8 +115,9 @@ func _ready() -> void:
 
 	print("\t-> Initialize GUI...")
 	$guiPopupCanvasLayer/mainPopupMenu.initialize(self.context)
-	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
-	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
+
+	# settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
+	# settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
 	# Initialize debug
 	$guiPopupCanvasLayer/debugPanelContainer.initialize(self._managerReferences)

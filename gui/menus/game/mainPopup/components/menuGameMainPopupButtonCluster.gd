@@ -52,6 +52,8 @@ func initialize(context : String) -> void:
 	.initialize(context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "menu" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "root" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "button" + UserInputManager.TCE_EVENT_UUID_SEPERATOR)
 	self.pause_mode = PAUSE_MODE_PROCESS
 
+	self._set_focus_neighbours()
+
 func _ready():
 	# only for testing purposes
 	# self.initialize("editorTest")

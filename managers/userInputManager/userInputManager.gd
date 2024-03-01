@@ -246,9 +246,29 @@ func _process_misc_input_events() -> void:
 			var _events : Array = _db[_key]
 			self._process_input_events_by_method_name(_events, _key)
 
+# source: https://docs.godotengine.org/en/3.5/classes/class_input.html#class-input-method-parse-input-event
+func _trigger_fake_input_event(event : InputEvent) -> void:
+	var _fakeInputEvent = InputEventAction.new()
+	_fakeInputEvent.action = event
+	_fakeInputEvent.pressed = true
+	Input.parse_input_event(_fakeInputEvent)
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: BOOL INPUT METHODS ##############################
+################################################################################
+func is_current_input_method_including_mouse() -> bool:
+	return self.is_current_input_method_matching("*mouse*")
+
+func is_current_input_method_keyboard_only() -> bool:
+	return self.is_current_input_method_matching("keyboard::only")
+
+func is_current_input_method_controller_only() -> bool:
+	return self.is_current_input_method_matching("controller::only")
+
 func initialize(_base_context : String, cim: String, clr : Object, mr : Dictionary, glr : Dictionary) -> void:
 	self._managerReferences = mr
 	self._guiLayerReferences = glr
@@ -296,14 +316,43 @@ func call_contextual_logic_with_tce_event_keychain(keyChain : Array, value) -> v
 	var _tmp_tce_event_uuid : String = self.create_tce_event_uuid(self.context, keyChain)
 	self._logic.general_processing_pipeline(_tmp_tce_event_uuid, value)
 
+func set_current_gui_context(tce_event_uuid : String, interaction : String) -> void:
+	# print("Before: ", self._currentGuiMouseContext)
+	self._currentGuiMouseContext = tce_event_uuid
+	self._logic.gui_context_management_pipeline(tce_event_uuid, interaction)
+	print("After: ", self._currentGuiMouseContext)
+
+func set_current_gui_context_to_grid() -> void:
+	var _tmp_gui_context_uuid : String = self.create_tce_event_uuid(self.context, ["gui", "grid"])
+	self.set_current_gui_context(_tmp_gui_context_uuid, "entered")
+
+func set_current_gui_context_to_void() -> void:
+	var _tmp_gui_context_uuid : String = self.create_tce_event_uuid(self.context, ["gui", "void"])
+	self.set_current_gui_context(_tmp_gui_context_uuid, "entered")
+
 func get_current_gui_context() -> String:
 	return self._currentGuiMouseContext
+
+func is_current_gui_context_grid() -> bool:
+	return self.get_current_gui_context().match("*" + TCE_EVENT_UUID_SEPERATOR + "grid")
+
+func is_current_gui_context_void() -> bool:
+	return self.get_current_gui_context().match("*" + TCE_EVENT_UUID_SEPERATOR + "void")
+
+func is_current_gui_context_menu() -> bool: 
+	return self.get_current_gui_context().match("*menu*")
 
 func get_context() -> String:
 	return self.context
 
 func set_context(tce_context_uuid : String) -> void:
 	self.context = tce_context_uuid
+
+func get_current_input_method() -> String:
+	return self._currentInputMethod
+
+func is_current_input_method_matching(regex : String) -> bool:
+	return self.get_current_input_method().match(regex)
 
 func set_current_input_method(method : String) -> void:
 	self._currentInputMethod = method
@@ -333,7 +382,7 @@ func exit_to_system() -> void:
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 func _on_gui_context_changed(tce_event_uuid : String, interaction : String) -> void:
-	_logic.gui_context_management_pipeline(tce_event_uuid, interaction)
+	self.set_current_gui_context(tce_event_uuid, interaction)
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func _on_special_user_input(tce_event_uuid : String, value) -> void:

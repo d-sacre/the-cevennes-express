@@ -34,15 +34,12 @@ func _is_tile_placeable_with_current_rotation() -> bool:
 	# the difference between place (Backend request required) and replace (always allowed)
 	return true
 
-func _is_current_gui_mouse_context_grid() -> bool:
-	return self._currentGuiMouseContext.match("*grid")
-
 func _is_correct_context_for_placing_tile(tce_event_uuid : String) -> bool:
 	if ._is_correct_context_for_placing_tile(tce_event_uuid):
 		if self._selectorOperationMode == "place":
 			if not self._is_gui_hidden:
 				if UserInputManager._currentInputMethod.match("*mouse*"):
-					if (self._is_current_gui_mouse_context_grid()):  # REMARK: Already in base class definition?
+					if (UserInputManager.is_current_gui_context_grid()):  # REMARK: Already in base class definition?
 						return true
 				else:
 					return true
@@ -120,20 +117,21 @@ func _movement_channel2(asmr : Vector2) -> void:
 ################################################################################
 func gui_context_management_pipeline(tce_event_uuid : String, value) -> void:
 	.gui_context_management_pipeline(tce_event_uuid, value) # execute base class function definition
+	self._manage_grid_to_gui_transition(tce_event_uuid, value)
 
-	# Extend base class functionality
-	if tce_event_uuid.match("game::*::gui::*"):
-		if tce_event_uuid.match("*::sidepanel::right::selector::tile::definition"):
-			if value is String:
-				self._manage_grid_to_gui_transition(tce_event_uuid, value)
+	# # Extend base class functionality
+	# if tce_event_uuid.match("game::*::gui::*"):
+	# 	if tce_event_uuid.match("*::sidepanel::right::selector::tile::definition"):
+	# 		if value is String:
+	# 			self._manage_grid_to_gui_transition(tce_event_uuid, value)
 
-		elif tce_event_uuid.match("*::hud::selector::action"):
-			if value is String:
-				self._manage_grid_to_gui_transition(tce_event_uuid, value)
-	else:
-		pass
-		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
-		# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
+	# 	elif tce_event_uuid.match("*::hud::selector::action"):
+	# 		if value is String:
+	# 			self._manage_grid_to_gui_transition(tce_event_uuid, value)
+	# else:
+	# 	pass
+	# 	# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
+	# 	# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
 
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES GENERAL PROCESSING PIPELINE #
@@ -287,7 +285,7 @@ func _is_correct_context_for_obtaining_new_tile_definition(tce_event_uuid : Stri
 
 func _is_grid_interaction_permitted(tce_event_uuid : String) -> bool:
 	if ._is_correct_context_for_placing_tile(tce_event_uuid):
-		if (self._is_current_gui_mouse_context_grid()):  
+		if UserInputManager.is_current_gui_context_grid():  
 			if not self._is_gui_hidden:
 				return true
 
@@ -320,19 +318,26 @@ func _is_correct_context_for_deleting_tile(tce_event_uuid : String) -> bool:
 # FUTURE: Make sure that this is only called in the appropriate Input Method modes
 # (mouse, touch?)
 func _manage_grid_to_gui_transition(tce_event_uuid : String, value : String) -> void:
-	if value == "entered":
-		self._currentGuiMouseContext = tce_event_uuid
-		self._managerReferences["cameraManager"].disable_zooming()
-		self._managerReferences["cameraManager"].disable_raycasting()
-	else:
-		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator 
-		if tce_event_uuid != "game::creative::gui::hud::selector::action":
-			self._currentGuiMouseContext += "grid"
-		else:
-			self._currentGuiMouseContext += "void"
-
+	if UserInputManager.is_current_gui_context_grid():
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting() # REMARK: Should only be called in "*mouse*" Input Method Modes
+
+	elif UserInputManager.is_current_gui_context_void():
+		self._managerReferences["cameraManager"].enable_zooming()
+		self._managerReferences["cameraManager"].enable_raycasting() # REMARK: Should only be called in "*mouse*" Input Method Modes
+
+	else:
+		if value == "entered":
+			self._managerReferences["cameraManager"].disable_zooming()
+			self._managerReferences["cameraManager"].disable_raycasting()
+		else:
+			if UserInputManager.match_tce_event_uuid(tce_event_uuid, ["*", "gui", "sidepanel", "right", "selector", "tile", "definition"]):
+				UserInputManager.set_current_gui_context_to_grid()
+			elif UserInputManager.match_tce_event_uuid(tce_event_uuid, ["*", "gui", "hud", "selector", "action"]):
+				if UserInputManager.is_current_input_method_including_mouse():
+					UserInputManager.set_current_gui_context_to_void()
+				else:
+					UserInputManager.set_current_gui_context_to_grid()
 
 func replace_tile() -> void:
 	if not self._managerReferences["hexGridManager"].is_current_grid_index_out_of_bounds():

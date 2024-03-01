@@ -29,8 +29,6 @@ var _guiLayerReferences : Dictionary = {}
 var _context : String
 
 var _tileDefinitionUuid : String = "" # REMARK: Not a good solution; could crash the game if the function is not properly overwritten
-var _currentGuiMouseContext : String 
-var _menu_ingame_visible : bool = false
 
 const _separator : String = UserInputManager.TCE_EVENT_UUID_SEPERATOR
 
@@ -97,11 +95,11 @@ func _is_input_event_cancel(tce_event_uuid: String) -> bool:
 ################################################################################
 func _is_correct_context_for_placing_tile(tce_event_uuid : String) -> bool:
 	var _condition : bool = false
-	if UserInputManager._currentInputMethod.match("*mouse*"):
-		_condition = self._is_input_event_confirm(tce_event_uuid) and self._is_current_gui_context_grid()
-	elif (UserInputManager._currentInputMethod == "keyboard::only"): 
+	if UserInputManager.is_current_input_method_including_mouse():
+		_condition = self._is_input_event_confirm(tce_event_uuid) and UserInputManager.is_current_gui_context_grid()
+	elif UserInputManager.is_current_input_method_keyboard_only(): 
 		_condition = self._is_input_event_confirm(tce_event_uuid)
-	elif (UserInputManager._currentInputMethod == "controller::only"):
+	elif UserInputManager.is_current_input_method_controller_only():
 		_condition = self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "perform", "tile", "action"])
 
 	return _condition
@@ -109,17 +107,17 @@ func _is_correct_context_for_placing_tile(tce_event_uuid : String) -> bool:
 func _is_correct_context_for_rotating_tile_clockwise(tce_event_uuid : String) -> bool:
 	var _condition : bool = false
 
-	if UserInputManager._currentInputMethod.match("*mouse*"):
-		_condition =  self._is_input_event_option_general(tce_event_uuid) and self._is_current_gui_context_grid()
-	elif (UserInputManager._currentInputMethod == "keyboard::only"):
+	if UserInputManager.is_current_input_method_including_mouse():
+		_condition =  self._is_input_event_option_general(tce_event_uuid) and UserInputManager.is_current_gui_context_grid()
+	elif UserInputManager.is_current_input_method_keyboard_only():
 		_condition = self._is_input_event_option_general(tce_event_uuid)
-	elif (UserInputManager._currentInputMethod == "controller::only"):
+	elif UserInputManager.is_current_input_method_controller_only():
 		_condition = self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "rotate", "tile", "clockwise"])
 
 	return _condition
 
 func _is_correct_context_for_zooming(tce_event_uuid : String) -> bool:
-	if (self._is_current_gui_context_grid()) or (self._currentGuiMouseContext.match("*void")):
+	if (UserInputManager.is_current_gui_context_grid()) or (UserInputManager.is_current_gui_context_void()):
 		var _cond_zoom_out : bool = self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "decrement"])
 		var _cond_zoom_in : bool = self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "increment"])
 	
@@ -128,11 +126,11 @@ func _is_correct_context_for_zooming(tce_event_uuid : String) -> bool:
 
 	return false
 
-func _is_current_gui_context_grid() -> bool:
-	return self._currentGuiMouseContext.match("*" + self._separator + "grid")
-
 func _is_correct_context_for_movement_channelNumber(tce_event_uuid : String, channelNo : int) -> bool:
-	return self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "movement", "channel"+str(channelNo)])
+	if not UserInputManager.is_current_gui_context_menu():
+		return self._is_tce_signaling_uuid_matching(tce_event_uuid,["*", "user", "interaction", "movement", "channel"+str(channelNo)])
+	
+	return false
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: TILE MANIPULATION ###############################
@@ -282,7 +280,7 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "interaction", "mouse", "movement"]):
 			if value is Vector2:
 				# DESCRIPTION: Only initiate raycast from camera when Input Mode uses mouse information
-				if UserInputManager._currentInputMethod.match("*mouse*"):
+				if UserInputManager.is_current_input_method_including_mouse():
 					self._managerReferences["cameraManager"].initiate_raycast_from_position(value)
 			else:
 				print("Error: Variable type does not match")
@@ -291,7 +289,7 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 			if value is Vector2:
 				# DESCRIPTION: Request camera movement only in Input Mode which uses mouse information
 				# In all other cases: Manipulate the position of the floating tile
-				if UserInputManager._currentInputMethod.match("*mouse*"):
+				if UserInputManager.is_current_input_method_including_mouse():
 					self._managerReferences["cameraManager"].request_movement(value)
 				else: # REMARK: Temporary solution; it would be better to outsource floating tile into own dedicated scene
 					self._managerReferences["hexGridManager"].request_floating_selector_movement(value)
@@ -319,17 +317,8 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
 			UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
 
-			# REMARK: Very simple logic. Will not behave as expected if user is in submenu!
-			# FUTURE: Should be extended to include all ingame menu subcontexts, especially settings!
-			if self._menu_ingame_visible:
-				self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
-			else:
-				self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "menu" + self._separator + "ingame" + self._separator + "root"
-
-			self._menu_ingame_visible = !self._menu_ingame_visible
-
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*","internal", "collision", "detected"]):
-			if UserInputManager._currentInputMethod.match("*mouse*"): # REMARK: Without if, culprit for movement issues in keyboard::only mode?
+			if UserInputManager.is_current_input_method_including_mouse(): # REMARK: Without if, culprit for movement issues in keyboard::only mode?
 				if value is Dictionary:
 					if value.has("colliding"):
 						var _tmp_collision_status = value["colliding"]["status"]
@@ -343,10 +332,10 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 						if _tmp_collision_status:
 							self._managerReferences["hexGridManager"].set_current_grid_index(value["grid_index"])
 							self._managerReferences["hexGridManager"].set_last_index_within_grid_boundary_to_current()
-							self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
+							UserInputManager.set_current_gui_context_to_grid()
 						else:
 							self._managerReferences["hexGridManager"].set_current_grid_index_out_of_bounds()
-							self._currentGuiMouseContext = self._context + self._separator + "void"
+							UserInputManager.set_current_gui_context_to_void()
 
 						if not self._managerReferences["hexGridManager"].is_last_grid_index_equal_current():
 							audioManager.play_sfx(["game", "tile", "move"])
@@ -367,12 +356,7 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 #### PUBLIC MEMBER FUNCTIONS: GUI MANAGEMENT PIPELINE ##########################
 ################################################################################
 func gui_context_management_pipeline(tce_event_uuid : String, _value : String) -> void:
-	if tce_event_uuid.match("game" + self._separator + "*" + self._separator + "gui" + self._separator + "*"):
-		pass
-	else:
-		pass
-		# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
-		# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
+	pass
 
 ################################################################################
 ################################################################################
@@ -382,6 +366,5 @@ func gui_context_management_pipeline(tce_event_uuid : String, _value : String) -
 func _init(ctxt : String, mr : Dictionary, glr : Dictionary) -> void:
 	self._context = ctxt
 	self._managerReferences = mr
-	self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
 	self._guiLayerReferences = glr
 

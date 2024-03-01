@@ -23,7 +23,7 @@ const TILE_LIST_ICON_SIZE_DEFAULT : Vector2 = Vector2(128,128)
 var selectedTile : String = ""
 var tileListIconSize : Vector2 = TILE_LIST_ICON_SIZE_DEFAULT
 
-var tce_signaling_uuid_lut : Dictionary = {
+var tce_event_and_gui_uuid_lut : Dictionary = {
 	"gui": {
 		"list": ["gui", "sidepanel", "right", "selector", "tile", "definition"],
 		"string": ""
@@ -113,7 +113,7 @@ func _create_icon_texture(fp : String) -> ImageTexture:
 
 func _select_item(index : int) -> void:
 	self.selectedTile = self._tileList.get_item_metadata(index)
-	emit_signal("new_tile_definition_selected", self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"], self.selectedTile)
+	emit_signal("new_tile_definition_selected", self.tce_event_and_gui_uuid_lut["actions"]["new_tile_definition_selected"]["string"], self.selectedTile)
 
 
 func _select_tile_definition_by_asmr(asmr : Vector2) -> void:
@@ -181,8 +181,8 @@ func initialize_tile_list(_tileDefinitionManager : Object) -> void:
 func initialize(context : String, tdm : Object) -> void:
 	self.initialize_tile_list(tdm)
 	self._context = context
-	self.tce_signaling_uuid_lut["gui"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_signaling_uuid_lut["gui"]["list"])
-	self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_signaling_uuid_lut["actions"]["new_tile_definition_selected"]["list"])
+	self.tce_event_and_gui_uuid_lut["gui"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_event_and_gui_uuid_lut["gui"]["list"])
+	self.tce_event_and_gui_uuid_lut["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_event_and_gui_uuid_lut["actions"]["new_tile_definition_selected"]["list"])
 
 	# SESCRIPTION: Required to set proper initialization value of _curentTileDefinitionUUID
 	# REMARK: Hopefully a temporary solution? Perhaps use UserInputManager command bus?
@@ -206,10 +206,10 @@ func _on_item_selected(index : int) -> void:
 	self._select_item(index)
 
 func _on_mouse_entered() -> void:
-	emit_signal("gui_mouse_context_changed", self.tce_signaling_uuid_lut["gui"]["string"], "entered")
+	emit_signal("gui_mouse_context_changed", self.tce_event_and_gui_uuid_lut["gui"]["string"], "entered")
 
 func _on_mouse_exited() -> void:
-	emit_signal("gui_mouse_context_changed", self.tce_signaling_uuid_lut["gui"]["string"], "exited")
+	emit_signal("gui_mouse_context_changed", self.tce_event_and_gui_uuid_lut["gui"]["string"], "exited")
 
 func _on_asmr_repetition_timeout() -> void:
 	if self._asmrRepetitionAllowed:

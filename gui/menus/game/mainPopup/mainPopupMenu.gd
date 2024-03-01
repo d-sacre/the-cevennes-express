@@ -17,6 +17,18 @@ const MENU_STATE = {HIDDEN = 0, ROOT = 1, SETTINGS = 2}
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
+var _tce_event_and_gui_uuid_lut : Dictionary = {
+	"gui": {
+		MENU_STATE.ROOT: {
+			"list": ["gui", "menu", "main", "popup", "root"],
+			"string": ""
+		},
+		MENU_STATE.SETTINGS:  {
+			"list": ["gui", "menu", "main", "popup", "settings"],
+			"string": ""
+		}
+	}
+}
 var _state : int
 
 var _error : int
@@ -42,6 +54,10 @@ func _initialize_root_context() -> void:
 	_buttonClusterRoot.set_focus_to_default()
 	audioManager.enable_request_processing()
 
+func _get_tce_event_and_gui_uuid_string(keyChain : Array) -> String:
+	keyChain.append("string")
+	return DictionaryParsing.get_dict_element_via_keychain(self._tce_event_and_gui_uuid_lut, keyChain)
+
 func _context_fsm() -> void:
 	match self._state:
 		MENU_STATE.HIDDEN:
@@ -51,10 +67,18 @@ func _context_fsm() -> void:
 			self._initialize_root_context()
 			self._state = MENU_STATE.ROOT
 
+			UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.ROOT]), "entered")
+
 		MENU_STATE.ROOT:
 			self.visible = false
 			get_tree().paused = false
 			self._state = MENU_STATE.HIDDEN
+
+			# REMARK: Needs to be adapted if not in a Input Method mode that supports the mouse
+			if UserInputManager.get_current_gui_context().match("*mouse*"):
+				UserInputManager.set_current_gui_context_to_void()
+			else:
+				UserInputManager.set_current_gui_context_to_grid()
 
 		MENU_STATE.SETTINGS:
 			self._settingsContext.visible = false
@@ -63,12 +87,20 @@ func _context_fsm() -> void:
 			self._initialize_root_context()
 			self._state = MENU_STATE.ROOT
 
+			UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.ROOT]), "entered")
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize(context : String) -> void:
+	# DESCRIPTION: Setting up the gui uuids
+	for _guiContext in [MENU_STATE.ROOT, MENU_STATE.SETTINGS]:
+		self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["string"] = UserInputManager.create_tce_event_uuid(UserInputManager.get_context(), self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["list"])
+
+	# DESCRIPTION: Initialize the root button cluster and set focus neighbours
 	self._buttonClusterRoot.initialize(context)
 	self._buttonClusterRoot.visible = true
+
 	self._rootContext.visible = true
 	self._settingsContext.visible = false
 	self.visible = false
@@ -93,37 +125,6 @@ func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> v
 
 	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
 		self._context_fsm()
-		# match self._state:
-		# 	MENU_STATE.HIDDEN:
-		# 		self.visible = true
-		# 		get_tree().paused = true
-
-		# 		self._initialize_root_context()
-		# 		self._state = MENU_STATE.ROOT
-
-		# 	MENU_STATE.ROOT:
-		# 		self.visible = false
-		# 		get_tree().paused = false
-		# 		self._state = MENU_STATE.HIDDEN
-
-		# 	MENU_STATE.SETTINGS:
-		# 		self._settingsContext.visible = false
-		# 		self._rootContext.visible = true
-
-		# 		self._initialize_root_context()
-		# 		self._state = MENU_STATE.ROOT
-
-		# self.visible = !self.visible
-		# get_tree().paused = !get_tree().paused
-		
-		
-		# _buttonClusterRoot.update_size()
-
-		# if self.visible:
-		#     # REMARK: Has to be fine tuned, so that e.g. music would not stop
-		#     audioManager.disable_request_processing()
-		#     _buttonClusterRoot.set_focus_to_default()
-		#     audioManager.enable_request_processing()
 
 	_tmp_eventKeychain = ["*","UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "settings", "context"]
 	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
@@ -132,8 +133,10 @@ func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> v
 		
 		if self._settingsContext.visible:
 			self._state = MENU_STATE.SETTINGS
+			UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.SETTINGS]), "entered")
 		else:
 			self._state = MENU_STATE.ROOT
+			UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.ROOT]), "entered")
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
