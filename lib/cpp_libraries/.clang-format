@@ -22,12 +22,12 @@ AlignTrailingComments: true
 #    MaxEmptyLinesToKeep: 1
 AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: Always
+AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: true
 # AllowShortCompoundRequirementOnASingleLine: false
 AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None # All
@@ -47,9 +47,9 @@ BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
 BreakStringLiterals: true
 # BreakTemplateDeclarations: Yes
-ColumnLimit: 132
+ColumnLimit: 0
 CompactNamespaces: false
-Cpp11BracedListStyle: false
+Cpp11BracedListStyle: true
 EmptyLineAfterAccessModifier: Never
 EmptyLineBeforeAccessModifier: Always
 FixNamespaceComments: true
@@ -74,7 +74,7 @@ InsertTrailingCommas: Wrapped
 #     HexMinDigits: 8
 KeepEmptyLinesAtTheStartOfBlocks: false
 LambdaBodyIndentation: Signature
-Language:       Cpp
+Language: Cpp
 # LineEnding: LF
 # MainIncludeChar: Quote
 MaxEmptyLinesToKeep: 1
