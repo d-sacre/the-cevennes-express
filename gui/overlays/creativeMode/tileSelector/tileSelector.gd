@@ -184,7 +184,7 @@ func initialize(context : String, tdm : Object) -> void:
 	self.tce_event_and_gui_uuid_lut["gui"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_event_and_gui_uuid_lut["gui"]["list"])
 	self.tce_event_and_gui_uuid_lut["actions"]["new_tile_definition_selected"]["string"] = UserInputManager.create_tce_event_uuid(self._context, self.tce_event_and_gui_uuid_lut["actions"]["new_tile_definition_selected"]["list"])
 
-	# SESCRIPTION: Required to set proper initialization value of _curentTileDefinitionUUID
+	# DESCRIPTION: Required to set proper initialization value of _curentTileDefinitionUUID
 	# REMARK: Hopefully a temporary solution? Perhaps use UserInputManager command bus?
 	var _index : int = (self._tileList.get_selected_items())[0]
 	var _tmp_uuid : String = self._tileList.get_item_metadata(_index)

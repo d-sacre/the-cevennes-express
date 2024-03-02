@@ -128,6 +128,7 @@ func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> v
 
 	_tmp_eventKeychain = ["*","UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "settings", "context"]
 	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
+		print("Toggle Settings")
 		self._rootContext.visible = !self._rootContext.visible
 		self._settingsContext.visible = !self._settingsContext.visible
 		

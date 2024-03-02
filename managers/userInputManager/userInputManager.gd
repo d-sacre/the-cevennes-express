@@ -1,18 +1,24 @@
 extends Node
 
 ################################################################################
+################################################################################
 #### AUTOLOAD REMARKS ##########################################################
+################################################################################
 ################################################################################
 # The scene this script is attached to is autoloaded as "UserInputManager".    #
 ################################################################################
 
 ################################################################################
+################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
 ################################################################################
 signal transmit_global_event(tce_event_uuid, value)
 
 ################################################################################
+################################################################################
 #### CONSTANT DEFINITIONS ######################################################
+################################################################################
 ################################################################################
 # TO-DO: should be moved into another autoload, so that other parts can access
 # it in a more logical/orderly manner
@@ -143,20 +149,20 @@ const GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT : Dictionary = {
 }
 
 ################################################################################
-#### PUBLIC MEMBER VARIABLES ###################################################
-################################################################################
-var context : String
-var base : String
-var variant : String
-
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
+################################################################################
+var _context : String
+var _base : String
+var _variant : String
+
 var _managerReferences : Dictionary = {}
 var _guiLayerReferences : Dictionary = {}
 
-var _currentGuiMouseContext : String 
+var _currentGuiContext : String 
 var _currentInputMethod : String
+var _deviceResponsibleForCurrentInput : String
 var _miscInputEventsToProcess : Dictionary = {}
 
 var _lastMovementRequest : Dictionary = {
@@ -170,7 +176,9 @@ var _curentTileDefinitionUUID : String = "" # REMARK: only temporary; has to be 
 var _logic : Object
 
 ################################################################################
+################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
+################################################################################
 ################################################################################
 func _create_string_with_tce_event_uuid_seperator(keyChain : Array) -> String:
 	var _tmpString : String = ""
@@ -182,6 +190,9 @@ func _create_string_with_tce_event_uuid_seperator(keyChain : Array) -> String:
 			_tmpString +=  self.TCE_EVENT_UUID_SEPERATOR
 
 	return _tmpString
+
+func _set_device_responsible_for_current_input(device : String) -> void:
+	self._deviceResponsibleForCurrentInput = device
 
 func _create_dictionary_of_misc_current_input_events() -> void:
 	var _db : Dictionary = self.GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT
@@ -227,6 +238,7 @@ func _process_movement_request_on_device_channel(device : String, channelNo : in
 func _process_input_event_by_method_name(event : String, methodName : String) -> void:
 	if Input.call("is_action_" + methodName,event):
 		if self.GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT.has(event):
+			self._set_device_responsible_for_current_input(event.split("_")[0])
 			var _input_uuid_keychain : Array = self.GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT[event]["TCE_EVENT_UUID_LUT_KEYCHAIN"]
 			var _tmp_eventKeychain : Array = DictionaryParsing.get_dict_element_via_keychain(self.TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT, _input_uuid_keychain)
 			self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, methodName)
@@ -246,22 +258,76 @@ func _process_misc_input_events() -> void:
 			var _events : Array = _db[_key]
 			self._process_input_events_by_method_name(_events, _key)
 
-# source: https://docs.godotengine.org/en/3.5/classes/class_input.html#class-input-method-parse-input-event
-func _trigger_fake_input_event(event : InputEvent) -> void:
-	var _fakeInputEvent = InputEventAction.new()
-	_fakeInputEvent.action = event
-	_fakeInputEvent.pressed = true
-	Input.parse_input_event(_fakeInputEvent)
-
+################################################################################
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+################################################################################
 
 ################################################################################
-#### PUBLIC MEMBER FUNCTIONS: BOOL INPUT METHODS ##############################
+#### PUBLIC MEMBER FUNCTIONS: CONTEXT SETTER/GETTER ############################
 ################################################################################
-func is_current_input_method_including_mouse() -> bool:
-	return self.is_current_input_method_matching("*mouse*")
+func set_context(tce_context_uuid : String) -> void:
+	self._context = tce_context_uuid
+
+func get_context() -> String:
+	return self._context
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: CURRENT INPUT METHOD SETTER/GETTER ###############
+################################################################################
+func set_current_input_method(method : String) -> void:
+	self._currentInputMethod = method
+	print("=> UserInputManager: Current Input Method changed to ", self._currentInputMethod)
+
+	if self.get_context().match("game*"):
+		if method == "keyboard::only":
+			self._managerReferences["hexGridManager"].enable_floating_selector_movement_by_asmr()
+			self._managerReferences["cameraManager"].disable_raycasting()
+			
+			# Debug Panel is possible. Might be only temporarily required.
+			self._managerReferences["hexGridManager"].set_current_grid_index(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary())
+			# self._currentGuiContext = self._context + self.TCE_EVENT_UUID_SEPERATOR + "game"	# REMARK: Needs to be verified if important!
+			self.set_current_gui_context_to_grid()
+
+		else:
+			self._managerReferences["hexGridManager"].disable_floating_selector_movement_by_asmr()
+			self._managerReferences["cameraManager"].enable_raycasting()
+			self.set_current_gui_context_to_void()
+
+	# DESCRIPTION: Update the misc input events to process according to current input method
+	self._create_dictionary_of_misc_current_input_events()
+
+func get_current_input_method() -> String:
+	return self._currentInputMethod
+
+func get_device_responsible_for_current_input() -> String:
+	return self._deviceResponsibleForCurrentInput
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: CURRENT GUI CONTEXT SETTER/GETTER ################
+################################################################################
+func set_current_gui_context(tce_event_uuid : String, interaction : String) -> void:
+	self._currentGuiContext = tce_event_uuid
+	self._logic.gui_context_management_pipeline(tce_event_uuid, interaction)
+	print(self._currentGuiContext) # Only for debugging purposes
+
+func set_current_gui_context_to_grid() -> void:
+	var _tmp_gui_context_uuid : String = self.create_tce_event_uuid(self.get_context(), ["gui", "grid"])
+	self.set_current_gui_context(_tmp_gui_context_uuid, "entered")
+
+func set_current_gui_context_to_void() -> void:
+	var _tmp_gui_context_uuid : String = self.create_tce_event_uuid(self.get_context(), ["gui", "void"])
+	self.set_current_gui_context(_tmp_gui_context_uuid, "entered")
+
+func get_current_gui_context() -> String:
+	return self._currentGuiContext
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: BOOL INPUT METHODS ###############################
+################################################################################
+func is_current_input_method_matching(regex : String) -> bool:
+	return self.get_current_input_method().match(regex)
 
 func is_current_input_method_keyboard_only() -> bool:
 	return self.is_current_input_method_matching("keyboard::only")
@@ -269,28 +335,54 @@ func is_current_input_method_keyboard_only() -> bool:
 func is_current_input_method_controller_only() -> bool:
 	return self.is_current_input_method_matching("controller::only")
 
+func is_current_input_method_including_mouse() -> bool:
+	return self.is_current_input_method_matching("*mouse*")
+
+func is_current_input_method_including_keyboard() -> bool:
+	return self.is_current_input_method_matching("*keyboard*")
+
+func is_current_input_method_including_controller() -> bool:
+	return self.is_current_input_method_matching("*controller*")
+
+func is_device_responsible_for_current_input_mouse() -> bool:
+	return self.get_device_responsible_for_current_input().match("*mouse*")
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: BOOL CURRENT GUI CONTEXT #########################
+################################################################################
+func is_current_gui_context_grid() -> bool:
+	return self.get_current_gui_context().match("*" + TCE_EVENT_UUID_SEPERATOR + "grid")
+
+func is_current_gui_context_void() -> bool:
+	return self.get_current_gui_context().match("*" + TCE_EVENT_UUID_SEPERATOR + "void")
+
+func is_current_gui_context_menu() -> bool: 
+	return self.get_current_gui_context().match("*menu*")
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: INITIALIZATION ###################################
+################################################################################
 func initialize(_base_context : String, cim: String, clr : Object, mr : Dictionary, glr : Dictionary) -> void:
 	self._managerReferences = mr
 	self._guiLayerReferences = glr
-	self.context = _base_context
+	self.set_context(_base_context)
 	self._currentInputMethod = cim
 	self._logic = clr.logic 
 
-	var _base_context_list : Array = self.context.split(self.TCE_EVENT_UUID_SEPERATOR)
-	self.base = _base_context_list[0]
+	var _base_context_list : Array = self.get_context().split(self.TCE_EVENT_UUID_SEPERATOR)
+	self._base = _base_context_list[0]
 
 	# DESCRIPTION: Select the misc input events to process according to current input method
 	self._create_dictionary_of_misc_current_input_events()
 
-	if self.base == "game":
-		self.variant = _base_context_list[1]
+	if self._base == "game":
+		self._variant = _base_context_list[1]
 		self._managerReferences["cameraManager"].enable_raycasting()
-		self._currentGuiMouseContext = self.context + self.TCE_EVENT_UUID_SEPERATOR
 		
-		if self._currentInputMethod.match("*mouse*"):
-			self._currentGuiMouseContext += "void"
+		if self.is_current_input_method_including_mouse():
+			self.set_current_gui_context_to_void()
 		else:
-			self._currentGuiMouseContext += "grid"	
+			self.set_current_gui_context_to_grid()	
 
 		# REMARK: Only temporary, until proper tile definition contextual logic is implemented
 		# Could it cause the issue of overwriting other settings?
@@ -298,6 +390,9 @@ func initialize(_base_context : String, cim: String, clr : Object, mr : Dictiona
 		if _tmp.has("TILE_DEFINITION_UUID"):
 			self._curentTileDefinitionUUID = _tmp["TILE_DEFINITION_UUID"]
 
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: EVENT TOOLS AND MANAGEMENT #######################
+################################################################################
 func create_tce_event_uuid(ctxt : String, keyChain : Array) -> String:
 	var _tmpString : String =  ctxt + self.TCE_EVENT_UUID_SEPERATOR
 	_tmpString += self._create_string_with_tce_event_uuid_seperator(keyChain)
@@ -311,75 +406,32 @@ func match_tce_event_uuid(tce_event_uuid : String, keyChain : Array) -> bool:
 func transmit_global_event(tce_event_uuid : String, value) -> void:
 	emit_signal("transmit_global_event", tce_event_uuid, value)
 
+func transmit_global_event_from_keychain(keyChain : Array, value) -> void:
+	var _tmp_event_uuid : String = self.create_tce_event_uuid(self.get_context(), keyChain)
+	self.transmit_global_event(_tmp_event_uuid, value)
+
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func call_contextual_logic_with_tce_event_keychain(keyChain : Array, value) -> void:
-	var _tmp_tce_event_uuid : String = self.create_tce_event_uuid(self.context, keyChain)
+	var _tmp_tce_event_uuid : String = self.create_tce_event_uuid(self.get_context(), keyChain)
 	self._logic.general_processing_pipeline(_tmp_tce_event_uuid, value)
 
-func set_current_gui_context(tce_event_uuid : String, interaction : String) -> void:
-	# print("Before: ", self._currentGuiMouseContext)
-	self._currentGuiMouseContext = tce_event_uuid
-	self._logic.gui_context_management_pipeline(tce_event_uuid, interaction)
-	print("After: ", self._currentGuiMouseContext)
-
-func set_current_gui_context_to_grid() -> void:
-	var _tmp_gui_context_uuid : String = self.create_tce_event_uuid(self.context, ["gui", "grid"])
-	self.set_current_gui_context(_tmp_gui_context_uuid, "entered")
-
-func set_current_gui_context_to_void() -> void:
-	var _tmp_gui_context_uuid : String = self.create_tce_event_uuid(self.context, ["gui", "void"])
-	self.set_current_gui_context(_tmp_gui_context_uuid, "entered")
-
-func get_current_gui_context() -> String:
-	return self._currentGuiMouseContext
-
-func is_current_gui_context_grid() -> bool:
-	return self.get_current_gui_context().match("*" + TCE_EVENT_UUID_SEPERATOR + "grid")
-
-func is_current_gui_context_void() -> bool:
-	return self.get_current_gui_context().match("*" + TCE_EVENT_UUID_SEPERATOR + "void")
-
-func is_current_gui_context_menu() -> bool: 
-	return self.get_current_gui_context().match("*menu*")
-
-func get_context() -> String:
-	return self.context
-
-func set_context(tce_context_uuid : String) -> void:
-	self.context = tce_context_uuid
-
-func get_current_input_method() -> String:
-	return self._currentInputMethod
-
-func is_current_input_method_matching(regex : String) -> bool:
-	return self.get_current_input_method().match(regex)
-
-func set_current_input_method(method : String) -> void:
-	self._currentInputMethod = method
-	print("=> UserInputManager: Current Input Method changed to ", self._currentInputMethod)
-
-	if self.context.match("game*"):
-		if method == "keyboard::only":
-			self._managerReferences["hexGridManager"].enable_floating_selector_movement_by_asmr()
-			self._managerReferences["cameraManager"].disable_raycasting()
-			
-			# Debug Panel is possible. Might be only temporarily required.
-			self._managerReferences["hexGridManager"].set_current_grid_index(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary())
-			self._currentGuiMouseContext = self.context + self.TCE_EVENT_UUID_SEPERATOR + "game"	
-
-		else:
-			self._managerReferences["hexGridManager"].disable_floating_selector_movement_by_asmr()
-			self._managerReferences["cameraManager"].enable_raycasting()
-			self._currentGuiMouseContext = self.context + self.TCE_EVENT_UUID_SEPERATOR + "void"
-
-	# DESCRIPTION: Update the misc input events to process according to current input method
-	self._create_dictionary_of_misc_current_input_events()
-
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: TOOLS ############################################
+################################################################################
 func exit_to_system() -> void:
 	get_tree().quit()
 
+# source: https://docs.godotengine.org/en/3.5/classes/class_input.html#class-input-method-parse-input-event
+func trigger_fake_input_event(event : String, pressed : bool) -> void:
+	var _fakeInputEvent = InputEventAction.new()
+	_fakeInputEvent.action = event
+	_fakeInputEvent.pressed = pressed
+	Input.parse_input_event(_fakeInputEvent)
+
+################################################################################
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
+################################################################################
 ################################################################################
 func _on_gui_context_changed(tce_event_uuid : String, interaction : String) -> void:
 	self.set_current_gui_context(tce_event_uuid, interaction)
@@ -390,20 +442,24 @@ func _on_special_user_input(tce_event_uuid : String, value) -> void:
 	self._logic.general_processing_pipeline(tce_event_uuid, value)
 
 ################################################################################
+################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
+################################################################################
 ################################################################################
 func _ready() -> void:
 	print("\t-> Load UserInputManager...")
 
 ################################################################################
+################################################################################
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
+################################################################################
 ################################################################################
 func _input(event : InputEvent) -> void:
 	# REMARK: Temporary Limitation to "game" context required until Main Menu is updated!
-	if self.base == "game": # temporary!
+	if self._base == "game": # temporary!
 
 		# DESCRIPTION: Process mouse inputs only when mouse is selected as an input method
-		if self._currentInputMethod.match("*mouse*"):
+		if self.is_current_input_method_including_mouse():
 			# mouse position (floating (tile) position)
 			if event is InputEventMouse:
 				var _tmp_eventKeychain : Array = ["user", "interaction", "mouse", "movement"]
@@ -412,14 +468,14 @@ func _input(event : InputEvent) -> void:
 func _process(_delta : float) -> void:
 	# DESCRIPTION: General keyboard input handling
 	# DESCRIPTION: Process keyboard inputs only when keyboard is selected as an input method
-	if self._currentInputMethod.match("*keyboard*"):
+	if self.is_current_input_method_including_keyboard():
 		for _i in range(1,6):
 			if Input.is_action_just_pressed("keyboard_option" + str(_i)):
 				var _tmp_eventKeychain : Array = self.TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT["option"][str(_i)]#["user", "interaction", "keyboard", "option"+str(_i)]
 				self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, "just_pressed")
 
 		# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
-		if self.base == "game":
+		if self._base == "game":
 			# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
 			# after Main Menu has been replaced
 
@@ -427,15 +483,15 @@ func _process(_delta : float) -> void:
 			for _channelNo in range(1,3): 
 				self._process_movement_request_on_device_channel("keyboard", _channelNo)
 
-	if self._currentInputMethod.match("*controller*"):
-		if self.base == "game":
+	if self.is_current_input_method_including_controller():
+		if self._base == "game":
 			# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
 			# after Main Menu has been replaced
 			for _channelNo in range(1,3): 
 				self._process_movement_request_on_device_channel("controller", _channelNo)
 	
 	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
-	if self.base == "game":
+	if self._base == "game":
 		# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
 		# after Main Menu has been replaced
 

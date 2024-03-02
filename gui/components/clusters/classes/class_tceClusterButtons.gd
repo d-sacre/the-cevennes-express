@@ -15,6 +15,7 @@ const _buttonResource : Resource = preload("res://gui/components/buttons/menuBut
 var _context : String 
 var _defaultButton : Button 
 var _buttonReferences : Array = []
+var _buttonFocusReferences : Array = []
 
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
@@ -49,27 +50,30 @@ func _create_button(button : Dictionary) -> void:
 	if button["default"]:
 		self._defaultButton = _buttonInstance
 
+	if not button["disabled"]:
+		self._buttonFocusReferences.append(_buttonInstance)
+
 func _set_focus_neighbours() -> void:
 	# DESCRIPTION: If more than one button
-	if len(self._buttonReferences) > 1:
-		var _maxIndex : int = len(self._buttonReferences)-1
+	if len(self._buttonFocusReferences) > 1:
+		var _maxIndex : int = len(self._buttonFocusReferences)-1
 
-		for i in self._buttonReferences.size():
-			var _current : Button = self._buttonReferences[i]
+		for i in self._buttonFocusReferences.size():
+			var _current : Button = self._buttonFocusReferences[i]
 
 			var _neighboursTopObject : Button
 			var _neighboursBottomObject : Button
 
 			match i:
 				0:
-					_neighboursTopObject = self._buttonReferences[-1]
-					_neighboursBottomObject = self._buttonReferences[i+1]
+					_neighboursTopObject = self._buttonFocusReferences[-1]
+					_neighboursBottomObject = self._buttonFocusReferences[i+1]
 				_maxIndex:
-					_neighboursTopObject = self._buttonReferences[i-1]
-					_neighboursBottomObject = self._buttonReferences[0]
+					_neighboursTopObject = self._buttonFocusReferences[i-1]
+					_neighboursBottomObject = self._buttonFocusReferences[0]
 				_:
-					_neighboursTopObject = self._buttonReferences[i-1]
-					_neighboursBottomObject = self._buttonReferences[i+1]
+					_neighboursTopObject = self._buttonFocusReferences[i-1]
+					_neighboursBottomObject = self._buttonFocusReferences[i+1]
 
 			var _neighboursTopPath : NodePath = _neighboursTopObject.get_path()
 			var _neighboursBottomPath : NodePath = _neighboursBottomObject.get_path()
@@ -100,4 +104,6 @@ func initialize(context : String) -> void:
 	# self.set_focus_to_default() # deactivated to prevent soundplayback during loading of game
 
 func update_size() -> void:
-	self.rect_min_size = self._buttonContainer.rect_size
+	var _tmp_sizeX : float = max(self._buttonContainer.rect_size.x, self._buttonContainer.rect_min_size.x) + 2*48
+	var _tmp_sizeY : float = max(self._buttonContainer.rect_size.y, self._buttonContainer.rect_min_size.y) + 2*48
+	self.rect_min_size = Vector2(_tmp_sizeX, _tmp_sizeY)

@@ -25,7 +25,7 @@ const buttons : Array = [
 		}
 	},
 	{
-		"text": "Return to Main Menu",
+		"text": "Exit to Main Menu",
 		"tce_event_uuid_suffix": "menu::main",
 		"default": false,
 		"disabled": true,

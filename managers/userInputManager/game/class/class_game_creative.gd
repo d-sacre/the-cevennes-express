@@ -58,7 +58,7 @@ func _hide_gui_creative_mode(status : bool) -> void:
 	self._guiLayerReferences["overlay"].visible = not status
 
 	if status:
-		self._currentGuiMouseContext = self._context + self._separator + "gui" + self._separator + "grid"
+		UserInputManager.set_current_gui_context_to_grid()
 		
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()

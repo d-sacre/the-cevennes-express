@@ -34,6 +34,17 @@ func initialize(context : String, data : Dictionary) -> void:
 	self._default = data["default"]	
 	self.pause_mode = PAUSE_MODE_PROCESS
 
+	# DESCRIPTION: If button is disabled, set overrides for focus and hover, so 
+	# that its appearence is always the same/correct.
+	# REMARK: Later has to be adapted to suit the new paths
+	if self.disabled:
+		for _override in ["hover", "focus"]:
+			if self.has_stylebox_override(_override):
+				self.remove_stylebox_override(_override)
+	
+		self.add_stylebox_override("hover", load("res://themes/button_disabled.stylebox"))
+		self.add_stylebox_override("focus", load("res://themes/button_disabled.stylebox"))
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################

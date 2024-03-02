@@ -33,14 +33,15 @@ margin_bottom = 775.0
 rect_min_size = Vector2( 512, 768 )
 
 [node name="settingsContext" type="PanelContainer" parent="."]
-margin_left = 622.0
-margin_top = 123.0
-margin_right = 1297.0
-margin_bottom = 957.0
+visible = false
+margin_left = 953.0
+margin_top = 533.0
+margin_right = 967.0
+margin_bottom = 547.0
 
 [node name="settingsCluster" parent="settingsContext" instance=ExtResource( 3 )]
 visible = true
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 668.0
-margin_bottom = 827.0
+margin_right = 647.0
+margin_bottom = 737.0
