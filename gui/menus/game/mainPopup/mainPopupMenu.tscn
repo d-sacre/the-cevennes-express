@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://gui/menus/game/mainPopup/mainPopupMenu.gd" type="Script" id=1]
 [ext_resource path="res://gui/menus/game/mainPopup/components/menuGameMainPopupButtonCluster.tscn" type="PackedScene" id=2]
 [ext_resource path="res://gui/menus/game/mainPopup/components/menuGameMainPopupSettings.tscn" type="PackedScene" id=3]
+[ext_resource path="res://themes/creditsPopup_mainMenu.theme" type="Theme" id=4]
+[ext_resource path="res://themes/fonts/lmodern_bold_96px.tres" type="DynamicFont" id=5]
 
 [node name="mainPopupMenu" type="CenterContainer"]
 anchor_right = 1.0
@@ -12,24 +14,43 @@ script = ExtResource( 1 )
 
 [node name="rootContext" type="PanelContainer" parent="."]
 pause_mode = 2
-margin_left = 697.0
-margin_top = 149.0
-margin_right = 1223.0
-margin_bottom = 931.0
+margin_left = 680.0
+margin_top = 61.0
+margin_right = 1240.0
+margin_bottom = 1019.0
 rect_min_size = Vector2( 0, 768 )
 focus_mode = 2
 size_flags_horizontal = 2
 size_flags_vertical = 2
+theme = ExtResource( 4 )
 
-[node name="buttonClusterRoot" parent="rootContext" instance=ExtResource( 2 )]
+[node name="GridContainer" type="GridContainer" parent="rootContext"]
+margin_left = 24.0
+margin_top = 24.0
+margin_right = 536.0
+margin_bottom = 934.0
+
+[node name="CenterContainer" type="CenterContainer" parent="rootContext/GridContainer"]
+margin_right = 512.0
+margin_bottom = 138.0
+
+[node name="Label" type="Label" parent="rootContext/GridContainer/CenterContainer"]
+margin_left = 120.0
+margin_right = 391.0
+margin_bottom = 138.0
+custom_fonts/font = ExtResource( 5 )
+text = "Menu"
+align = 1
+valign = 1
+
+[node name="buttonClusterRoot" parent="rootContext/GridContainer" instance=ExtResource( 2 )]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 519.0
-margin_bottom = 775.0
+margin_top = 142.0
+margin_right = 512.0
+margin_bottom = 910.0
 rect_min_size = Vector2( 512, 768 )
 
 [node name="settingsContext" type="PanelContainer" parent="."]

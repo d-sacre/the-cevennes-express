@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://managers/uiActionManager/uiActionManager.gd" type="Script" id=1]
+
+[node name="uiActionManager" type="Node"]
+script = ExtResource( 1 )
+
+[node name="uiMovementTimer" type="Timer" parent="."]
+pause_mode = 2

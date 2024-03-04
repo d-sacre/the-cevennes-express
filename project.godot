@@ -65,6 +65,7 @@ sfxManager="*res://managers/audioManager/sfx/sfxManager.tscn"
 musicManager="*res://managers/audioManager/music/musicManager.tscn"
 audioManager="*res://managers/audioManager/audioManager.tscn"
 UserInputManager="*res://managers/userInputManager/userInputManager.tscn"
+UiActionManager="*res://managers/uiActionManager/uiActionManager.tscn"
 
 [display]
 

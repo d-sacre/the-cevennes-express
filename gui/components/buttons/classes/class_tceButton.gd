@@ -21,6 +21,9 @@ var _default : bool
 
 var _context : String = "test"
 
+var _textDefault : String 
+const _textFocusAddition : Dictionary = {"prefix": "«", "suffix": "»"}
+
 var _error : int
 
 ################################################################################
@@ -28,7 +31,8 @@ var _error : int
 ################################################################################
 func initialize(context : String, data : Dictionary) -> void:
 	self._context = context
-	self.text = data["text"]
+	self._textDefault = data["text"]
+	self.text = self._textDefault
 	self.disabled = data["disabled"]
 	self._tce_event_uuid = self._context + data["tce_event_uuid_suffix"]
 	self._default = data["default"]	
@@ -52,7 +56,17 @@ func _on_mouse_entered() -> void:
 	self.grab_focus()
 
 func _on_focus_entered() -> void:
+	if not self.disabled:
+		self.text = _textFocusAddition["prefix"] + self._textDefault + _textFocusAddition["suffix"]
+
+	# DESCRIPTION: Calculate the position of the mouse cursor, so that in the mixed 
+	# keyboard and mouse mode the mouse cursor follows the keyboard selection
+	var _center : Vector2 =  0.5 * self.rect_size
+	self.warp_mouse(_center)
 	audioManager.play_sfx(["ui", "button", "hover"])
+
+func _on_focus_exited() -> void:
+	self.text = self._textDefault
 
 func _on_button_pressed() -> void:
 	UserInputManager._on_special_user_input(self._tce_event_uuid + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "pressed", "pressed")

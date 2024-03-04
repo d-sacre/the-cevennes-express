@@ -17,6 +17,8 @@ var _defaultButton : Button
 var _buttonReferences : Array = []
 var _buttonFocusReferences : Array = []
 
+var _vSpacerHeight : int = 24
+
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
@@ -52,6 +54,11 @@ func _create_button(button : Dictionary) -> void:
 
 	if not button["disabled"]:
 		self._buttonFocusReferences.append(_buttonInstance)
+
+func _create_spacer() -> void:
+	var _spacer = Control.new()
+	_spacer.rect_min_size = Vector2(self._vSpacerHeight, self._vSpacerHeight)
+	self._buttonContainer.add_child(_spacer)
 
 func _set_focus_neighbours() -> void:
 	# DESCRIPTION: If more than one button
@@ -96,14 +103,18 @@ func initialize(context : String) -> void:
 	# due to tool functionality
 	self._remove_all_buttons()
 
-	for _button in self.buttons:
+	for _i in self.buttons.size():
+		var _button = self.buttons[_i]
 		if self._is_button_creation_allowed(_button):
 			self._create_button(_button)
+
+			if _i < len(self.buttons) - 1:
+				self._create_spacer()
 	
 	# self._set_focus_neighbours() # currently producing errors
 	# self.set_focus_to_default() # deactivated to prevent soundplayback during loading of game
 
 func update_size() -> void:
 	var _tmp_sizeX : float = max(self._buttonContainer.rect_size.x, self._buttonContainer.rect_min_size.x) + 2*48
-	var _tmp_sizeY : float = max(self._buttonContainer.rect_size.y, self._buttonContainer.rect_min_size.y) + 2*48
+	var _tmp_sizeY : float = max(self._buttonContainer.rect_size.y, self._buttonContainer.rect_min_size.y) + 2*self._vSpacerHeight + len(self.buttons)*self._vSpacerHeight
 	self.rect_min_size = Vector2(_tmp_sizeX, _tmp_sizeY)

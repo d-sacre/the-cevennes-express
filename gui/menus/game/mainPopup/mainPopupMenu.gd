@@ -39,7 +39,7 @@ var _error : int
 onready var _rootContext : PanelContainer = $rootContext
 onready var _settingsContext : PanelContainer = $settingsContext
 
-onready var _buttonClusterRoot : Object = $rootContext/buttonClusterRoot
+onready var _buttonClusterRoot : Object = $rootContext/GridContainer/buttonClusterRoot
 onready var settingsPopout : Object = $settingsContext/settingsCluster
 
 ################################################################################

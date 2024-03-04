@@ -161,6 +161,7 @@ var _managerReferences : Dictionary = {}
 var _guiLayerReferences : Dictionary = {}
 
 var _currentGuiContext : String 
+var _currentGuiFocus : Object
 var _currentInputMethod : String
 var _deviceResponsibleForCurrentInput : String
 var _miscInputEventsToProcess : Dictionary = {}
@@ -174,6 +175,8 @@ var _lastMovementRequest : Dictionary = {
 var _curentTileDefinitionUUID : String = "" # REMARK: only temporary; has to be replaced with proper logic
 
 var _logic : Object
+
+var _error : int
 
 ################################################################################
 ################################################################################
@@ -272,6 +275,12 @@ func set_context(tce_context_uuid : String) -> void:
 
 func get_context() -> String:
 	return self._context
+
+################################################################################
+#### PUBLIC MEMBER FUNCTIONS: CURRENT GUI FOCUS SETTER/GETTER ##################
+################################################################################
+func get_control_currently_in_focus() -> Object:
+	return self._currentGuiFocus
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: CURRENT INPUT METHOD SETTER/GETTER ###############
@@ -441,6 +450,9 @@ func _on_special_user_input(tce_event_uuid : String, value) -> void:
 	# print(tce_event_uuid) # REMARK: For debugging purposes only
 	self._logic.general_processing_pipeline(tce_event_uuid, value)
 
+func _on_gui_focus_changed(control : Control) -> void:
+	self._currentGuiFocus = control
+
 ################################################################################
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
@@ -448,6 +460,7 @@ func _on_special_user_input(tce_event_uuid : String, value) -> void:
 ################################################################################
 func _ready() -> void:
 	print("\t-> Load UserInputManager...")
+	self._error = get_viewport().connect("gui_focus_changed", self, "_on_gui_focus_changed")
 
 ################################################################################
 ################################################################################
