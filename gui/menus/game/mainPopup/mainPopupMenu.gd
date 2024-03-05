@@ -40,7 +40,7 @@ onready var _rootContext : PanelContainer = $rootContext
 onready var _settingsContext : PanelContainer = $settingsContext
 
 onready var _buttonClusterRoot : Object = $rootContext/GridContainer/buttonClusterRoot
-onready var settingsPopout : Object = $settingsContext/settingsCluster
+# onready var settingsPopout : Object = $settingsContext/settingsCluster
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -106,9 +106,22 @@ func initialize(context : String) -> void:
 	self.visible = false
 	self._state = MENU_STATE.HIDDEN
 
-	# DESCRIPTION: Initialize the settings
-	settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
-	settingsPopout.button_initialize(userSettingsManager.get_user_settings())
+	var _data : Dictionary = {
+		"disabled": true,
+		"default": true,
+		"default_value": 50,
+		"min": 0,
+		"max": 100,
+		"step": 1,
+		"description": "Audio",
+		"tce_event_uuid_suffix": "volume::audio"
+	}
+
+	$settingsContext/TCEHSlider.initialize(context, _data)
+
+	# # DESCRIPTION: Initialize the settings
+	# settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
+	# settingsPopout.button_initialize(userSettingsManager.get_user_settings())
 
 	# DESCRIPTION: Set the correct size and viewport position
 	# REMARK: Is required due to the fact that Godot can not handle the sizes of class inherited
@@ -128,7 +141,6 @@ func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> v
 
 	_tmp_eventKeychain = ["*","UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "settings", "context"]
 	if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
-		print("Toggle Settings")
 		self._rootContext.visible = !self._rootContext.visible
 		self._settingsContext.visible = !self._settingsContext.visible
 		

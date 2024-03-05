@@ -47,12 +47,20 @@ const buttons : Array = [
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES #############################
 ################################################################################
+# func initialize(context : String) -> void:
+# 	self._buttonContainer = $VBoxContainer #$CenterContainer #$CenterContainer/GridContainer
+# 	.initialize(context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "menu" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "root" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "button" + UserInputManager.TCE_EVENT_UUID_SEPERATOR)
+# 	self.pause_mode = PAUSE_MODE_PROCESS
+
+# 	self._set_focus_neighbours()
+
 func initialize(context : String) -> void:
-	self._buttonContainer = $VBoxContainer #$CenterContainer #$CenterContainer/GridContainer
-	.initialize(context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "menu" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "root" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "button" + UserInputManager.TCE_EVENT_UUID_SEPERATOR)
+	#$CenterContainer #$CenterContainer/GridContainer
+	var _tmp_context : String = context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "menu" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "root" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "button" + UserInputManager.TCE_EVENT_UUID_SEPERATOR
+	.initialize_button_cluster(_tmp_context, $VBoxContainer, self.buttons)
 	self.pause_mode = PAUSE_MODE_PROCESS
 
-	self._set_focus_neighbours()
+	self.set_focus_neighbours(self.get_focus_reference())
 
 func _ready():
 	# only for testing purposes

@@ -55,6 +55,10 @@ onready var uiMovementTimer : Timer = $uiMovementTimer
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
 ################################################################################
+
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS: BOOL EXPRESSIONS ################################
+################################################################################
 func _is_current_control(type : String) -> bool:
 	var _currentControl : Object = UserInputManager.get_control_currently_in_focus()
 	var _currentControlType : String = _currentControl.get_class()
@@ -68,6 +72,9 @@ func _is_current_control(type : String) -> bool:
 func _is_current_control_hslider() -> bool:
 	return self._is_current_control("HSlider")
 
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS: UTILITIES AND TOOLS #############################
+################################################################################
 func _ui_move() -> void:
 	if self._lastMovementAction != "":
 		if not self._is_current_control_hslider():

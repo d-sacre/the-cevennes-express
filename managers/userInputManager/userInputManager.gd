@@ -319,7 +319,7 @@ func get_device_responsible_for_current_input() -> String:
 func set_current_gui_context(tce_event_uuid : String, interaction : String) -> void:
 	self._currentGuiContext = tce_event_uuid
 	self._logic.gui_context_management_pipeline(tce_event_uuid, interaction)
-	print(self._currentGuiContext) # Only for debugging purposes
+	# print(self._currentGuiContext) # REMARK: Only for debugging purposes
 
 func set_current_gui_context_to_grid() -> void:
 	var _tmp_gui_context_uuid : String = self.create_tce_event_uuid(self.get_context(), ["gui", "grid"])
@@ -427,8 +427,6 @@ func call_contextual_logic_with_tce_event_keychain(keyChain : Array, value) -> v
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: TOOLS ############################################
 ################################################################################
-func exit_to_system() -> void:
-	get_tree().quit()
 
 # source: https://docs.godotengine.org/en/3.5/classes/class_input.html#class-input-method-parse-input-event
 func trigger_fake_input_event(event : String, pressed : bool) -> void:

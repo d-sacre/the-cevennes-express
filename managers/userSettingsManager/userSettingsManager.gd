@@ -59,32 +59,30 @@ func save_user_settings() -> void:
 	JsonFio.save_json(self.USER_SETTINGS_FILEPATH, self._userSettings)
 
 
-func update_user_settings(settingKeychain : Array, setterType, settingValue) -> Dictionary:
-	var _returnSignal : Dictionary = {}
+func update_user_settings(keyChain : Array, setterType, value) -> Dictionary:
+	var _audioLevelChange : Dictionary = {}
 
 	# determine the depth in the dictionary to set the value
-	if len(settingKeychain) == 1:
-		_userSettings[settingKeychain[0]] = settingValue
-	elif len(settingKeychain) == 2:
-		_userSettings[settingKeychain[0]][settingKeychain[1]] = settingValue
-	elif len(settingKeychain) == 3:
-		_userSettings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]] = settingValue
-	elif len(settingKeychain) == 4:
-		_userSettings[settingKeychain[0]][settingKeychain[1]][settingKeychain[2]][settingKeychain[3]] = settingValue
+	if len(keyChain) == 1:
+		_userSettings[keyChain[0]] = value
+	elif len(keyChain) == 2:
+		_userSettings[keyChain[0]][keyChain[1]] = value
+	elif len(keyChain) == 3:
+		_userSettings[keyChain[0]][keyChain[1]][keyChain[2]] = value
+	elif len(keyChain) == 4:
+		_userSettings[keyChain[0]][keyChain[1]][keyChain[2]][keyChain[3]] = value
 
-	if settingKeychain[0] == "volume": # if volume setting changed
-		var _tmp_settingKeychain = []
-		for entry in settingKeychain:
+	if keyChain[0] == "volume": # if volume setting changed
+		var _tmp_keyChain = []
+		for entry in keyChain:
 			if entry != "volume":
-				_tmp_settingKeychain.append(entry)
+				_tmp_keyChain.append(entry)
 		
-		_returnSignal = {"keyChain": _tmp_settingKeychain, "value": settingValue}
-	
-	# print("update user settings signal information: ",_returnSignal)
+		_audioLevelChange = {"keyChain": _tmp_keyChain, "value": value}
 	
 	self._update()
 
-	return _returnSignal
+	return _audioLevelChange
 
 func get_user_settings() -> Dictionary:
 	return self._userSettings
@@ -93,10 +91,13 @@ func get_user_settings() -> Dictionary:
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
 # Currently not working for main menu, but would be for in-game popup menu
-func _on_user_settings_changed(settingKeychain : Array, setterType, settingValue) -> void:
-	var _audioManagerSignalResult : Dictionary = userSettingsManager.update_user_settings(settingKeychain, setterType, settingValue)
-	if _audioManagerSignalResult.has("keyChain"):
-		audioManager.set_volume_level(_audioManagerSignalResult["keyChain"], _audioManagerSignalResult["value"])
+func _on_user_settings_changed(keyChain : Array, setterType, value) -> void:
+	var _audioManagerRequest : Dictionary = userSettingsManager.update_user_settings(keyChain, setterType, value)
+	
+	# DESCRIPTION: If the audio manager request is not empty (that means an audio 
+	# volume level has to be changed), pass the result to the AudioManager
+	if _audioManagerRequest.has("keyChain"):
+		audioManager.set_volume_level(_audioManagerRequest["keyChain"], _audioManagerRequest["value"])
 	
 
 

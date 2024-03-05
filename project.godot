@@ -14,10 +14,25 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://gui/components/buttons/classes/class_tceButton.gd"
 }, {
-"base": "Control",
+"base": "TCEUICluster",
 "class": "TCEButtonCluster",
 "language": "GDScript",
 "path": "res://gui/components/clusters/classes/class_tceClusterButtons.gd"
+}, {
+"base": "HSlider",
+"class": "TCEHSlider",
+"language": "GDScript",
+"path": "res://gui/components/slider/classes/class_tceSlider.gd"
+}, {
+"base": "Control",
+"class": "TCEHSliderCluster",
+"language": "GDScript",
+"path": "res://gui/components/clusters/classes/class_tceClusterHSliders.gd"
+}, {
+"base": "Control",
+"class": "TCEUICluster",
+"language": "GDScript",
+"path": "res://gui/components/clusters/classes/class_tceCluster.gd"
 }, {
 "base": "Reference",
 "class": "convert_indices",
@@ -42,6 +57,9 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "TCEButton": "",
 "TCEButtonCluster": "",
+"TCEHSlider": "",
+"TCEHSliderCluster": "",
+"TCEUICluster": "",
 "convert_indices": "",
 "game_base": "",
 "game_creative": "",
@@ -66,6 +84,7 @@ musicManager="*res://managers/audioManager/music/musicManager.tscn"
 audioManager="*res://managers/audioManager/audioManager.tscn"
 UserInputManager="*res://managers/userInputManager/userInputManager.tscn"
 UiActionManager="*res://managers/uiActionManager/uiActionManager.tscn"
+TransitionManager="*res://managers/transitionManager/transitionManager.tscn"
 
 [display]
 
@@ -75,6 +94,10 @@ window/size/test_width=854
 window/size/test_height=480
 window/stretch/mode="2d"
 window/stretch/aspect="keep"
+
+[editor_plugins]
+
+enabled=PoolStringArray(  )
 
 [gui]
 
