@@ -280,6 +280,7 @@ func get_context() -> String:
 #### PUBLIC MEMBER FUNCTIONS: CURRENT GUI FOCUS SETTER/GETTER ##################
 ################################################################################
 func get_control_currently_in_focus() -> Object:
+	print(self._currentGuiFocus)
 	return self._currentGuiFocus
 
 ################################################################################

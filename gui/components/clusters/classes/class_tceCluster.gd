@@ -26,21 +26,25 @@ func _remove_all_elements_in_cluster(cluster : Object) -> void:
 			_n.queue_free()
 
 func _is_element_creation_allowed(_element : Dictionary) -> bool:
-    var _placeable : bool = true
+	var _placeable : bool = true
 
-    return _placeable
+	return _placeable
 
 func _create_element(cluster : Object, elementResource : Resource, element : Dictionary) -> void:
-    var _elementInstance  = elementResource.instance()
-    _elementInstance.initialize(self._context, element)
-    cluster.add_child(_elementInstance)
-    self._objectReferences.append(_elementInstance)
+	var _elementInstance  = elementResource.instance()
+	cluster.add_child(_elementInstance)
 
-    if element["default"]:
-        self._defaultObject = _elementInstance
+	# REMARK: It is important to initialize the element only AFTER it was added
+	# to the scene tree; otherwise, the TCEHSlider with several children of their
+	# own will fail to initialize properly!
+	_elementInstance.initialize(self._context, element)
+	self._objectReferences.append(_elementInstance)
 
-    if not element["disabled"]:
-        self._focusReferences.append(_elementInstance)
+	if element["default"]:
+		self._defaultObject = _elementInstance
+
+	if not element["disabled"]:
+		self._focusReferences.append(_elementInstance)
 
 func _create_spacer(cluster : Object) -> void:
 	var _spacer = Control.new()
@@ -50,37 +54,40 @@ func _create_spacer(cluster : Object) -> void:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+func initialize_ui_cluster_parameters(context : String, cluster : Object) -> void:
+	self._context = context
+	self._cluster = cluster
+
 func initialize_ui_cluster(context : String, cluster : Object, _elementResource : Resource, elements : Array) -> void:
-    self._context = context
-    self.pause_mode = PAUSE_MODE_PROCESS
-    self._cluster = cluster
+	self.initialize_ui_cluster_parameters(context, cluster)
+	self.pause_mode = PAUSE_MODE_PROCESS
 
-    # DESCRIPTION: If there are already some children present, delete them
-    # to prevent the issue that multiple instances of the same slider could be present
-    # due to tool functionality
-    self._remove_all_elements_in_cluster(cluster)
+	# DESCRIPTION: If there are already some children present, delete them
+	# to prevent the issue that multiple instances of the same slider could be present
+	# due to tool functionality
+	self._remove_all_elements_in_cluster(cluster)
 
-    for _i in elements.size():
-        var _element = elements[_i]
-        if self._is_element_creation_allowed(_element):
-            self._create_element(cluster, _elementResource, _element)
+	for _i in elements.size():
+		var _element = elements[_i]
+		if self._is_element_creation_allowed(_element):
+			self._create_element(cluster, _elementResource, _element)
 
-            if _i < len(elements) - 1:
-                self._create_spacer(cluster)
+			if _i < len(elements) - 1:
+				self._create_spacer(cluster)
 
 func get_focus_reference() -> Array:
-    return self._focusReferences
+	return self._focusReferences
 
 func set_focus_neighbours(focusReference : Array) -> void:
-	# DESCRIPTION: If more than one slider
+	# DESCRIPTION: If more than one element
 	if len(focusReference) > 1:
 		var _maxIndex : int = len(focusReference)-1
 
 		for i in focusReference.size():
-			var _current : Button = focusReference[i]
+			var _current : Object = focusReference[i]
 
-			var _neighboursTopObject : Button
-			var _neighboursBottomObject : Button
+			var _neighboursTopObject : Object
+			var _neighboursBottomObject : Object
 
 			match i:
 				0:
@@ -99,7 +106,7 @@ func set_focus_neighbours(focusReference : Array) -> void:
 			_current.set_focus_neighbour(MARGIN_BOTTOM, _neighboursBottomPath)
 
 func set_focus_to_default() -> void:
-    self._defaultObject.grab_focus()
+	self._defaultObject.grab_focus()
 
 func update_size() -> void:
 	var _tmp_sizeX : float = max(self._cluster.rect_size.x, self._cluster.rect_min_size.x) + 2*48

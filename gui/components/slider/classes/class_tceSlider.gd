@@ -14,6 +14,11 @@ extends HSlider
 class_name TCEHSlider
 
 ################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
+signal user_settings_changed(settingKeychain, setterType, settingValue)
+
+################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 var _tce_event_uuid : String 
@@ -73,4 +78,6 @@ func _on_focus_entered() -> void:
 		self.warp_mouse(_center)
 		audioManager.play_sfx(["ui", "button", "hover"])
 
+func _on_value_changed(value) -> void:
+	emit_signal("user_settings_changed", [], "Test", value)
 

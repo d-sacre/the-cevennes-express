@@ -106,19 +106,6 @@ func initialize(context : String) -> void:
 	self.visible = false
 	self._state = MENU_STATE.HIDDEN
 
-	var _data : Dictionary = {
-		"disabled": true,
-		"default": true,
-		"default_value": 50,
-		"min": 0,
-		"max": 100,
-		"step": 1,
-		"description": "Audio",
-		"tce_event_uuid_suffix": "volume::audio"
-	}
-
-	$settingsContext/TCEHSlider.initialize(context, _data)
-
 	# # DESCRIPTION: Initialize the settings
 	# settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
 	# settingsPopout.button_initialize(userSettingsManager.get_user_settings())

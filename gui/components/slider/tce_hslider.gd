@@ -12,11 +12,13 @@ var _context : String
 
 var _disabled : bool
 
-var _description : String 
+var _description : String = ""
 var _value : String = ""
 var _valueMax
 var _unit : String = ""
 var _valueSeperator : String = "/"
+
+var _error : int
 
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
@@ -40,6 +42,8 @@ func _set_value_label_text(value : String) -> void:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+# REMARK: Seems to be called in menuGameMainPopupSettings.gd::_initialize()
+# before the onready vars are valid
 func initialize(context : String, data : Dictionary) -> void:
 	self._context = context
 
@@ -58,3 +62,15 @@ func initialize(context : String, data : Dictionary) -> void:
 
 	# DESCRIPTION: Initializing the slider
 	self.hSlider.initialize(self._context, data)
+
+################################################################################
+#### SIGNAL HANDLING ###########################################################
+################################################################################
+func _on_slider_value_changed(value) -> void:
+	self._set_value_label_text(str(int(value)))
+
+################################################################################
+#### GODOT LOADTIME FUNCTION OVERRIDES #########################################
+################################################################################
+func _ready() -> void:
+	self._error = hSlider.connect("value_changed", self, "_on_slider_value_changed")

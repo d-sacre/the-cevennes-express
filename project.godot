@@ -24,7 +24,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://gui/components/slider/classes/class_tceSlider.gd"
 }, {
-"base": "Control",
+"base": "TCEUICluster",
 "class": "TCEHSliderCluster",
 "language": "GDScript",
 "path": "res://gui/components/clusters/classes/class_tceClusterHSliders.gd"

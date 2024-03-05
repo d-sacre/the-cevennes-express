@@ -1,138 +1,156 @@
-extends PanelContainer
+tool
 
-signal user_settings_changed(settingKeychain, setterType, settingValue)
+extends TCEUICluster
 
-onready var slider_reference : Dictionary = {
-	"volume": {
-		"sfx": {
-			"ui": $VBoxContainer2/audioSubmenu_vboxContainer/uiSFXHBox/volume_uiSFX_slider,
-			"ambience": $VBoxContainer2/audioSubmenu_vboxContainer/ambienceSFXHBox/volume_ambienceSFX_slider,
-			"game": $VBoxContainer2/audioSubmenu_vboxContainer/gameSFXHBox/volume_gameSFX_slider
-		},
-		"music": $VBoxContainer2/audioSubmenu_vboxContainer/musicHBox/volume_music_slider,
-		"master": $VBoxContainer2/audioSubmenu_vboxContainer/masterHBox/volume_master_slider
+################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
+
+const SETTINGS_ELEMENTS_CLUSTER : Array = [
+	{
+		"heading": "Audio",
+		"members": [
+			{
+				"description": "UI SFX",
+				"type": "TCEHSlider",
+				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "ui",
+				"disabled": false,
+				"default": true,
+				"default_value": 5,
+				"min": 0,
+				"max": 100,
+				"step": 1
+			},
+			{
+				"description": "Ambience",
+				"type": "TCEHSlider",
+				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "ambience",
+				"disabled": true,
+				"default": false,
+				"default_value": 25,
+				"min": 0,
+				"max": 100,
+				"step": 1
+			},
+			{
+				"description": "Game SFX",
+				"type": "TCEHSlider",
+				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "game",
+				"disabled": false,
+				"default": false,
+				"default_value": 50,
+				"min": 0,
+				"max": 100,
+				"step": 1
+			},
+			{
+				"description": "Music",
+				"type": "TCEHSlider",
+				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "music",
+				"disabled": true,
+				"default": false,
+				"default_value": 75,
+				"min": 0,
+				"max": 100,
+				"step": 1
+			},
+			{
+				"description": "MASTER",
+				"type": "TCEHSlider",
+				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "master",
+				"disabled": false,
+				"default": false,
+				"default_value": 100,
+				"min": 0,
+				"max": 100,
+				"step": 1
+			}
+		] # UI SFX, Ambience, Game SFX, Music, Master
+	},
+	{
+		"heading": "Visual",
+		"members": []
 	}
-}
+]
 
-onready var button_reference : Dictionary = {
-	"fullscreen": {"reference": $VBoxContainer2/visualSubmenu_vboxContainer/fullscreen_toggle, "type": "toggle"}
-}
+const SLIDER_RESOURCE : Resource = preload("res://gui/components/slider/tce_hslider.tscn")
 
-func slider_initialize(user_settings) -> void:
-	for category in slider_reference:
-		var _object = slider_reference[category]
-		if _object is Dictionary:
-			for subcategory in _object:
-				var _subobject = _object[subcategory]
+################################################################################
+#### PRIVATE MEMBER VARIABLES ##################################################
+################################################################################
+var _lastType : String = ""
+var _objectNeighbourReference : Array = []
 
-				if _subobject is Dictionary:
-					for subsubcategory in _subobject:
-						var _subsubobject = _subobject[subsubcategory]
-						var slider_keychain = [category, subcategory, subsubcategory]
-						_subsubobject.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
-				else:
-					var slider_keychain = [category, subcategory]
-					_subobject.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
-		else:
-			var slider_keychain = [category]
-			_object.value = DictionaryParsing.get_dict_element_via_keychain(user_settings,slider_keychain)
+################################################################################
+#### ONREADY MEMBER VARIABLES ##################################################
+################################################################################
+onready var _clusterContainer : GridContainer = $MarginContainer/CenterContainer/GridContainer
 
-func button_initialize(user_settings) -> void:
-	for category in button_reference:
-		var _object = button_reference[category]
-		var _button 
-		var _button_type = "default"
+################################################################################
+#### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES #############################
+################################################################################
+func set_focus_to_default() -> void:
+	if _objectNeighbourReference != []:
+		_objectNeighbourReference[0].grab_focus()
 
-		if _object is Dictionary:
-			if _object.has("reference"):
-				_button = _object["reference"]
-				_button_type = _object["type"]
+################################################################################
+#### PRIVATE MEMBER FUNCTIONS ##################################################
+################################################################################
+func _initialize() -> void:
+	self.initialize_ui_cluster_parameters("test", self._clusterContainer)
 
-				if _button_type == "toggle":
-					if user_settings[category] == false:
-						_button.pressed = false
-					elif user_settings[category] == true:
-						_button.pressed = true
-			else:
-				pass
-				# to implement if more nested buttons will be added
-		
+	var _tmp_cluster_of_categories : Array = []
+	for _h in self.SETTINGS_ELEMENTS_CLUSTER.size():
+		var _category = self.SETTINGS_ELEMENTS_CLUSTER[_h]
+		var _tmp_cluster_of_clusters : Array = []
+		var _tmp_helper : Dictionary = {}
+		if _category.has("members"):
+			if len(_category["members"]) != 0:
+				for _i in _category["members"].size():
+					var _element : Dictionary = _category["members"][_i]
+					if _element["type"] != self._lastType:
+						if len(_tmp_helper) != 0:
+							_tmp_cluster_of_clusters.append(_tmp_helper)
+							_tmp_helper = {}
+						else:
+							self._lastType = _element["type"]
+							_tmp_helper = {self._lastType : [{"category": _h, "element": _i}]}
+					else:
+						_tmp_helper[self._lastType].append({"category": _h, "element": _i})
 
-func _on_slider_value_changed_volume_sfx_ui(value) -> void:
-	emit_signal("user_settings_changed", ["volume", "sfx", "ui"] ,"slider", value)
+					if _i == len(_category["members"])-1:
+						if len(_tmp_helper) != 0:
+							_tmp_cluster_of_clusters.append(_tmp_helper)
 
-func _on_slider_value_changed_volume_sfx_ambience(value) -> void:
-	emit_signal("user_settings_changed", ["volume", "sfx", "ambience"] ,"slider", value)
-	
-func _on_slider_value_changed_volume_sfx_game(value) -> void:
-	emit_signal("user_settings_changed", ["volume", "sfx", "game"] ,"slider", value)
-	
-func _on_slider_value_changed_volume_music(value) -> void:
-	emit_signal("user_settings_changed", ["volume", "music"] ,"slider", value)
-	
-func _on_slider_value_changed_volume_master(value) -> void:
-	emit_signal("user_settings_changed", ["volume", "master"] ,"slider", value)
+		_tmp_cluster_of_categories.append(_tmp_cluster_of_clusters)
 
-func connect_to_slider_value_changed_signal(sliderRef, _slider_function_id) -> void:
-	sliderRef.connect("value_changed", self, "_on_slider_value_changed_" + _slider_function_id)
+	print(_tmp_cluster_of_categories)
 
-func connect_to_button_value_changed_signal(buttonRef, _button_function_id, buttonType) -> void:
-	if buttonType != "toggle":
-		buttonRef.connect("pressed", self, "_on_button_value_changed_" + _button_function_id)
-	else:
-		buttonRef.connect("toggled", self, "_on_button_value_changed_" + _button_function_id)
+	for _category in _tmp_cluster_of_categories:
+		if _category != []:
+			for _element in _category:
+				for _key in _element.keys():
+					match _key:
+						"TCEHSlider":
+							var _tmp_sliderData : Array = []
 
-func _on_button_value_changed_fullscreen(value) -> void:
-	emit_signal("user_settings_changed", ["fullscreen"] ,"toggle", value)
+							for _entry in _element[_key]:
+								_tmp_sliderData.append(self.SETTINGS_ELEMENTS_CLUSTER[_entry["category"]]["members"][_entry["element"]])
 
+							# print(_tmp_sliderData)
+							var _tmp_sliderCluster = TCEHSliderCluster.new()
+							_tmp_sliderCluster.initialize_slider_cluster("test", self._clusterContainer, _tmp_sliderData)
+
+							self._objectNeighbourReference += _tmp_sliderCluster.get_focus_reference()
+
+	self.set_focus_neighbours(self._objectNeighbourReference)
+	self.set_focus_to_default()
+
+	# print(self._objectNeighbourReference)
+
+################################################################################
+#### GODOT LOADTIME FUNCTION OVERRIDES #########################################
+################################################################################
 func _ready():
-	# connect to all the slider signals
-	for category in slider_reference:
-		var _object = slider_reference[category]
-		if _object is Dictionary:
-			for subcategory in _object:
-				var slider_function_id_subcategory = "_" + subcategory
-				var _subobject = _object[subcategory]
-				
-				if _subobject is Dictionary:
-					for subsubcategory in _subobject:
-						var _subsubobject = _subobject[subsubcategory]
-						var slider_function_id = category + "_" + subcategory + "_" + subsubcategory
-						connect_to_slider_value_changed_signal(_subsubobject, slider_function_id)
-				else:
-					var slider_function_id = category + "_" + subcategory 
-					connect_to_slider_value_changed_signal(_subobject, slider_function_id)
-		else:
-			var slider_function_id = category
-			connect_to_slider_value_changed_signal(_object, slider_function_id)
-
-	# connect to all the button signals
-	# FUTURE: Could be implemented in a function
-	for category in button_reference:
-		var _object = button_reference[category]
-		if _object is Dictionary:
-			if _object.has("reference"):
-				var button_function_id = category
-				var buttonType = _object["type"]
-				var buttonRef = _object["reference"]
-				connect_to_button_value_changed_signal(buttonRef, button_function_id, buttonType)
-			else:
-				# deeper nesting not implemented yet!
-				pass
-				# for subcategory in _object:
-				# 	var button_function_id_subcategory = "_" + subcategory
-				# 	var _subobject = _object[subcategory]
-					
-				# 	if _subobject is Dictionary:
-				# 		for subsubcategory in _subobject:
-				# 			var _subsubobject = _subobject[subsubcategory]
-				# 			var button_function_id = category + "_" + subcategory + "_" + subsubcategory
-				# 			connect_to_button_value_changed_signal(_subsubobject, button_function_id, buttonType)
-				# 	else:
-				# 		var button_function_id = category + "_" + subcategory 
-				# 		connect_to_button_value_changed_signal(_subobject, button_function_id, buttonType)
-		else:
-			pass
-			
-	self.connect("user_settings_changed", userSettingsManager, "_on_user_settings_changed")
-			
+	# only for testing purposes
+	self._initialize()

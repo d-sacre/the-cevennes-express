@@ -64,7 +64,6 @@ func _is_current_control(type : String) -> bool:
 	var _currentControlType : String = _currentControl.get_class()
 
 	if _currentControlType == type:
-		print(type)
 		return true
 
 	return false
@@ -79,6 +78,12 @@ func _ui_move() -> void:
 	if self._lastMovementAction != "":
 		if not self._is_current_control_hslider():
 			UserInputManager.trigger_fake_input_event(self._lastMovementAction, true)
+		else:
+			if (self._lastMovementAction != "ui_left") or (self._lastMovementAction != "ui_right"):
+				# REMARK: Currently a hack, since it requires two movements to get the slider to change focus
+				# Perhaps too many (hidden) sliders initialized?
+				UserInputManager.trigger_fake_input_event(self._lastMovementAction, true)
+				UserInputManager.trigger_fake_input_event(self._lastMovementAction, true)
 
 ################################################################################
 ################################################################################

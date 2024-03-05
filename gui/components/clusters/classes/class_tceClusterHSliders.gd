@@ -1,6 +1,6 @@
 tool
 
-extends Control
+extends TCEUICluster
 
 class_name TCEHSliderCluster
 
@@ -9,4 +9,5 @@ class_name TCEHSliderCluster
 ################################################################################
 const _sliderResource : Resource = preload("res://gui/components/slider/tce_hslider.tscn")
 
-
+func initialize_slider_cluster(context : String, cluster : Object, elements : Array) -> void:
+	.initialize_ui_cluster(context, cluster, self._sliderResource, elements)
