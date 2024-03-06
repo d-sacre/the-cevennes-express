@@ -62,8 +62,9 @@ func _on_focus_entered() -> void:
 
 	# DESCRIPTION: Calculate the position of the mouse cursor, so that in the mixed 
 	# keyboard and mouse mode the mouse cursor follows the keyboard selection
-	var _center : Vector2 =  0.5 * self.rect_size
-	self.warp_mouse(_center)
+	if not UserInputManager.is_device_responsible_for_current_input_mouse():
+		var _center : Vector2 =  0.5 * self.rect_size
+		self.warp_mouse(_center)
 	audioManager.play_sfx(["ui", "button", "hover"])
 
 func _on_focus_exited() -> void:

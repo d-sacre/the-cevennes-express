@@ -147,11 +147,11 @@ func manage_ui_action_mapping(tce_event_uuid : String, value) -> void:
 				# DESCRIPTION: Translate left-right action strength to horizontal movement
 				# REMARK: Needs a case for when a horizontal slider is the element currently in focus
 				if abs(_leftRight) >= 0.501:
-					if _leftRight < 0:
+					if _leftRight > 0:
 						self._lastMovementAction = "ui_left"
 						self.enable_movement_by_asmr(uiMovementTimer, self._uiMovementRepetitionDelay)
 
-					elif _leftRight > 0:
+					elif _leftRight < 0:
 						self._lastMovementAction = "ui_right"
 						self.enable_movement_by_asmr(uiMovementTimer, self._uiMovementRepetitionDelay)
 

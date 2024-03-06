@@ -12,34 +12,33 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -174.5
+margin_left = -292.0
 margin_top = -24.0
-margin_right = 174.5
+margin_right = 292.0
 margin_bottom = 24.0
 columns = 3
 
 [node name="descriptionLabel" type="Label" parent="GridContainer"]
-margin_right = 147.0
+margin_right = 192.0
 margin_bottom = 48.0
-rect_min_size = Vector2( 0, 48 )
+rect_min_size = Vector2( 192, 48 )
 custom_fonts/font = ExtResource( 3 )
 text = "Description"
-align = 1
 valign = 1
 
 [node name="HSlider" type="HSlider" parent="GridContainer"]
-margin_left = 151.0
-margin_right = 279.0
+margin_left = 196.0
+margin_right = 452.0
 margin_bottom = 48.0
-rect_min_size = Vector2( 128, 48 )
+rect_min_size = Vector2( 256, 48 )
 script = ExtResource( 2 )
 
 [node name="valueLabel" type="Label" parent="GridContainer"]
-margin_left = 283.0
-margin_right = 349.0
+margin_left = 456.0
+margin_right = 584.0
 margin_bottom = 48.0
-rect_min_size = Vector2( 0, 48 )
+rect_min_size = Vector2( 128, 48 )
 custom_fonts/font = ExtResource( 3 )
 text = "value"
-align = 1
+align = 2
 valign = 1

@@ -1,6 +1,6 @@
 tool
 
-extends TCEUICluster
+extends TCEClusterBase
 
 class_name TCEHSliderCluster
 
@@ -10,4 +10,9 @@ class_name TCEHSliderCluster
 const _sliderResource : Resource = preload("res://gui/components/slider/tce_hslider.tscn")
 
 func initialize_slider_cluster(context : String, cluster : Object, elements : Array) -> void:
-	.initialize_ui_cluster(context, cluster, self._sliderResource, elements)
+	self._vSpacerHeight = 42
+	.set_element_resource(self._sliderResource)
+	.initialize_ui_cluster(context, cluster, elements)
+
+func update_size() -> void:
+	.update_size()

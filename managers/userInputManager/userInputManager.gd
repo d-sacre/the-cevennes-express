@@ -222,6 +222,8 @@ func _create_dictionary_of_misc_current_input_events() -> void:
 	self._miscInputEventsToProcess = _eventsSortedByType
 
 func _process_movement_request_on_device_channel(device : String, channelNo : int) -> void:
+	self._set_device_responsible_for_current_input(device)
+
 	# DESCRIPTION: Checking for movement request on movement channel 1
 	var _movementRequest : Vector2 = Vector2(
 		Input.get_action_strength(device + "_move_channel" + str(channelNo) + "_left") - Input.get_action_strength(device + "_move_channel" + str(channelNo) + "_right"),
@@ -476,6 +478,7 @@ func _input(event : InputEvent) -> void:
 			if event is InputEventMouse:
 				var _tmp_eventKeychain : Array = ["user", "interaction", "mouse", "movement"]
 				self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, event.position)
+				self._set_device_responsible_for_current_input("mouse")
 
 func _process(_delta : float) -> void:
 	# DESCRIPTION: General keyboard input handling
@@ -485,6 +488,7 @@ func _process(_delta : float) -> void:
 			if Input.is_action_just_pressed("keyboard_option" + str(_i)):
 				var _tmp_eventKeychain : Array = self.TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT["option"][str(_i)]#["user", "interaction", "keyboard", "option"+str(_i)]
 				self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, "just_pressed")
+				self._set_device_responsible_for_current_input("keyboard")
 
 		# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
 		if self._base == "game":

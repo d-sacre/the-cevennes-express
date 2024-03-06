@@ -113,7 +113,7 @@ func initialize(context : String) -> void:
 	# DESCRIPTION: Set the correct size and viewport position
 	# REMARK: Is required due to the fact that Godot can not handle the sizes of class inherited
 	# objects properly and the calculations during _ready do not show any effect
-	_buttonClusterRoot.update_size()
+	self._buttonClusterRoot.update_size()
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

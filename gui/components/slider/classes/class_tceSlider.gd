@@ -26,7 +26,7 @@ var _default : bool
 
 var _context : String = "test"
 
-var _minSize : Vector2 = Vector2(128,32)
+var _minSize : Vector2 = Vector2(256,48)
 
 var _error : int
 
@@ -74,8 +74,13 @@ func _on_focus_entered() -> void:
 	if self.editable:
 		# DESCRIPTION: Calculate the position of the mouse cursor, so that in the mixed 
 		# keyboard and mouse mode the mouse cursor follows the keyboard selection
-		var _center : Vector2 =  0.5 * self.rect_size
-		self.warp_mouse(_center)
+
+		print(UserInputManager.get_device_responsible_for_current_input())
+		
+		if not UserInputManager.is_device_responsible_for_current_input_mouse():
+			var _center : Vector2 =  0.5 * self.rect_size
+			self.warp_mouse(_center)
+
 		audioManager.play_sfx(["ui", "button", "hover"])
 
 func _on_value_changed(value) -> void:
