@@ -27,7 +27,7 @@ _global_script_classes=[ {
 "base": "HSlider",
 "class": "TCEHSlider",
 "language": "GDScript",
-"path": "res://gui/components/slider/classes/class_tceSlider.gd"
+"path": "res://gui/components/slider/classes/class_tceHSlider.gd"
 }, {
 "base": "TCEClusterBase",
 "class": "TCEHSliderCluster",
@@ -83,6 +83,7 @@ config/icon="res://icon.png"
 
 JsonFio="*res://utils/fileHandling/json_fio.gd"
 DictionaryParsing="*res://utils/dataHandling/dictionaryParsing.gd"
+NodeHandling="*res://utils/nodeHandling/nodeHandling.gd"
 userSettingsManager="*res://managers/userSettingsManager/userSettingsManager.tscn"
 AudioManagerNodeHandling="*res://managers/audioManager/utils/audioManager_node-handling.gd"
 sfxManager="*res://managers/audioManager/sfx/sfxManager.tscn"

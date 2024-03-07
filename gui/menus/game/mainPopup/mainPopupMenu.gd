@@ -29,6 +29,9 @@ var _tce_event_and_gui_uuid_lut : Dictionary = {
 		}
 	}
 }
+
+var _context : String = ""
+
 var _state : int
 
 var _error : int
@@ -40,8 +43,9 @@ onready var _rootContext : PanelContainer = $rootContext
 onready var _settingsContext : PanelContainer = $settingsContext
 
 onready var _buttonClusterRoot : Object = $rootContext/GridContainer/buttonClusterRoot
+onready var _settingsScroll : Object = $settingsContext/ScrollContainer
 onready var _settingsCluster : Object = $settingsContext/ScrollContainer/settings_popup_panelContainer2
-# onready var settingsPopout : Object = $settingsContext/settingsCluster
+onready var _settingsClusterContainer : Object = $settingsContext/ScrollContainer/settings_popup_panelContainer2/CenterContainer/GridContainer
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -90,16 +94,32 @@ func _context_fsm() -> void:
 
 			UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.ROOT]), "entered")
 
+func _update_size() -> void:
+	# DESCRIPTION: Set the correct size and viewport position
+	# REMARK: Is required due to the fact that Godot can not handle the sizes of class inherited
+	# objects properly and the calculations during _ready do not show any effect
+	self._buttonClusterRoot.update_size()
+	self._settingsCluster.rect_min_size = self._settingsClusterContainer.rect_size
+	self._settingsScroll.rect_min_size = self._settingsCluster.rect_min_size + Vector2(24,24)
+	self._settingsContext.rect_min_size = self._settingsScroll.rect_min_size + Vector2(12,12)
+
+	# DEBUG
+	# print("Settings Cluster: min size: ", self._settingsCluster.rect_min_size)
+	# print("Scroll Container: min size: ", self._settingsScroll.rect_min_size)
+	# print("Settings: Panel Container : min size: ", self._settingsContext.rect_min_size)
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize(context : String) -> void:
+	self._context = context
+
 	# DESCRIPTION: Setting up the gui uuids
 	for _guiContext in [MENU_STATE.ROOT, MENU_STATE.SETTINGS]:
-		self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["string"] = UserInputManager.create_tce_event_uuid(UserInputManager.get_context(), self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["list"])
+		self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["string"] = UserInputManager.create_tce_event_uuid(self._context, self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["list"])
 
 	# DESCRIPTION: Initialize the root button cluster and set focus neighbours
-	self._buttonClusterRoot.initialize(context)
+	self._buttonClusterRoot.initialize(self._context)
 	self._buttonClusterRoot.visible = true
 
 	self._rootContext.visible = true
@@ -107,22 +127,9 @@ func initialize(context : String) -> void:
 	self.visible = false
 	self._state = MENU_STATE.HIDDEN
 
-	# # DESCRIPTION: Initialize the settings
-	# settingsPopout.slider_initialize(userSettingsManager.get_user_settings())
-	# settingsPopout.button_initialize(userSettingsManager.get_user_settings())
+	self._update_size()
 
-	# DESCRIPTION: Set the correct size and viewport position
-	# REMARK: Is required due to the fact that Godot can not handle the sizes of class inherited
-	# objects properly and the calculations during _ready do not show any effect
-	self._buttonClusterRoot.update_size()
-	var test = self._settingsCluster.get_node("CenterContainer/GridContainer")
-	self._settingsCluster.rect_min_size = test.rect_size
-	$settingsContext/ScrollContainer.rect_min_size = self._settingsCluster.rect_min_size + Vector2(24,24)
-	$settingsContext.rect_min_size = $settingsContext/ScrollContainer.rect_min_size + Vector2(12,12)
-
-	print("Settings Cluster: min size: ", self._settingsCluster.rect_min_size)
-	print("Scroll Container: min size: ", $settingsContext/ScrollContainer.rect_min_size)
-	print("Settings: Panel Container : min size: ", $settingsContext.rect_min_size)
+	self._settingsCluster.initialize(context)
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

@@ -1,13 +1,13 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://gui/components/buttons/menuButton.gd" type="Script" id=1]
+[ext_resource path="res://gui/components/buttons/tceButtonLarge.gd" type="Script" id=1]
 [ext_resource path="res://themes/fonts/lmodern_bold_48px.tres" type="DynamicFont" id=2]
 [ext_resource path="res://themes/button_hover.stylebox" type="StyleBox" id=3]
 [ext_resource path="res://themes/tce-button_medium_hover.stylebox" type="StyleBox" id=4]
 [ext_resource path="res://themes/button_disabled.stylebox" type="StyleBox" id=5]
 [ext_resource path="res://themes/tce-button_medium_normal.stylebox" type="StyleBox" id=6]
 
-[node name="menuButton" type="Button"]
+[node name="tceButtonLarge" type="Button"]
 margin_right = 203.0
 margin_bottom = 165.0
 rect_min_size = Vector2( 0, 96 )

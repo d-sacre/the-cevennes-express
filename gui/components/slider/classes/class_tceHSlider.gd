@@ -5,6 +5,7 @@ tool
 ################################################################################
 # This script expects the following autoloads:
 # "audioManager": res://managers/audioManager/audioManager.tscn
+# "DictionaryParsing": res://utils/dataHandling/dictionaryParsing.gd
 # Other autoloads that are indirectly required:
 # "sfxManager": res://managers/audioManager/sfx/sfxManager.tscn
 # "musicManager": res://managers/audioManager/music/musicManager.tscn
@@ -56,7 +57,7 @@ func initialize(context : String, data : Dictionary) -> void:
 	self.min_value = data["min"]
 	self.max_value = data["max"]
 	self.step = data["step"]
-	self.value = data["default_value"]
+	self.value = 0.0
 
 	# DESCRIPTION: Setting the correct size
 	self.rect_min_size = self._minSize
@@ -76,6 +77,9 @@ func initialize(context : String, data : Dictionary) -> void:
 	if not Engine.editor_hint:
 		self.enable_processing()
 
+func set_to_default_value(userSettings : Dictionary) -> void:
+	self.value = DictionaryParsing.get_dict_element_via_keychain(userSettings, self._settingsKeychain)
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
@@ -87,9 +91,6 @@ func _on_focus_entered() -> void:
 	if self.editable:
 		# DESCRIPTION: Calculate the position of the mouse cursor, so that in the mixed 
 		# keyboard and mouse mode the mouse cursor follows the keyboard selection
-
-		print(UserInputManager.get_device_responsible_for_current_input())
-		
 		if not UserInputManager.is_device_responsible_for_current_input_mouse():
 			var _center : Vector2 =  0.5 * self.rect_size
 			self.warp_mouse(_center)

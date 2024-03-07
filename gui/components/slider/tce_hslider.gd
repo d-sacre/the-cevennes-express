@@ -1,6 +1,12 @@
 extends Control
 
 ################################################################################
+#### AUTOLOAD REMARKS ##########################################################
+################################################################################
+# This script expects the following autoloads:
+# "userSettingsManager": res://managers/userSettingsManager/userSettingsManager.tscn
+
+################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 const FONT_MODULATE_DISABLED = Color8(120,120,120, 255)
@@ -58,10 +64,13 @@ func initialize(context : String, data : Dictionary) -> void:
 	self._set_description_label_text(data["description"])
 	self._valueMax = data["max"]
 	# REMARK: Needs to be changed as it will cause issues, e.g. if the number is in range 0...1
-	self._set_value_label_text(str(int(data["default_value"])))
+	self._set_value_label_text(str(int(0)))
 
 	# DESCRIPTION: Initializing the slider
 	self.hSlider.initialize(self._context, data)
+
+func set_slider_to_default_value() -> void:
+	self.hSlider.set_to_default_value(userSettingsManager.get_user_settings())
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

@@ -7,7 +7,7 @@ class_name TCEButtonCluster
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################
 ################################################################################
-const _buttonResource : Resource = preload("res://gui/components/buttons/menuButton.tscn")
+const _buttonResource : Resource = preload("res://gui/components/buttons/tceButtonLarge.tscn")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################

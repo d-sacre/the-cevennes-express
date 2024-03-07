@@ -517,8 +517,7 @@ func _process(_delta : float) -> void:
 # when the UserInputManager exits the Scene Tree
 # REMARK: This measure is required since the logic is based upon classes, which are not 
 # registered as nodes in the Scene Tree and consequently are not garbage collected by Godot
-# on its own. If not done manually, this would lead to 131 unclaimed strings on exiting the 
-# game from "game::creative"
+# on its own. 
 func _exit_tree() -> void:
 	# REMARK: Safety to ensure that if no logic is initialized, the game does not
 	# crash on exit. Especially helpful for debugging menuGameMainPopupSettings.tscn

@@ -10,6 +10,7 @@ class_name TCEClusterBase
 var _context : String 
 var _cluster : Object
 var _elementResource : Object
+var _clusterEntries : Array
 
 var _clearContainerAllowed : bool = true
 
@@ -54,6 +55,18 @@ func _create_spacer(cluster : Object) -> void:
 	var _spacer = Control.new()
 	_spacer.rect_min_size = Vector2(self._vSpacerHeight, self._vSpacerHeight)
 	cluster.add_child(_spacer)
+
+func _create_category_title(parent : Object, title : String) -> void:
+	var _title = Label.new()
+	_title.text = title
+	_title.align = Label.ALIGN_LEFT
+	_title.size_flags_horizontal = SIZE_EXPAND_FILL
+
+	# REMARK: Has to be adjusted when the paths will have changed
+	_title.add_font_override("font", preload("res://themes/fonts/lmodern_bold_48px.tres")) 
+	parent.add_child(_title)
+
+	self._create_spacer(parent)
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
