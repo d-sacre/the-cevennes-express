@@ -55,17 +55,16 @@ margin_bottom = 910.0
 rect_min_size = Vector2( 512, 768 )
 
 [node name="settingsContext" type="PanelContainer" parent="."]
-margin_left = 655.0
-margin_top = 119.0
-margin_right = 1265.0
-margin_bottom = 961.0
+margin_left = 574.0
+margin_top = 533.0
+margin_right = 1346.0
+margin_bottom = 547.0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="settingsContext"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 603.0
-margin_bottom = 835.0
-rect_min_size = Vector2( 0, 828 )
+margin_right = 765.0
+margin_bottom = 7.0
 scroll_horizontal_enabled = false
 
 [node name="settings_popup_panelContainer2" parent="settingsContext/ScrollContainer" instance=ExtResource( 3 )]
@@ -75,6 +74,6 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 0.0
 margin_top = 0.0
-margin_right = 596.0
-margin_bottom = 828.0
-rect_min_size = Vector2( 596, 828 )
+margin_right = 746.0
+margin_bottom = 1164.0
+rect_min_size = Vector2( 746, 1164 )

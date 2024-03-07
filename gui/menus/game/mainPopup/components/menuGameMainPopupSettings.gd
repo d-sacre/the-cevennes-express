@@ -14,6 +14,7 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 				"description": "UI SFX",
 				"type": "TCEHSlider",
 				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "ui",
+				"keychain": ["volume", "sfx", "ui"],
 				"disabled": false,
 				"default": true,
 				"default_value": 5,
@@ -25,6 +26,7 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 				"description": "Ambience",
 				"type": "TCEHSlider",
 				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "ambience",
+				"keychain": ["volume", "sfx", "ambience"],
 				"disabled": true,
 				"default": false,
 				"default_value": 25,
@@ -36,6 +38,7 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 				"description": "Game SFX",
 				"type": "TCEHSlider",
 				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "game",
+				"keychain": ["volume", "sfx", "game"],
 				"disabled": false,
 				"default": false,
 				"default_value": 50,
@@ -47,6 +50,7 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 				"description": "Music",
 				"type": "TCEHSlider",
 				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "music",
+				"keychain": ["volume", "music"],
 				"disabled": true,
 				"default": false,
 				"default_value": 75,
@@ -58,6 +62,7 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 				"description": "MASTER",
 				"type": "TCEHSlider",
 				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "master",
+				"keychain": ["volume", "master"],
 				"disabled": false,
 				"default": false,
 				"default_value": 100,
@@ -74,6 +79,7 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 				"description": "Visual Test",
 				"type": "TCEHSlider",
 				"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "ui",
+				"keychain": [],
 				"disabled": false,
 				"default": true,
 				"default_value": 5,
@@ -96,8 +102,8 @@ var _objectNeighbourReference : Array = []
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
-onready var _clusterContainer : GridContainer = $MarginContainer/CenterContainer/GridContainer
-onready var _headingReferences : Array = [$MarginContainer/CenterContainer/GridContainer/settingsTitleLabel]
+onready var _clusterContainer : GridContainer = $CenterContainer/GridContainer
+onready var _headingReferences : Array = [$CenterContainer/GridContainer/settingsTitleLabel]
 
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES #############################
@@ -154,10 +160,12 @@ func _initialize() -> void:
 	for  _i in range(len(_tmp_cluster_of_categories)):
 		var _category = _tmp_cluster_of_categories[_i]
 
-		var _marginContainer : MarginContainer = MarginContainer.new()
-		self._clusterContainer.add_child(_marginContainer)
-		var _gridContainer : GridContainer = GridContainer.new()
-		_marginContainer.add_child(_gridContainer)
+		# var _marginContainer : MarginContainer = MarginContainer.new()
+		# self._clusterContainer.add_child(_marginContainer)
+		# var _gridContainer : GridContainer = GridContainer.new()
+		# _marginContainer.add_child(_gridContainer)
+
+		var _gridContainer = self._clusterContainer
 
 		var _title = Label.new()
 		_title.text = self.SETTINGS_ELEMENTS_CLUSTER[_i]["heading"]
@@ -182,8 +190,12 @@ func _initialize() -> void:
 							var _tmp_sliderCluster = TCEHSliderCluster.new()
 							_tmp_sliderCluster.disable_container_cleaning()
 
+
 							_tmp_sliderCluster.initialize_slider_cluster("test", _gridContainer, _tmp_sliderData)
 							_tmp_sliderCluster.update_size()
+							# REMARK: Reduced Unclaimed Strings Database Leak from 249 to 131 and got rid of 
+							# "There are still MemoryPool allocs in use at exit!" Error
+							_tmp_sliderCluster.queue_free() 
 
 							# REMARK: Currently hardcoded, as all progamatical approaches have failed so far
 							# FUTURE: Make it progamatic
@@ -193,11 +205,22 @@ func _initialize() -> void:
 
 		self._create_spacer(_gridContainer)
 		self._create_spacer(_gridContainer)
+		
 
 	self.set_focus_neighbours(self._objectNeighbourReference)
 	self.set_focus_to_default()
 
-	self.update_size()
+	var _tmp_maxWidth : int = 0
+	var _tmp_height : int = 0
+
+	for _child in self._cluster.get_children():
+		print(_child)
+		_tmp_height += _child.rect_size.y
+		if _tmp_maxWidth < _child.rect_size.x:
+			_tmp_maxWidth = _child.rect_size.x
+
+	print("tmp height: ", _tmp_height, _tmp_maxWidth)
+	# self.update_size()
 
 	# print(self._objectNeighbourReference)
 
@@ -211,5 +234,6 @@ func _ready():
 	# only for testing purposes
 	self._initialize()
 
-	if Engine.editor_hint:
-		self._initialize()
+	# if Engine.editor_hint:
+	# 	self._initialize()
+

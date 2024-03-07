@@ -512,4 +512,17 @@ func _process(_delta : float) -> void:
 		# after Main Menu has been replaced
 
 		self._process_misc_input_events()
+
+# DESCRIPTION: Required to make sure that the logic backend is correctly terminated
+# when the UserInputManager exits the Scene Tree
+# REMARK: This measure is required since the logic is based upon classes, which are not 
+# registered as nodes in the Scene Tree and consequently are not garbage collected by Godot
+# on its own. If not done manually, this would lead to 131 unclaimed strings on exiting the 
+# game from "game::creative"
+func _exit_tree() -> void:
+	# REMARK: Safety to ensure that if no logic is initialized, the game does not
+	# crash on exit. Especially helpful for debugging menuGameMainPopupSettings.tscn
+	if self._logic != null:
+#		if self._logic.get_children_count() != 0:
+		self._logic.queue_free()
 	

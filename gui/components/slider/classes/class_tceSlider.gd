@@ -25,6 +25,9 @@ var _tce_event_uuid : String
 var _default : bool
 
 var _context : String = "test"
+var _settingsKeychain : Array = []
+
+var _processingAllowed : bool = false
 
 var _minSize : Vector2 = Vector2(256,48)
 
@@ -33,8 +36,15 @@ var _error : int
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
+func enable_processing() -> void:
+	self._processingAllowed = true
+
+func disable_processing() -> void:
+	self._processingAllowed = false
+
 func initialize(context : String, data : Dictionary) -> void:
 	self._context = context
+	self._settingsKeychain = data["keychain"]
 
 	# DESCRIPTION: General setup
 	self.editable = not data["disabled"]
@@ -63,6 +73,9 @@ func initialize(context : String, data : Dictionary) -> void:
 		# self.add_stylebox_override("hover", load("res://themes/button_disabled.stylebox"))
 		# self.add_stylebox_override("focus", load("res://themes/button_disabled.stylebox"))
 
+	if not Engine.editor_hint:
+		self.enable_processing()
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
@@ -84,5 +97,13 @@ func _on_focus_entered() -> void:
 		audioManager.play_sfx(["ui", "button", "hover"])
 
 func _on_value_changed(value) -> void:
-	emit_signal("user_settings_changed", [], "Test", value)
+	if self._processingAllowed:
+		if self._settingsKeychain != []:
+			emit_signal("user_settings_changed", self._settingsKeychain, self._tce_event_uuid, value)
+
+################################################################################
+#### GODOT LOADTIME FUNCTION OVERRIDES #########################################
+################################################################################
+func _ready() -> void:
+	self._error = self.connect("user_settings_changed", userSettingsManager, "_on_user_settings_changed")
 
