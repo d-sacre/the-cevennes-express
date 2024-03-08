@@ -14,6 +14,9 @@ func find_all_nodes_of_class(node: Node, className : String, result : Array) -> 
 func find_all_hslider_nodes(node: Node, result: Array) -> void:
 	self.find_all_nodes_of_class(node, "HSlider", result)
 
+func find_all_check_button_nodes(node: Node, result: Array) -> void:
+	self.find_all_nodes_of_class(node, "CheckButton", result)
+
 func remove_stylebox_override(node : Control, override : String) -> void:
 	if node.has_stylebox_override(override):
 			node.remove_stylebox_override(override)

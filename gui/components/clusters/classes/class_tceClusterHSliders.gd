@@ -2,7 +2,7 @@ tool
 
 extends TCEClusterBase
 
-class_name TCEHSliderCluster
+class_name TCEClusterHSlider
 
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################

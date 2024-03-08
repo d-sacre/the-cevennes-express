@@ -14,8 +14,6 @@ func _parse_elements_into_categories() -> Array:
 		var _category : Dictionary = self._clusterEntries[_h]
 		var _lastType : String = ""
 
-		# print(_category["heading"])
-
 		var _tmp_clusterOfClusters : Array = []
 		var _tmp_helper : Dictionary = {}
 
@@ -43,7 +41,6 @@ func _parse_elements_into_categories() -> Array:
 							_tmp_clusterOfClusters.append(_tmp_helper)
 							_tmp_helper = {}
 
-		# print(_tmp_clusterOfClusters)
 		_tmp_categoryCluster.append(_tmp_clusterOfClusters)
 
 	return _tmp_categoryCluster
@@ -54,7 +51,7 @@ func _load_type_specific_routines(type : String) -> Dictionary:
 
 	match type:
 		"TCEHSlider":
-			_tmp_elementCluster = TCEHSliderCluster.new()
+			_tmp_elementCluster = TCEClusterHSlider.new()
 			_tmp_initMethodName = "initialize_slider_cluster"
 		"TCEButtonToggle":
 			_tmp_elementCluster = TCEClusterButtonToggle.new()
@@ -69,7 +66,7 @@ func _process_category_element_by_type(elementData : Array, type : String, neigh
 	var _tmp_elementData : Array = []
 
 	for _entry in elementData:
-		_tmp_elementData.append(self.SETTINGS_ELEMENTS_CLUSTER[_entry["category"]]["members"][_entry["element"]])
+		_tmp_elementData.append(self._clusterEntries[_entry["category"]]["members"][_entry["element"]])
 
 	var _tmp_typeSpecificRoutines : Dictionary = self._load_type_specific_routines(type)
 
@@ -98,7 +95,7 @@ func _process_categories(categoryCluster : Array) -> Array:
 	for  _i in range(len(categoryCluster)):
 		var _category = categoryCluster[_i]
 
-		var _categoryTitle : String = self.SETTINGS_ELEMENTS_CLUSTER[_i]["heading"]
+		var _categoryTitle : String = self._clusterEntries[_i]["heading"]
 		self._create_category_title(self._cluster, _categoryTitle)
 
 		self._process_category_elements_according_to_type(_category, _neighbourReferences)
@@ -107,3 +104,40 @@ func _process_categories(categoryCluster : Array) -> Array:
 		self._create_spacer(self._cluster)
 
 	return _neighbourReferences
+
+func _initialize(context : String, cluster : Object) -> void:
+	self.initialize_ui_cluster_parameters(context, cluster)
+
+	var _tmp_categoryCluster : Array = self._parse_elements_into_categories()
+	self._focusReferences = self._process_categories(_tmp_categoryCluster)
+	
+	self.set_focus_neighbours(self._focusReferences)
+	self.set_focus_to_default()
+
+func _set_all_nodes_of_type_to_default(type : String) -> void:
+	var _references : Array = []
+
+	var _class : String
+	var _method : String
+
+	# TO-DO: Include TCEButtonOption
+	match type:
+		"TCEHSlider":
+			_class = "HSlider"
+			_method = "set_slider_to_default_value"
+		"TCEButtonToggle":
+			_class = "CheckButton"
+			_method = "set_toggle_button_to_default_value"
+
+	NodeHandling.find_all_nodes_of_class(self, _class, _references)
+
+	for _node in _references:
+		var _parent = _node.get_parent()
+
+		if _parent.has_method(_method):
+			_parent.call(_method)
+		else:
+			var _grandParent = _parent.get_parent()
+
+			if _grandParent.has_method(_method):
+				_grandParent.call(_method)
