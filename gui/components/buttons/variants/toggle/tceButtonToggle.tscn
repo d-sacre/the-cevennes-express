@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://themes/fonts/lmodern_bold_48px.tres" type="DynamicFont" id=1]
+[ext_resource path="res://gui/components/buttons/variants/toggle/components/tceButtonToggle_component.gd" type="Script" id=2]
+[ext_resource path="res://themes/fonts/lmodern_sans_32px.tres" type="DynamicFont" id=3]
+[ext_resource path="res://gui/components/buttons/variants/toggle/tceButtonToggle.gd" type="Script" id=4]
+
+[node name="tceButtonToggle" type="GridContainer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -292.0
+margin_top = -38.5
+margin_right = 292.0
+margin_bottom = 38.5
+columns = 3
+script = ExtResource( 4 )
+
+[node name="Label" type="Label" parent="."]
+margin_right = 192.0
+margin_bottom = 78.0
+rect_min_size = Vector2( 192, 78 )
+custom_fonts/font = ExtResource( 3 )
+text = "Test"
+valign = 1
+
+[node name="toggleButton" type="CheckButton" parent="."]
+margin_left = 196.0
+margin_right = 452.0
+margin_bottom = 78.0
+rect_min_size = Vector2( 256, 78 )
+custom_fonts/font = ExtResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Control" type="Control" parent="."]
+margin_left = 456.0
+margin_right = 584.0
+margin_bottom = 78.0
+rect_min_size = Vector2( 128, 78 )

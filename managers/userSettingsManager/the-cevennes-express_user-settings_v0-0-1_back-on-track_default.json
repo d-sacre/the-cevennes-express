@@ -8,5 +8,7 @@
         },
         "music": 100
     },
-    "fullscreen": false
+    "visual": {
+        "fullscreen": false
+    }
 }

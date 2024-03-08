@@ -176,4 +176,5 @@ func _on_ui_movement_timer_timeout() -> void:
 ################################################################################
 ################################################################################
 func _ready() -> void:
+	print("\t-> Load UI Action Manager...")
 	self._error = self.uiMovementTimer.connect("timeout", self, "_on_ui_movement_timer_timeout")

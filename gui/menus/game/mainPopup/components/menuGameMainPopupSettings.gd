@@ -77,17 +77,14 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 	{
 		"heading": "Visual",
 		"members": [
-			# {
-			# 	"description": "Visual Test",
-			# 	"type": "TCEHSlider",
-			# 	"tce_event_uuid_suffix": "audio" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "volume" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "sfx" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "ui",
-			# 	"keychain": [],
-			# 	"disabled": false,
-			# 	"default": true,
-			# 	"min": 0,
-			# 	"max": 100,
-			# 	"step": 1
-			# }
+			{
+				"description": "Fullscreen",
+				"type": "TCEButtonToggle",
+				"tce_event_uuid_suffix": "visual" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "fullscreen",
+				"keychain": ["visual", "fullscreen"],
+				"disabled": false,
+				"default": false
+			}
 		]
 	}
 ]
@@ -128,10 +125,12 @@ func set_to_default_values() -> void:
 		if _grandParent.has_method("set_slider_to_default_value"):
 			_grandParent.set_slider_to_default_value()
 
-	# TO-DO: Do the same for TCEToggleButton, TCEOptionButton
+	# TO-DO: Do the same for TCEButtonToggle, TCEButtonOption
 
 func initialize(context : String) -> void:
+	var _tmp_context = context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "settings"
+
 	self._clusterEntries = self.SETTINGS_ELEMENTS_CLUSTER
-	self._initialize(context, $CenterContainer/GridContainer)
+	self._initialize(_tmp_context, $CenterContainer/GridContainer)
 	self.set_to_default_values()
 

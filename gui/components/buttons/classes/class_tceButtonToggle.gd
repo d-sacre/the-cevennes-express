@@ -10,14 +10,14 @@ tool
 # "sfxManager": res://managers/audioManager/sfx/sfxManager.tscn
 # "musicManager": res://managers/audioManager/music/musicManager.tscn
 
-extends Button
+extends CheckButton
 
-class_name TCEButton
+class_name TCEButtonToggle
 
 ################################################################################
 #### CUSTOM SIGNAL DEFINITIONS #################################################
 ################################################################################
-signal pressed_animation_finished
+signal user_settings_changed(settingKeychain, setterType, settingValue)
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -25,68 +25,20 @@ signal pressed_animation_finished
 var _tce_event_uuid : String 
 var _default : bool
 
+var _settingsKeychain : Array = []
+
 var _context : String = "test"
 
-var _textDefault : String 
-const _textFocusAddition : Dictionary = {"prefix": "«", "suffix": "»"}
-
 var _error : int
-
-################################################################################
-#### PRIVATE MEMBER FUNCTIONS ##################################################
-################################################################################
-func _set_to_pressed() -> void:
-	NodeHandling.override_styleboxes(
-		self, 
-		[
-			{
-				"override": "hover",
-				"stylebox_path": "res://themes/button_pressed.stylebox"
-			},
-			{
-				"override": "focus",
-				"stylebox_path": "res://themes/button_pressed.stylebox"
-			}
-		]
-	)
-
-func _reset_to_hover() -> void:
-	NodeHandling.override_styleboxes(
-		self, 
-		[
-			{
-				"override": "hover",
-				"stylebox_path": "res://themes/button_hover.stylebox"
-			},
-			{
-				"override": "focus",
-				"stylebox_path": "res://themes/button_hover.stylebox"
-			}
-		]
-	)
-
-func _play_pressed_animation() -> void:
-	self.pressed = true
-	self._set_to_pressed()
-	
-	yield(get_tree().create_timer(0.5), "timeout")
-	self.pressed = false
-
-	self._reset_to_hover()
-
-	yield(get_tree().create_timer(0.25), "timeout")
-
-	emit_signal("pressed_animation_finished")
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize(context : String, data : Dictionary) -> void:
 	self._context = context
-	self._textDefault = data["text"]
-	self.text = self._textDefault
 	self.disabled = data["disabled"]
 	self._tce_event_uuid = self._context + data["tce_event_uuid_suffix"]
+	self._settingsKeychain = data["keychain"]
 	self._default = data["default"]	
 	self.pause_mode = PAUSE_MODE_PROCESS
 
@@ -94,17 +46,21 @@ func initialize(context : String, data : Dictionary) -> void:
 	# that its appearence is always the same/correct.
 	# REMARK: Later has to be adapted to suit the new paths
 	if self.disabled:
-		NodeHandling.override_styleboxes(self, [
-			{
-				"override": "hover",
-				"stylebox_path": "res://themes/button_disabled.stylebox"
-			},
-			{
-				"override": "focus",
-				"stylebox_path": "res://themes/button_disabled.stylebox"
-			}
-		])
+		pass
+		# TO-DO: Define style boxes for toggle button
+		# NodeHandling.override_styleboxes(self, [
+		# 	{
+		# 		"override": "hover",
+		# 		"stylebox_path": "res://themes/button_disabled.stylebox"
+		# 	},
+		# 	{
+		# 		"override": "focus",
+		# 		"stylebox_path": "res://themes/button_disabled.stylebox"
+		# 	}
+		# ])
 
+func set_to_default_value(userSettings : Dictionary) -> void:
+	self.pressed = DictionaryParsing.get_dict_element_via_keychain(userSettings, self._settingsKeychain)
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -114,9 +70,6 @@ func _on_mouse_entered() -> void:
 		self.grab_focus()
 
 func _on_focus_entered() -> void:
-	if not self.disabled:
-		self.text = _textFocusAddition["prefix"] + self._textDefault + _textFocusAddition["suffix"]
-
 	# DESCRIPTION: Calculate the position of the mouse cursor, so that in the mixed 
 	# keyboard and mouse mode the mouse cursor follows the keyboard selection
 	if not UserInputManager.is_device_responsible_for_current_input_mouse():
@@ -124,15 +77,18 @@ func _on_focus_entered() -> void:
 		self.warp_mouse(_center)
 	audioManager.play_sfx(["ui", "button", "hover"])
 
-func _on_focus_exited() -> void:
-	self.text = self._textDefault
-
-func _on_button_pressed() -> void:
+func _on_button_toggled(value) -> void:
 	audioManager.play_sfx(["ui", "button", "pressed"])
-
-	self._play_pressed_animation()
-	yield(self, "pressed_animation_finished")
-
-	UserInputManager._on_special_user_input(self._tce_event_uuid + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "pressed", "pressed")
+	emit_signal("user_settings_changed", self._settingsKeychain, self._tce_event_uuid, value)
 	
+################################################################################
+#### GODOT LOADTIME FUNCTION OVERRIDES #########################################
+################################################################################
+func _ready() -> void:
+	# DESCRIPTION: Internal signal handling
+	self._error = self.connect("mouse_entered", self, "_on_mouse_entered")
+	self._error = self.connect("focus_entered", self, "_on_focus_entered")
+	self._error = self.connect("toggled", self, "_on_button_toggled")
 
+	# DESCRIPTION: External signal handling
+	self._error = self.connect("user_settings_changed", userSettingsManager, "_on_user_settings_changed")

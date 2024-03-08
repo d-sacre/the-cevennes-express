@@ -112,11 +112,11 @@ func _update_size() -> void:
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
 func initialize(context : String) -> void:
-	self._context = context
+	self._context = context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "menu"+ UserInputManager.TCE_EVENT_UUID_SEPERATOR + "main"+ UserInputManager.TCE_EVENT_UUID_SEPERATOR + "popup"
 
 	# DESCRIPTION: Setting up the gui uuids
 	for _guiContext in [MENU_STATE.ROOT, MENU_STATE.SETTINGS]:
-		self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["string"] = UserInputManager.create_tce_event_uuid(self._context, self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["list"])
+		self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["string"] = UserInputManager.create_tce_event_uuid(context, self._tce_event_and_gui_uuid_lut["gui"][_guiContext]["list"])
 
 	# DESCRIPTION: Initialize the root button cluster and set focus neighbours
 	self._buttonClusterRoot.initialize(self._context)
@@ -129,7 +129,7 @@ func initialize(context : String) -> void:
 
 	self._update_size()
 
-	self._settingsCluster.initialize(context)
+	self._settingsCluster.initialize(self._context)
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

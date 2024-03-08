@@ -56,6 +56,9 @@ func _load_type_specific_routines(type : String) -> Dictionary:
 		"TCEHSlider":
 			_tmp_elementCluster = TCEHSliderCluster.new()
 			_tmp_initMethodName = "initialize_slider_cluster"
+		"TCEButtonToggle":
+			_tmp_elementCluster = TCEClusterButtonToggle.new()
+			_tmp_initMethodName = "initialize_toggle_button_cluster"
 
 	return {"class_instance": _tmp_elementCluster, "init_method": _tmp_initMethodName}
 

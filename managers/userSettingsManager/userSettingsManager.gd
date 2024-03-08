@@ -13,8 +13,8 @@ extends Node
 ################################################################################
 # user settings
 # user:// under Linux/MacOS: ~/.local/share/godot/app_userdata/Name, Windows: %APPDATA%/Name
-const USER_SETTINGS_FILEPATH : String = "user://the-cevennes-express_user-settings_honest-jam-6.json"
-const FALLBACK_USER_SETTINGS_FILEPATH : String = "res://managers/userSettingsManager/the-cevennes-express_user-settings_honest-jam-6_default.json"
+const USER_SETTINGS_FILEPATH : String = "user://the-cevennes-express_user-settings_v0-0-1_back-on-track.json"
+const FALLBACK_USER_SETTINGS_FILEPATH : String = "res://managers/userSettingsManager/the-cevennes-express_user-settings_v0-0-1_back-on-track_default.json"
 
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -27,7 +27,7 @@ var _userSettings : Dictionary = {}
 func _update() -> void:
 	self.save_user_settings() # to make sure no settings get lost
 
-	if _userSettings["fullscreen"]:
+	if _userSettings["visual"]["fullscreen"]:
 		OS.set_window_fullscreen(true)
 	else:
 		OS.set_window_fullscreen(false)

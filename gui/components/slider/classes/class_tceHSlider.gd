@@ -4,6 +4,7 @@ tool
 #### AUTOLOAD REMARKS ##########################################################
 ################################################################################
 # This script expects the following autoloads:
+# "UserInputManager": res://managers/userInputManager/userInputManager.tscn
 # "audioManager": res://managers/audioManager/audioManager.tscn
 # "DictionaryParsing": res://utils/dataHandling/dictionaryParsing.gd
 # Other autoloads that are indirectly required:
@@ -49,7 +50,7 @@ func initialize(context : String, data : Dictionary) -> void:
 
 	# DESCRIPTION: General setup
 	self.editable = not data["disabled"]
-	self._tce_event_uuid = self._context + data["tce_event_uuid_suffix"]
+	self._tce_event_uuid = self._context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + data["tce_event_uuid_suffix"]
 	self._default = data["default"]	
 	self.pause_mode = PAUSE_MODE_PROCESS
 
