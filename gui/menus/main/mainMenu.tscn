@@ -1,0 +1,86 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/2D/project-identity/the-cevennes-express_main-menu_logo.svg" type="Texture" id=1]
+[ext_resource path="res://menus/mainMenu/art/the-cevennes-express_honest-jam-6_main-menu_bg.png" type="Texture" id=2]
+[ext_resource path="res://gui/menus/main/mainMenu.gd" type="Script" id=3]
+[ext_resource path="res://gui/menus/main/components/root/menuMainRootContextButtonCluster.tscn" type="PackedScene" id=4]
+[ext_resource path="res://gui/menus/main/components/contextualLogic.gd" type="Script" id=5]
+
+[node name="mainMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 3 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.392157, 0.266667, 0.223529, 1 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 48.0
+margin_top = 42.0
+margin_right = -48.0
+margin_bottom = -42.0
+
+[node name="contentVBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_right = 1824.0
+margin_bottom = 996.0
+
+[node name="titleVBoxContainer" type="VBoxContainer" parent="MarginContainer/contentVBoxContainer"]
+margin_right = 1824.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 0, 128 )
+alignment = 1
+
+[node name="tceLogoMenu" type="TextureRect" parent="MarginContainer/contentVBoxContainer/titleVBoxContainer"]
+margin_right = 1824.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 0, 128 )
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 4
+
+[node name="titleSpacer" type="Control" parent="MarginContainer/contentVBoxContainer"]
+margin_top = 132.0
+margin_right = 1824.0
+margin_bottom = 196.0
+rect_min_size = Vector2( 0, 64 )
+
+[node name="rootContext" type="HBoxContainer" parent="MarginContainer/contentVBoxContainer"]
+margin_top = 200.0
+margin_right = 1824.0
+margin_bottom = 996.0
+size_flags_vertical = 3
+
+[node name="content" type="HBoxContainer" parent="MarginContainer/contentVBoxContainer/rootContext"]
+margin_right = 1213.0
+margin_bottom = 796.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="buttons" type="HBoxContainer" parent="MarginContainer/contentVBoxContainer/rootContext"]
+margin_left = 1217.0
+margin_right = 1824.0
+margin_bottom = 796.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="buttonClusterRoot" parent="MarginContainer/contentVBoxContainer/rootContext/buttons" instance=ExtResource( 4 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 607.0
+margin_bottom = 796.0
+
+[node name="contextualLogic" type="Node" parent="."]
+script = ExtResource( 5 )

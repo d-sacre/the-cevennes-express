@@ -374,12 +374,12 @@ func is_current_gui_context_menu() -> bool:
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: INITIALIZATION ###################################
 ################################################################################
-func initialize(_base_context : String, cim: String, clr : Object, mr : Dictionary, glr : Dictionary) -> void:
+func initialize(context : String, cim: String, clr : Object, mr : Dictionary, glr : Dictionary) -> void:
 	self._managerReferences = mr
 	self._guiLayerReferences = glr
-	self.set_context(_base_context)
+	self.set_context(context)
 	self._currentInputMethod = cim
-	self._logic = clr.logic 
+	self._logic = clr 
 
 	var _base_context_list : Array = self.get_context().split(self.TCE_EVENT_UUID_SEPERATOR)
 	self._base = _base_context_list[0]
@@ -491,27 +491,15 @@ func _process(_delta : float) -> void:
 				self._set_device_responsible_for_current_input("keyboard")
 
 		# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
-		if self._base == "game":
-			# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
-			# after Main Menu has been replaced
-
-			# DESCRIPTION: Checking for movement requests on all channels
-			for _channelNo in range(1,3): 
-				self._process_movement_request_on_device_channel("keyboard", _channelNo)
+		# DESCRIPTION: Checking for movement requests on all channels
+		for _channelNo in range(1,3): 
+			self._process_movement_request_on_device_channel("keyboard", _channelNo)
 
 	if self.is_current_input_method_including_controller():
-		if self._base == "game":
-			# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
-			# after Main Menu has been replaced
-			for _channelNo in range(1,3): 
-				self._process_movement_request_on_device_channel("controller", _channelNo)
-	
-	# REMARK: Cannot be outsourced into game logic, since _process not working in the classes
-	if self._base == "game":
-		# REMARK: Temporary restriction to "game" base necessary to avoid issues with the Main Menu. Can be chnaged
-		# after Main Menu has been replaced
+		for _channelNo in range(1,3): 
+			self._process_movement_request_on_device_channel("controller", _channelNo)
 
-		self._process_misc_input_events()
+	self._process_misc_input_events()
 
 # DESCRIPTION: Required to make sure that the logic backend is correctly terminated
 # when the UserInputManager exits the Scene Tree
