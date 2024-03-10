@@ -78,4 +78,9 @@ namespace
 		}
 	}
 
+	// TEST(EdgeType_Test, ToString) // Enum to String
+	// {
+	// 	EXPECT_TRUE(false);
+	// }
+
 } // namespace

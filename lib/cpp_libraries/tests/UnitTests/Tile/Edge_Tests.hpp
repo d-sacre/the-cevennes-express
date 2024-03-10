@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Edge_Utils.hpp"
-#include "Tile/Edge.hpp"
 
 #include <gtest/gtest.h>
 
@@ -31,9 +30,9 @@ namespace
 
 	TEST(Edge_Test, MatchOnlyReverse)
 	{
-		CE::Tile::EdgeType type1 = CE::Tile::EdgeType::Forest;
-		CE::Tile::EdgeType type2 = CE::Tile::EdgeType::Settlement;
-		CE::Tile::EdgeType type3 = CE::Tile::EdgeType::River;
+		const CE::Tile::EdgeType type1 = CE::Tile::EdgeType::Forest;
+		const CE::Tile::EdgeType type2 = CE::Tile::EdgeType::RiverSmall;
+		const CE::Tile::EdgeType type3 = CE::Tile::EdgeType::Buildings;
 
 		ASSERT_TRUE(CE::IsCompatible(type1, type1));
 		ASSERT_FALSE(CE::IsCompatible(type1, type2));

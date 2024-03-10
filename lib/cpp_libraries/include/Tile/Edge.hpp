@@ -10,7 +10,9 @@ namespace CE
 	{
 		struct Edge
 		{
-			std::array<EdgeType, 3> Types;
+			std::array<EdgeType, 3> Types {EdgeType::None, EdgeType::None, EdgeType::None};
+
+			friend bool operator==(Edge const& lhs, Edge const& rhs) = default;
 		};
 	} // namespace Tile
 
