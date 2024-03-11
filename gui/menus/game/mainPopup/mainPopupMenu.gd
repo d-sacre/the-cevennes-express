@@ -131,6 +131,11 @@ func initialize(context : String) -> void:
 
 	self._settingsCluster.initialize(self._context)
 
+	var _height : int = min(self._settingsCluster.get_cluster_height() + 128, 750) 
+	self._settingsScroll.rect_min_size.y = _height
+	self._settingsContext.rect_min_size.y = _height
+	print(self._settingsContext.rect_min_size.y)
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################

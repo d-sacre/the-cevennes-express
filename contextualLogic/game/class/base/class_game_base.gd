@@ -279,6 +279,9 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 			var _tmp_eventString : String = UserInputManager.create_tce_event_uuid(self._context, _tmp_eventKeychain)
 			UserInputManager.transmit_global_event(_tmp_eventString, self._tileDefinitionUuid)
 
+		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "button", "menu", "main", "pressed"]):
+			TransitionManager.transition_to_main_menu()
+
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "button", "exit", "pressed"]):
 			TransitionManager.exit_to_system()
 

@@ -98,7 +98,7 @@ func _ready() -> void:
 	# contextual logic
 	print("\t-> Configure UserInputManager...")
 	print("\t\t-> Load Game Variant specific Contextual Logic...")
-	var _scene2 : Resource = load("res://managers/userInputManager/game/game.tscn")
+	var _scene2 : Resource = load("res://contextualLogic/game/game.tscn") #load("res://managers/userInputManager/game/game.tscn")
 	var _contextualLogic =  _scene2.instance()
 	add_child(_contextualLogic)
 	_contextualLogic.initialize(self.context, self._managerReferences, self._guiLayerReferences)

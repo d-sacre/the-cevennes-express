@@ -47,7 +47,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "TCEMainMenuContextualLogic",
 "language": "GDScript",
-"path": "res://managers/userInputManager/mainMenu/class_contextualLogic_mainMenu.gd"
+"path": "res://contextualLogic/mainMenu/class_contextualLogic_mainMenu.gd"
 }, {
 "base": "TCEClusterBase",
 "class": "TCEMixedCluster",
@@ -62,17 +62,17 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "game_base",
 "language": "GDScript",
-"path": "res://managers/userInputManager/game/class/base/class_game_base.gd"
+"path": "res://contextualLogic/game/class/base/class_game_base.gd"
 }, {
-"base": "game_base",
+"base": "Reference",
 "class": "game_creative",
 "language": "GDScript",
-"path": "res://managers/userInputManager/game/class/class_game_creative.gd"
+"path": "res://contextualLogic/game/class/class_game_creative.gd"
 }, {
-"base": "game_base",
+"base": "Reference",
 "class": "game_default",
 "language": "GDScript",
-"path": "res://managers/userInputManager/game/class/class_game_default.gd"
+"path": "res://contextualLogic/game/class/class_game_default.gd"
 } ]
 _global_script_class_icons={
 "TCEButton": "",
@@ -93,7 +93,7 @@ _global_script_class_icons={
 [application]
 
 config/name="The Cévennes Express"
-run/main_scene="res://menus/mainMenu/mainMenu.tscn"
+run/main_scene="res://gui/menus/main/mainMenu.tscn"
 boot_splash/image="res://assets/2D/the-cevennes-express_honest-jam-6_splash-screen.png"
 config/icon="res://icon.png"
 

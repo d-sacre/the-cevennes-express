@@ -28,7 +28,7 @@ const buttons : Array = [
 		"text": "Exit to Main Menu",
 		"tce_event_uuid_suffix": "menu"+ UserInputManager.TCE_EVENT_UUID_SEPERATOR + "main",
 		"default": false,
-		"disabled": true,
+		"disabled": false,
 		"export": {
 			"javascript": true
 		}

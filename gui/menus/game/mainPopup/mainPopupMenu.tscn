@@ -56,15 +56,18 @@ rect_min_size = Vector2( 512, 768 )
 
 [node name="settingsContext" type="PanelContainer" parent="."]
 margin_left = 574.0
-margin_top = 533.0
+margin_top = 190.0
 margin_right = 1346.0
-margin_bottom = 547.0
+margin_bottom = 890.0
+rect_min_size = Vector2( 0, 700 )
+size_flags_vertical = 3
 
 [node name="ScrollContainer" type="ScrollContainer" parent="settingsContext"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 765.0
 margin_bottom = 7.0
+size_flags_vertical = 2
 scroll_horizontal_enabled = false
 
 [node name="settings_popup_panelContainer2" parent="settingsContext/ScrollContainer" instance=ExtResource( 3 )]

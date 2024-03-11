@@ -469,16 +469,13 @@ func _ready() -> void:
 ################################################################################
 ################################################################################
 func _input(event : InputEvent) -> void:
-	# REMARK: Temporary Limitation to "game" context required until Main Menu is updated!
-	if self._base == "game": # temporary!
-
-		# DESCRIPTION: Process mouse inputs only when mouse is selected as an input method
-		if self.is_current_input_method_including_mouse():
-			# mouse position (floating (tile) position)
-			if event is InputEventMouse:
-				var _tmp_eventKeychain : Array = ["user", "interaction", "mouse", "movement"]
-				self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, event.position)
-				self._set_device_responsible_for_current_input("mouse")
+	# DESCRIPTION: Process mouse inputs only when mouse is selected as an input method
+	if self.is_current_input_method_including_mouse():
+		# mouse position (floating (tile) position)
+		if event is InputEventMouse:
+			var _tmp_eventKeychain : Array = ["user", "interaction", "mouse", "movement"]
+			self.call_contextual_logic_with_tce_event_keychain(_tmp_eventKeychain, event.position)
+			self._set_device_responsible_for_current_input("mouse")
 
 func _process(_delta : float) -> void:
 	# DESCRIPTION: General keyboard input handling

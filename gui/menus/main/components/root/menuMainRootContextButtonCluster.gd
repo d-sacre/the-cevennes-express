@@ -19,7 +19,7 @@ const buttons : Array = [
 		"text": "Settings",
 		"tce_event_uuid_suffix": "settings",
 		"default": false,
-		"disabled": true,
+		"disabled": false,
 		"export": {
 			"javascript": true
 		}
@@ -28,7 +28,7 @@ const buttons : Array = [
 		"text": "Credits",
 		"tce_event_uuid_suffix": "credits",
 		"default": false,
-		"disabled": true,
+		"disabled": false,
 		"export": {
 			"javascript": true
 		}
