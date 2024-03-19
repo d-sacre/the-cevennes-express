@@ -4,7 +4,7 @@
 [ext_resource path="res://menus/mainMenu/art/the-cevennes-express_honest-jam-6_main-menu_bg.png" type="Texture" id=2]
 [ext_resource path="res://gui/menus/main/mainMenu.gd" type="Script" id=3]
 [ext_resource path="res://gui/menus/main/components/root/menuMainRootContextButtonCluster.tscn" type="PackedScene" id=4]
-[ext_resource path="res://gui/menus/main/components/contextualLogic.gd" type="Script" id=5]
+[ext_resource path="res://contextualLogic/mainMenu/mainMenu_contextualLogic.tscn" type="PackedScene" id=5]
 [ext_resource path="res://menus/menuElements/creditsPopup.tscn" type="PackedScene" id=6]
 [ext_resource path="res://gui/menus/main/components/root/menuMainRootContextSettings.tscn" type="PackedScene" id=7]
 
@@ -75,10 +75,12 @@ margin_left = 0.0
 margin_top = 0.0
 margin_right = 800.0
 margin_bottom = 776.0
+focus_mode = 2
 
 [node name="settingsSubmenu" parent="MarginContainer/contentVBoxContainer/rootContext/content" instance=ExtResource( 7 )]
 margin_top = 158.0
 margin_bottom = 638.0
+focus_mode = 2
 
 [node name="buttons" type="HBoxContainer" parent="MarginContainer/contentVBoxContainer/rootContext"]
 margin_left = 1217.0
@@ -96,5 +98,4 @@ anchor_bottom = 0.0
 margin_right = 607.0
 margin_bottom = 796.0
 
-[node name="contextualLogic" type="Node" parent="."]
-script = ExtResource( 5 )
+[node name="contextualLogic" parent="." instance=ExtResource( 5 )]

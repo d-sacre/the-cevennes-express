@@ -129,7 +129,7 @@ func manage_ui_action_mapping(tce_event_uuid : String, value) -> void:
 			if value is Vector2:
 
 				# REMARK: For debug purposes only
-				print("Action Strength: ", value)
+				# print("Action Strength: ", value)
 
 				var _upDown : float = value.y
 				var _leftRight : float = value.x

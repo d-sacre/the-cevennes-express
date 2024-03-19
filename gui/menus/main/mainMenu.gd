@@ -43,6 +43,22 @@ func _is_tce_uuid_matching_toggle_settings(tce_event_uuid : String) -> bool:
 func _is_tce_uuid_matching_toggle_context(tce_event_uuid : String) -> bool:
 	return UserInputManager.match_tce_event_uuid(tce_event_uuid, self.EVENT_MANAGER_REQUESTS_TO_PROCESS["context_toggle"])
 
+func _initialize_root_context_state() -> void:
+	self._settingsCluster.visible = false
+	self.rootContextCredits.visible = false
+	self._state = self.MENU_STATE.ROOT
+	self.rootContextButtons.set_focus_to_default()
+
+func _initialize_settings_context_state() -> void:
+	self._settingsCluster.visible = true
+	self._settingsCluster.set_focus_to_default()
+	self._state = self.MENU_STATE.SETTINGS
+
+func _initialize_credits_context_state() -> void:
+	self.rootContextCredits.visible = true
+	self.rootContextCredits.grab_focus()
+	self._state = self.MENU_STATE.CREDITS
+
 func _context_fsm(tce_event_uuid : String, _value) -> void:
 	var _tmp_eventKeychain : Array = []
 	
@@ -50,49 +66,40 @@ func _context_fsm(tce_event_uuid : String, _value) -> void:
 		MENU_STATE.ROOT:
 			self.rootContextCredits.visible = false
 			if self._is_tce_uuid_matching_toggle_settings(tce_event_uuid):
-				self._settingsCluster.visible = true
-				self._state = self.MENU_STATE.SETTINGS
+				self._initialize_settings_context_state()
 
 			if self._is_tce_uuid_matching_toggle_credits(tce_event_uuid):
-				self.rootContextCredits.visible = true
-				self.rootContextCredits.grab_focus()
-				self._state = self.MENU_STATE.CREDITS
+				self._initialize_credits_context_state()
 
 		MENU_STATE.SETTINGS:
 			if self._is_tce_uuid_matching_toggle_settings(tce_event_uuid):
-				self._settingsCluster.visible = false
-				self._state = self.MENU_STATE.ROOT
+				self._initialize_root_context_state()
 
 			if self._is_tce_uuid_matching_toggle_credits(tce_event_uuid):
 				self._settingsCluster.visible = false
-				self.rootContextCredits.visible = true
-				self.rootContextCredits.grab_focus()
-				self._state = self.MENU_STATE.CREDITS
+				self._initialize_credits_context_state()
 
 			if self._is_tce_uuid_matching_toggle_context(tce_event_uuid):
-				self._settingsCluster.visible = false
-				self._state = self.MENU_STATE.ROOT
+				self._initialize_root_context_state()
 
 		MENU_STATE.CREDITS:
 			if self._is_tce_uuid_matching_toggle_credits(tce_event_uuid):
-				self.rootContextCredits.visible = false
-				self._state = self.MENU_STATE.ROOT
+				self._initialize_root_context_state()
 
 			if self._is_tce_uuid_matching_toggle_settings(tce_event_uuid):
 				self.rootContextCredits.visible = false
-				self._settingsCluster.visible = true
-				self._state = self.MENU_STATE.SETTINGS
+				self._initialize_settings_context_state()
 
 			if self._is_tce_uuid_matching_toggle_context(tce_event_uuid):
-				self.rootContextCredits.visible = false
-				self._state = self.MENU_STATE.ROOT
+				self._initialize_root_context_state()
 
 func _initialize() -> void:
-	self._state = self.MENU_STATE.ROOT
 	self.rootContextCredits.visible = false
 
 	self._settingsCluster.initialize(self._context)
 	self._settingsCluster.visible = false
+
+	self._initialize_root_context_state()
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

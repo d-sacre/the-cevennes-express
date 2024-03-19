@@ -2,7 +2,7 @@ tool
 
 extends TCEClusterBase
 
-class_name TCEButtonCluster
+class_name TCEClusterButton
 
 ################################################################################
 #### RESOURCE AND CLASS LOADING ################################################

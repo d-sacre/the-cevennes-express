@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://contextualLogic/mainMenu/mainMenu_contextualLogic.gd" type="Script" id=1]
+
+[node name="contextualLogic" type="Node"]
+script = ExtResource( 1 )

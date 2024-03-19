@@ -34,7 +34,7 @@ func initialize(context : String) -> void:
 ################################################################################
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func general_processing_pipeline(tce_event_uuid : String, value) -> void: 
-    print(tce_event_uuid)
+    # print(tce_event_uuid)
     if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "root", "button", "play", "pressed"]):
         TransitionManager.transition_to_game()
 

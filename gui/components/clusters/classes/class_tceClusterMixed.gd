@@ -2,7 +2,7 @@ tool
 
 extends TCEClusterBase
 
-class_name TCEMixedCluster
+class_name TCEClusterMixed
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################

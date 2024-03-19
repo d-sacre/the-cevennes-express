@@ -142,7 +142,17 @@ func set_focus_neighbours(focusReference : Array) -> void:
 			_current.focus_next = _neighboursBottomPath
 
 func set_focus_to_default() -> void:
+	print("Default Object: ", self._defaultObject)
+	print("Viewport Size: ", get_viewport_rect())
 	self._defaultObject.grab_focus()
+	print("Mouse Position (before): global, local:", get_global_mouse_position(), ", ", get_local_mouse_position())
+	# if not UserInputManager.is_device_responsible_for_current_input_mouse():
+	var _center : Vector2 =  0.5 * self._defaultObject.rect_size
+	print("Calculated Coordinate: ", _center)
+	self._defaultObject.warp_mouse(_center)
+	# get_viewport().warp_mouse(_center)
+	# Input.warp_mouse_position(self.get_global_transform_with_canvas().origin+_center)
+	print("Mouse Position (after): global, local:", get_global_mouse_position(), ", ", get_local_mouse_position())
 
 func update_size() -> void:
 	var _tmp_sizeX : float = max(self._cluster.rect_size.x, self._cluster.rect_min_size.x) + 2*48

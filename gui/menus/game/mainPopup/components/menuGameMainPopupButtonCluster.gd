@@ -1,6 +1,6 @@
 tool
 
-extends TCEButtonCluster
+extends TCEClusterButton
 
 ################################################################################
 #### CONSTANT DEFINITIONS ######################################################
