@@ -1,4 +1,4 @@
-extends Control
+extends PanelContainer
 
 ################################################################################
 #### AUTOLOAD REMARKS ##########################################################
@@ -75,11 +75,54 @@ func set_slider_to_default_value() -> void:
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################
+func _on_mouse_entered() -> void:
+	if not self._disabled:
+		self.hSlider.grab_focus()
+
 func _on_slider_value_changed(value) -> void:
 	self._set_value_label_text(str(int(value)))
+	
+func _on_slider_focus_entered() -> void:
+	NodeHandling.override_styleboxes(
+		self, 
+		[
+			{
+				"override": "panel",
+				"stylebox_path": "res://gui/themes/components/slider/tceHSlider_focus-highlight.stylebox"
+			}
+		]
+	)
+	
+func _on_slider_focus_exited() -> void:
+	NodeHandling.override_styleboxes(
+		self, 
+		[
+			{
+				"override": "panel",
+				"stylebox_path": "res://gui/themes/components/slider/tceHSlider_default.stylebox"
+			}
+		]
+	)
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready() -> void:
+	# DESCRIPTION: Connect to parent signals
+	self._error = self.connect("mouse_entered", self, "_on_mouse_entered")
+
+	# DESCRIPTION: Connect the slider signals
 	self._error = hSlider.connect("value_changed", self, "_on_slider_value_changed")
+	self._error = hSlider.connect("focus_entered", self, "_on_slider_focus_entered")
+	self._error = hSlider.connect("focus_exited", self, "_on_slider_focus_exited")
+
+	# DESCRIPTION: Set the default styling
+	NodeHandling.override_styleboxes(
+		self, 
+		[
+			{
+				"override": "panel",
+				"stylebox_path": "res://gui/themes/components/slider/tceHSlider_default.stylebox"
+			}
+		]
+	)

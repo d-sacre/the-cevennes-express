@@ -18,6 +18,7 @@ var _defaultObject
 var _objectReferences : Array = []
 var _focusReferences : Array = []
 
+var _spacerAllowed : bool = false
 var _vSpacerHeight : int = 24
 var _vCorrection : int   = 2*self._vSpacerHeight
 
@@ -102,9 +103,10 @@ func initialize_ui_cluster_parameters(context : String, cluster : Object) -> voi
 	self._context = context
 	self._cluster = cluster
 
-func initialize_ui_cluster(context : String, cluster : Object, elements : Array) -> void:
+func initialize_ui_cluster(context : String, cluster : Object, elements : Array, spacerAllowed : bool = true) -> void:
 	self.initialize_ui_cluster_parameters(context, cluster)
 	self.pause_mode = PAUSE_MODE_PROCESS
+	self._spacerAllowed = spacerAllowed
 
 	# DESCRIPTION: If there are already some children present, delete them
 	# to prevent the issue that multiple instances of the same slider could be present
@@ -117,8 +119,9 @@ func initialize_ui_cluster(context : String, cluster : Object, elements : Array)
 		if self._is_element_creation_allowed(_element):
 			self._create_element(self._cluster, self._elementResource, _element)
 
-			if _i < len(elements) - 1:
-				self._create_spacer(self._cluster)
+			if self._spacerAllowed:
+				if _i < len(elements) - 1:
+					self._create_spacer(self._cluster)
 	
 	# DESCRIPTION: To ensure that the cluster does not interfer with ui focus of other elements
 	self.disable_ui_focus_mode_all()
@@ -171,6 +174,9 @@ func set_focus_to_default() -> void:
 
 		if _tmp_defaultObjectName.match("*HSlider*"):
 			_tmp_defaultObject = self._defaultObject.get_node("GridContainer/HSlider")
+
+		elif _tmp_defaultObjectName.match("*Toggle*"):
+			_tmp_defaultObject = self._defaultObject.get_node("GridContainer/toggleButton")
 		
 		self._defaultObject = _tmp_defaultObject
 

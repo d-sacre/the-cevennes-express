@@ -43,9 +43,9 @@ onready var _rootContext : PanelContainer = $rootContext
 onready var _settingsContext : PanelContainer = $settingsContext
 
 onready var _buttonClusterRoot : Object = $rootContext/GridContainer/buttonClusterRoot
-onready var _settingsScroll : Object = $settingsContext/ScrollContainer
-onready var _settingsCluster : Object = $settingsContext/ScrollContainer/settings_popup_panelContainer2
-onready var _settingsClusterContainer : Object = $settingsContext/ScrollContainer/settings_popup_panelContainer2/CenterContainer/GridContainer
+# onready var _settingsScroll : Object = $settingsContext/ScrollContainer
+onready var _settingsCluster : Object = $settingsContext/settings_popup_panelContainer2 #$settingsContext/ScrollContainer/settings_popup_panelContainer2
+onready var _settingsClusterContainer : Object = $settingsContext/settings_popup_panelContainer2/CenterContainer/ScrollContainer/MarginContainer/GridContainer# $settingsContext/ScrollContainer/settings_popup_panelContainer2/CenterContainer/GridContainer
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -106,37 +106,6 @@ func _hide_popup_menu() -> void:
 	else:
 		UserInputManager.set_current_gui_context_to_grid()
 
-# func _context_fsm() -> void:
-# 	match self._state:
-# 		MENU_STATE.HIDDEN:
-# 			self.visible = true
-# 			get_tree().paused = true
-
-# 			self._initialize_root_context()
-# 			self._state = MENU_STATE.ROOT
-
-# 			UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.ROOT]), "entered")
-
-# 		MENU_STATE.ROOT:
-# 			self.visible = false
-# 			get_tree().paused = false
-# 			self._state = MENU_STATE.HIDDEN
-
-# 			# REMARK: Needs to be adapted if not in a Input Method mode that supports the mouse
-# 			if UserInputManager.get_current_gui_context().match("*mouse*"):
-# 				UserInputManager.set_current_gui_context_to_void()
-# 			else:
-# 				UserInputManager.set_current_gui_context_to_grid()
-
-# 		MENU_STATE.SETTINGS:
-# 			self._settingsContext.visible = false
-# 			self._rootContext.visible = true
-
-# 			self._initialize_root_context()
-# 			self._state = MENU_STATE.ROOT
-
-# 			UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.ROOT]), "entered")
-
 func _context_fsm(tce_event_uuid : String) -> void:
 	match self._state:
 		MENU_STATE.HIDDEN:
@@ -161,9 +130,9 @@ func _update_size() -> void:
 	# REMARK: Is required due to the fact that Godot can not handle the sizes of class inherited
 	# objects properly and the calculations during _ready do not show any effect
 	self._buttonClusterRoot.update_size()
-	self._settingsCluster.rect_min_size = self._settingsClusterContainer.rect_size
-	self._settingsScroll.rect_min_size = self._settingsCluster.rect_min_size + Vector2(24,24)
-	self._settingsContext.rect_min_size = self._settingsScroll.rect_min_size + Vector2(12,12)
+	# self._settingsCluster.rect_min_size = self._settingsClusterContainer.rect_size
+	# self._settingsScroll.rect_min_size = self._settingsCluster.rect_min_size + Vector2(24,24)
+	# self._settingsContext.rect_min_size = self._settingsScroll.rect_min_size + Vector2(12,12)
 
 	# DEBUG
 	# print("Settings Cluster: min size: ", self._settingsCluster.rect_min_size)
@@ -194,7 +163,7 @@ func initialize(context : String) -> void:
 	self._settingsCluster.initialize(self._context)
 
 	var _height : int = min(self._settingsCluster.get_cluster_height() + 128, 750) 
-	self._settingsScroll.rect_min_size.y = _height
+	# self._settingsScroll.rect_min_size.y = _height
 	self._settingsContext.rect_min_size.y = _height
 
 ################################################################################
@@ -202,27 +171,6 @@ func initialize(context : String) -> void:
 ################################################################################
 func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> void:
 	self._context_fsm(tce_event_uuid)
-
-	# # DESCRIPTION: Toggle the visibility of the popup menu and its components 
-	# # by evaluated user inputs 
-	# var _tmp_eventKeychain : Array = ["*", "UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "main", "context"]
-
-	# if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
-	# 	self._context_fsm()
-
-	# _tmp_eventKeychain = ["*","UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "settings", "context"]
-	# if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_eventKeychain):
-	# 	self._rootContext.visible = !self._rootContext.visible
-	# 	self._settingsContext.visible = !self._settingsContext.visible
-		
-	# 	if self._settingsContext.visible:
-	# 		print("Opening Settings; has method: ", self._settingsCluster.has_method("set_focus_to_default"))
-	# 		self._state = MENU_STATE.SETTINGS
-	# 		self._settingsCluster.set_focus_to_default()
-	# 		UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.SETTINGS]), "entered")
-	# 	else:
-	# 		self._state = MENU_STATE.ROOT
-	# 		UserInputManager.set_current_gui_context(self._get_tce_event_and_gui_uuid_string(["gui", MENU_STATE.ROOT]), "entered")
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

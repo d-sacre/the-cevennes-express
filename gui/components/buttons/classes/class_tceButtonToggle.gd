@@ -81,6 +81,7 @@ func _on_focus_entered() -> void:
 	if not UserInputManager.is_device_responsible_for_current_input_mouse():
 		var _center : Vector2 =  0.5 * self.rect_size
 		self.warp_mouse(_center)
+		
 	audioManager.play_sfx(["ui", "button", "hover"])
 
 func _on_button_toggled(value) -> void:

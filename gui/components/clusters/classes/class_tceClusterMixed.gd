@@ -105,7 +105,7 @@ func _process_categories(categoryCluster : Array) -> Array:
 
 	return _neighbourReferences
 
-func _initialize(context : String, cluster : Object) -> void:
+func _initialize(context : String, cluster : Object = $CenterContainer/GridContainer) -> void:
 	self.initialize_ui_cluster_parameters(context, cluster)
 
 	var _tmp_categoryCluster : Array = self._parse_elements_into_categories()

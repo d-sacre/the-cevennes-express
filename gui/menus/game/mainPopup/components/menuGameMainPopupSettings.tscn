@@ -21,18 +21,29 @@ margin_left = -325.0
 margin_top = -297.0
 margin_right = 325.0
 margin_bottom = 297.0
-focus_mode = 2
 size_flags_vertical = 2
 
-[node name="GridContainer" type="GridContainer" parent="CenterContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="CenterContainer"]
 margin_top = 47.0
-margin_right = 650.0
+margin_right = 686.0
 margin_bottom = 547.0
+rect_min_size = Vector2( 686, 500 )
+follow_focus = true
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/ScrollContainer"]
+margin_right = 686.0
+margin_bottom = 500.0
+custom_constants/margin_right = 12
+custom_constants/margin_left = 24
+
+[node name="GridContainer" type="GridContainer" parent="CenterContainer/ScrollContainer/MarginContainer"]
+margin_left = 24.0
+margin_right = 674.0
+margin_bottom = 500.0
 rect_min_size = Vector2( 650, 500 )
-focus_mode = 2
 size_flags_vertical = 3
 
-[node name="settingsTitleLabel" type="Label" parent="CenterContainer/GridContainer"]
+[node name="settingsTitleLabel" type="Label" parent="CenterContainer/ScrollContainer/MarginContainer/GridContainer"]
 margin_right = 650.0
 margin_bottom = 56.0
 size_flags_horizontal = 3
@@ -40,7 +51,7 @@ custom_fonts/font = ExtResource( 2 )
 text = "Settings"
 valign = 1
 
-[node name="vSpacer" type="Control" parent="CenterContainer/GridContainer"]
+[node name="vSpacer" type="Control" parent="CenterContainer/ScrollContainer/MarginContainer/GridContainer"]
 margin_top = 60.0
 margin_right = 650.0
 margin_bottom = 72.0

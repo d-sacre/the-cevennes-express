@@ -81,6 +81,7 @@ focus_mode = 2
 margin_top = 158.0
 margin_bottom = 638.0
 focus_mode = 2
+theme = null
 
 [node name="buttons" type="HBoxContainer" parent="MarginContainer/contentVBoxContainer/rootContext"]
 margin_left = 1217.0
