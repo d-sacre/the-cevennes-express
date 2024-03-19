@@ -105,6 +105,11 @@ func initialize(context : String, data : Dictionary) -> void:
 			}
 		])
 
+func enable_ui_focus_mode_all() -> void:
+	self.focus_mode = FOCUS_ALL
+
+func disable_ui_focus_mode_all() -> void:
+	self.focus_mode = FOCUS_NONE
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

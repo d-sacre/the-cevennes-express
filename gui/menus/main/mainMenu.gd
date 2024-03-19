@@ -47,7 +47,9 @@ func _initialize_root_context_state() -> void:
 	self._settingsCluster.visible = false
 	self.rootContextCredits.visible = false
 	self._state = self.MENU_STATE.ROOT
+	audioManager.disable_request_processing()
 	self.rootContextButtons.set_focus_to_default()
+	audioManager.enable_request_processing()
 
 func _initialize_settings_context_state() -> void:
 	self._settingsCluster.visible = true
@@ -111,9 +113,10 @@ func _on_user_input_manager_global_command(tce_event_uuid : String, _value) -> v
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################
 ################################################################################
 func _ready():
-	self._state = self.MENU_STATE.ROOT
+	# self._state = self.MENU_STATE.ROOT
 	
 	self.rootContextButtons.initialize(self._context)
+	self._initialize_root_context_state()
 
 	# Initialize user settings
 	userSettingsManager.initialize_user_settings()

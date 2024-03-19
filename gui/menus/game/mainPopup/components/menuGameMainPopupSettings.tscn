@@ -7,6 +7,7 @@
 [node name="settingsSubmenu" type="Control"]
 margin_right = 1920.0
 margin_bottom = 1080.0
+focus_mode = 2
 size_flags_vertical = 6
 theme = ExtResource( 5 )
 script = ExtResource( 1 )
@@ -20,6 +21,7 @@ margin_left = -325.0
 margin_top = -297.0
 margin_right = 325.0
 margin_bottom = 297.0
+focus_mode = 2
 size_flags_vertical = 2
 
 [node name="GridContainer" type="GridContainer" parent="CenterContainer"]
@@ -27,6 +29,7 @@ margin_top = 47.0
 margin_right = 650.0
 margin_bottom = 547.0
 rect_min_size = Vector2( 650, 500 )
+focus_mode = 2
 size_flags_vertical = 3
 
 [node name="settingsTitleLabel" type="Label" parent="CenterContainer/GridContainer"]

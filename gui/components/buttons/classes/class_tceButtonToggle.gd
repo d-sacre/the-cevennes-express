@@ -62,6 +62,12 @@ func initialize(context : String, data : Dictionary) -> void:
 func set_to_default_value(userSettings : Dictionary) -> void:
 	self.pressed = DictionaryParsing.get_dict_element_via_keychain(userSettings, self._settingsKeychain)
 
+func enable_ui_focus_mode_all() -> void:
+	self.focus_mode = FOCUS_ALL
+
+func disable_ui_focus_mode_all() -> void:
+	self.focus_mode = FOCUS_NONE
+
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
 ################################################################################

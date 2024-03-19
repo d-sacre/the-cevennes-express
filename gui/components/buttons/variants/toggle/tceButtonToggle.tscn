@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://themes/fonts/lmodern_bold_48px.tres" type="DynamicFont" id=1]
-[ext_resource path="res://gui/components/buttons/variants/toggle/components/tceButtonToggle_component.gd" type="Script" id=2]
+[ext_resource path="res://gui/components/buttons/variants/toggle/components/component_tceButtonToggle.gd" type="Script" id=2]
 [ext_resource path="res://themes/fonts/lmodern_sans_32px.tres" type="DynamicFont" id=3]
 [ext_resource path="res://gui/components/buttons/variants/toggle/tceButtonToggle.gd" type="Script" id=4]
 

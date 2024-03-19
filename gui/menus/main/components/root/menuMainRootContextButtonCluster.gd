@@ -53,7 +53,7 @@ func initialize(context : String) -> void:
 	self.pause_mode = PAUSE_MODE_PROCESS
 
 	self.set_focus_neighbours(self.get_focus_reference())
-	self.set_focus_to_default()
+	# self.set_focus_to_default()
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

@@ -97,8 +97,10 @@ var _clusterHeight : int = 0
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES #############################
 ################################################################################
 func set_focus_to_default() -> void:
-	if _focusReferences != []:
-		_focusReferences[0].grab_focus()
+    if _focusReferences != []:
+        self._defaultObject = _focusReferences[0]
+
+    .set_focus_to_default()
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################

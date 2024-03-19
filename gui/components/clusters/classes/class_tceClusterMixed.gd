@@ -112,7 +112,7 @@ func _initialize(context : String, cluster : Object) -> void:
 	self._focusReferences = self._process_categories(_tmp_categoryCluster)
 	
 	self.set_focus_neighbours(self._focusReferences)
-	self.set_focus_to_default()
+	# self.set_focus_to_default()
 
 func _set_all_nodes_of_type_to_default(type : String) -> void:
 	var _references : Array = []

@@ -46,7 +46,7 @@ onready var cameraManager : Object = $cameraManager
 onready var tileDefinitionManager : Object = $tileDefinitionManager
 onready var cppBridge : Object = $cppBridge
 onready var collisionManager : Object = $collisionManager
-onready var settingsPopout : Object = $guiPopupCanvasLayer/PopupMenu/settings_popup_panelContainer
+#onready var settingsPopout : Object = $guiPopupCanvasLayer/PopupMenu/settings_popup_panelContainer
 
 ################################################################################
 #### GODOT LOADTIME FUNCTION OVERRIDES #########################################

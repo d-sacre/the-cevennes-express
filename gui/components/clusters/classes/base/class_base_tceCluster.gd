@@ -68,6 +68,11 @@ func _create_category_title(parent : Object, title : String) -> void:
 
 	self._create_spacer(parent)
 
+func _change_ui_focus_mode(methodName : String) -> void:
+	for _child in self._cluster.get_children():
+		if _child.has_method(methodName):
+			_child.call(methodName)
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
 ################################################################################
@@ -76,6 +81,12 @@ func enable_container_cleaning() -> void:
 
 func disable_container_cleaning() -> void:
 	self._clearContainerAllowed = false
+
+func enable_ui_focus_mode_all() -> void:
+	self._change_ui_focus_mode("enable_ui_focus_mode_all")
+
+func disable_ui_focus_mode_all() -> void:
+	self._change_ui_focus_mode("disable_ui_focus_mode_all")
 
 func get_element_size() -> Vector2:
 	var _tmp_element : Object = self._elementResource.instance()
@@ -108,6 +119,9 @@ func initialize_ui_cluster(context : String, cluster : Object, elements : Array)
 
 			if _i < len(elements) - 1:
 				self._create_spacer(self._cluster)
+	
+	# DESCRIPTION: To ensure that the cluster does not interfer with ui focus of other elements
+	self.disable_ui_focus_mode_all()
 
 func get_focus_reference() -> Array:
 	return self._focusReferences
@@ -142,8 +156,24 @@ func set_focus_neighbours(focusReference : Array) -> void:
 			_current.focus_next = _neighboursBottomPath
 
 func set_focus_to_default() -> void:
-	print("Default Object: ", self._defaultObject)
+	self.emit_signal("item_rect_changed") # Testing purposes to see whether size is updated; seems not to have any effect
+	self.enable_ui_focus_mode_all()
+
+	var _tmp_defaultObjectName : String = self._defaultObject.name
+	print("Default Object: ", self._defaultObject, ", name: ", _tmp_defaultObjectName,", class: ", self._defaultObject.get_class())
 	print("Viewport Size: ", get_viewport_rect())
+	
+	# DESCRIPTION: Detect TCE Custom Types to be able to set focus to the correct Godot default element
+	# REMARK: Currently very crude/unflexible/hardcoded and only working for HSliders
+	# FUTURE: Needs to be generalized and expanded to other types
+	if _tmp_defaultObjectName.match("TCE*") or _tmp_defaultObjectName.match("tce*"):
+		var _tmp_defaultObject = self._defaultObject
+
+		if _tmp_defaultObjectName.match("*HSlider*"):
+			_tmp_defaultObject = self._defaultObject.get_node("GridContainer/HSlider")
+		
+		self._defaultObject = _tmp_defaultObject
+
 	self._defaultObject.grab_focus()
 	print("Mouse Position (before): global, local:", get_global_mouse_position(), ", ", get_local_mouse_position())
 	# if not UserInputManager.is_device_responsible_for_current_input_mouse():
@@ -152,7 +182,7 @@ func set_focus_to_default() -> void:
 	self._defaultObject.warp_mouse(_center)
 	# get_viewport().warp_mouse(_center)
 	# Input.warp_mouse_position(self.get_global_transform_with_canvas().origin+_center)
-	print("Mouse Position (after): global, local:", get_global_mouse_position(), ", ", get_local_mouse_position())
+	print("Mouse Position (after): global, local:", get_global_mouse_position(), ", ", get_local_mouse_position(), "\n")
 
 func update_size() -> void:
 	var _tmp_sizeX : float = max(self._cluster.rect_size.x, self._cluster.rect_min_size.x) + 2*48
