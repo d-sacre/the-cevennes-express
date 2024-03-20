@@ -7,8 +7,10 @@ public:: true
 	- ![hexTile_coordinate-system_edges.png](../assets/hexTile_coordinate-system_edges_1707745461853_0.png)
 -
 - ## Edge Types
+	- ```
+	  ```
 	- ### Landscape
-		- `grass`
+		- `grass`:
 		  id:: 65ca4e12-f703-486a-8e0a-49dfa203b7f7
 		  collapsed:: true
 			- Matches: ((65ca4e12-f703-486a-8e0a-49dfa203b7f7)), ((65ca4e91-e688-4f0c-92aa-8dc28cccfbc3)), ((65ca4ea4-d2a0-4888-bbab-e6bc2c4d26e4)), ((65ca4f3b-a362-49d1-be9f-264491b5c7b8))

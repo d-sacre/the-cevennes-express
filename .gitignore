@@ -289,3 +289,7 @@ menus/mainMenu/art/the-cevennes-express_honest-jam-6_main-menu_bg.png.import
 themes/buttons/textures/main-menu_button_active.png.import
 themes/buttons/textures/main-menu_button_hover.png.import
 themes/buttons/textures/main-menu_button_disabled.png.import
+pages/Costs.md
+*.synctex.gz
+*.log
+*.aux
