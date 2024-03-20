@@ -54,38 +54,46 @@ func _is_input_event_option_general(tce_event_uuid : String) -> bool:
 func _hide_gui_creative_mode(status : bool) -> void:
 	# REMARK: Should be implemented properly at a later date
 	self._selectorOperationMode = "NONE" 
+	var _creativeModeOverlay : Object = self._guiLayerReferences["overlay"].get_node("creativeModeOverlay")
+	var _hiddenGuiElement : Object = self._guiLayerReferences["hidden"].get_node("hiddenGUI")
 
-	self._guiLayerReferences["overlay"].visible = not status
+	# self._guiLayerReferences["overlay"].visible = true # not status
 
 	if status:
+		_creativeModeOverlay.enable_hidden_overlay_mode()
 		UserInputManager.set_current_gui_context_to_grid()
 		
 		self._managerReferences["cameraManager"].enable_zooming()
 		self._managerReferences["cameraManager"].enable_raycasting()
 
-		# REMARK:/FUTURE: Should be instanced @ ready and only visibility set, not deleted
-		if not self._is_gui_hidden:  # REMARK: To remove multiple "Unhide GUI" Buttons
-			var _scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
-			var _instance = _scene.instance()
-			_instance.initialize(self._context)
-			self._guiLayerReferences["hidden"].add_child(_instance)
+		# # REMARK:/FUTURE: Should be instanced @ ready and only visibility set, not deleted
+		# if not self._is_gui_hidden:  # REMARK: To remove multiple "Unhide GUI" Buttons
+		# 	var _scene = load("res://gui/overlays/creativeMode/hiddenGUI/hiddenGUI.tscn")
+		# 	var _instance = _scene.instance()
+		# 	_instance.initialize(self._context)
+		# 	self._guiLayerReferences["hidden"].add_child(_instance)
 
-			# DESCRIPTION: Remove floating tile if existing
-			if self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
-				var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
-				self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
-				self._managerReferences["hexGridManager"].delete_floating_tile()
-			
-			self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), false)
-			self._managerReferences["hexGridManager"].set_highlight_persistence("void", false)
+		_hiddenGuiElement.reactivate_and_unhide()
+
+		# DESCRIPTION: Remove floating tile if existing
+		if self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
+			var _floating_tile_status : Dictionary = self._managerReferences["hexGridManager"].get_floating_tile_definition_uuid_and_rotation()
+			self._last_tile_definition_uuid = _floating_tile_status["TILE_DEFINITION_UUID"]
+			self._managerReferences["hexGridManager"].delete_floating_tile()
 		
-	else:
-		# DESCRIPTION: Delete unhide GUI button if still existing
-		if self._guiLayerReferences["hidden"].has_node("hiddenGUI"):
-			# FUTURE: Play hiding animation before deleting element
-			self._guiLayerReferences["hidden"].get_node("hiddenGUI").queue_free()
+		self._managerReferences["hexGridManager"].set_single_grid_cell_highlight(self._managerReferences["hexGridManager"].get_last_index_within_grid_boundary(), false)
+		self._managerReferences["hexGridManager"].set_highlight_persistence("void", false)
 
-		self._guiLayerReferences["overlay"].get_node("creativeModeOverlay").set_creative_mode_gui_to_default()
+	else:
+		# # DESCRIPTION: Delete unhide GUI button if still existing
+		# if self._guiLayerReferences["hidden"].has_node("hiddenGUI"):
+		# 	# FUTURE: Play hiding animation before deleting element
+		# 	self._guiLayerReferences["hidden"].get_node("hiddenGUI").queue_free()
+		_hiddenGuiElement.deactivate_and_hide()
+
+		
+		_creativeModeOverlay.disable_hidden_overlay_mode()
+		_creativeModeOverlay.set_creative_mode_gui_to_default()
 		self._selectorOperationMode = "place" # REMARK: Should be implemented properly at a later date to reflect the actually selected mode
 
 		if not self._managerReferences["hexGridManager"].is_floating_tile_reference_valid():
@@ -97,9 +105,14 @@ func _hide_gui_creative_mode(status : bool) -> void:
 		self._managerReferences["hexGridManager"].set_highlight_persistence("void", true)
 
 	self._is_gui_hidden = status
+	print_debug(self._is_gui_hidden)
 
 func _hide_gui(status : bool) -> void:
 	self._hide_gui_creative_mode(status)
+
+func _toggle_gui_visibility() -> void:
+	._toggle_gui_visibility()
+	self._hide_gui_creative_mode(self._is_gui_hidden)
 
 func _movement_channel2(asmr : Vector2) -> void:
 	var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "update", "tile", "definition", "selector", "position"]
@@ -118,20 +131,6 @@ func _movement_channel2(asmr : Vector2) -> void:
 func gui_context_management_pipeline(tce_event_uuid : String, value) -> void:
 	.gui_context_management_pipeline(tce_event_uuid, value) # execute base class function definition
 	self._manage_grid_to_gui_transition(tce_event_uuid, value)
-
-	# # Extend base class functionality
-	# if tce_event_uuid.match("game::*::gui::*"):
-	# 	if tce_event_uuid.match("*::sidepanel::right::selector::tile::definition"):
-	# 		if value is String:
-	# 			self._manage_grid_to_gui_transition(tce_event_uuid, value)
-
-	# 	elif tce_event_uuid.match("*::hud::selector::action"):
-	# 		if value is String:
-	# 			self._manage_grid_to_gui_transition(tce_event_uuid, value)
-	# else:
-	# 	pass
-	# 	# REMARK: Disabled for the time being until Main Menu is updated to prevent enormous amount of printing
-	# 	# print("Error: <TCE_SIGNALING_UUID|",tce_event_uuid, "> could not be processed!")
 
 ################################################################################
 #### PARENT CLASS PUBLIC MEMBER FUNCTION OVERRIDES GENERAL PROCESSING PIPELINE #
@@ -193,8 +192,11 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 			if tce_event_uuid.match(_tmp_eventString):
 				# DESCRIPTION: Unhide GUI first if it should be hidden and the hide gui options has not been requested
 				if self._is_gui_hidden:
+					print_debug(self._is_gui_hidden)
 					if _i!= 5:
 						self._hide_gui(false)
+
+					# self._hide_gui(false)
 				
 				# DESCRIPTION: Send a execution request via the InputManager Command Signal to ensure that all relevant
 				# entities can react properly.
@@ -243,7 +245,6 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 ################################################################################
 ################################################################################
 var _selectorOperationMode : String = "place" #"place"
-var _is_gui_hidden : bool = false
 var _last_tile_definition_uuid : String 
 
 ################################################################################

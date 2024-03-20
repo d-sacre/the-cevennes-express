@@ -34,4 +34,14 @@ func deactivate_and_hide_tile_selector() -> void:
 func reactivate_and_unhide_tile_selector() -> void:
 	self._tileSelector.reactivate_and_unhide()
 
+func enable_hidden_overlay_mode() -> void:
+	self._actionSelector.deactivate_and_hide()
+	self._tileSelector.deactivate_and_hide()
+
+func disable_hidden_overlay_mode() -> void:
+	self._actionSelector.reactivate_and_unhide()
+	self._tileSelector.reactivate_and_unhide()
+
+func is_tile_selector_visible() -> bool:
+	return self._tileSelector.is_visible()
 	

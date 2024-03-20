@@ -23,6 +23,48 @@ signal transition_finished
 
 ################################################################################
 ################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
+################################################################################
+const TRANSITION_MANAGER_STATES = {IDLE = 0, SCENE_TRANSITION = 1, SLIDING_TRANSITION = 2}
+
+const SLIDING_TRANSITION = {
+	# "RIGHT": {
+	# 	"CENTER": {
+	# 		"START": Vector2(2*1920,1080/2),
+	# 		"END": Vector2(1920,1080/2)
+	# 	}
+	# },
+	# "TOP": {
+	# 	"CENTER": {
+	# 		"START": Vector2(1920/2,-1080),
+	# 		"END": Vector2(1920/2,0)
+	# 	},
+	# 	"LEFT": {
+	# 		"START": Vector2(-1920,0),
+	# 		"END": Vector2(0,0)
+	# 	},
+	# }
+	"RIGHT": {
+		"CENTER": {
+			"START": Vector2(1920,0),
+			"END": Vector2(0,0)
+		}
+	},
+	"TOP": {
+		"CENTER": {
+			"START": Vector2(0,-1080),
+			"END": Vector2(0,0)
+		},
+		"LEFT": {
+			"START": Vector2(-1920,0),
+			"END": Vector2(0,0)
+		},
+	}
+}
+
+################################################################################
+################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 ################################################################################
@@ -33,6 +75,11 @@ var _loader
 var _waitFrames
 var _timeMax = 100 # msec
 var _currentScene 
+
+var _state : int
+var _returnBool : bool
+
+var _slidingTime : float = 1
 
 ################################################################################
 ################################################################################
@@ -46,6 +93,8 @@ onready var fadeBlack : Control = $transitionEffects/fadeBlack
 
 onready var loadingScreen : CanvasLayer = $loadingScreen
 onready var progressBar : ProgressBar = $loadingScreen/CenterContainer/VBoxContainer/ProgressBar
+
+onready var _tween : Tween = $Tween
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -100,7 +149,6 @@ func _fade_loading_screen(reverse : bool = false, paused : bool = true) -> void:
 
 	emit_signal("transition_finished")
 
-
 ################################################################################
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
@@ -140,6 +188,7 @@ func goto_scene(path : String): # Game requests to switch to this scene.
 	self._waitFrames = 1
 
 func transition_to_scene(path : String) -> void:
+	self._state = TRANSITION_MANAGER_STATES.SCENE_TRANSITION
 	self.progressBar.value = 0
 	self._fade_loading_screen()
 	yield(self, "transition_finished")
@@ -151,12 +200,54 @@ func transition_to_scene(path : String) -> void:
 	yield(self, "transition_finished")
 
 	self.loadingScreen.visible = false
+	self._state = TRANSITION_MANAGER_STATES.IDLE
 
 func transition_to_game() -> void:
 	self.transition_to_scene("res://Main.tscn")
 
 func transition_to_main_menu() -> void:
 	self.transition_to_scene("res://gui/menus/main/mainMenu.tscn")
+
+func wait_until_tween_is_finished_and_execute(element : Object, method : String) -> void:
+	yield(self._tween, "tween_completed")
+	element.call(method)
+
+func wait_until_tween_is_finished() -> void:
+	yield(self._tween, "tween_completed")
+
+func initialize_sliding_element_left(element : Object) -> void:
+	element.rect_global_position = SLIDING_TRANSITION.TOP.LEFT.START
+	element.visible = false
+
+func slide_element_from_to(element : Object, start : Vector2, end : Vector2, slideDuration : float = self._slidingTime) -> void:
+	self.set_process(true)
+	self._state = TRANSITION_MANAGER_STATES.SLIDING_TRANSITION
+	element.visible = true
+	self._returnBool = self._tween.interpolate_property(element, "rect_global_position", start, end, slideDuration)
+	self._returnBool = self._tween.start()
+
+func slide_element_in_from_top_left(element : Object, slideDuration : float = self._slidingTime) -> void:
+	self.slide_element_from_to(element,  SLIDING_TRANSITION.TOP.LEFT.START, SLIDING_TRANSITION.TOP.LEFT.END, slideDuration)
+
+func slide_element_out_to_top_left(element : Object, slideDuration : float = self._slidingTime) -> void:
+	print("Slide out")
+	self.slide_element_from_to(element, SLIDING_TRANSITION.TOP.LEFT.END, SLIDING_TRANSITION.TOP.LEFT.START, slideDuration)
+
+func slide_element_in_from_right_center(element : Object, slideDuration : float = self._slidingTime) -> void:
+	self.slide_element_from_to(element,  SLIDING_TRANSITION.RIGHT.CENTER.START, SLIDING_TRANSITION.RIGHT.CENTER.END, slideDuration)
+
+func slide_element_out_to_right_center(element : Object, slideDuration : float = self._slidingTime) -> void:
+	self.slide_element_from_to(element,  SLIDING_TRANSITION.RIGHT.CENTER.END, SLIDING_TRANSITION.RIGHT.CENTER.START, slideDuration)
+
+func slide_element_in_from_top_center(element : Object, slideDuration : float = self._slidingTime) -> void:
+	self.slide_element_from_to(element,  SLIDING_TRANSITION.TOP.CENTER.START, SLIDING_TRANSITION.TOP.CENTER.END, slideDuration)
+
+func slide_element_out_to_top_center(element : Object, slideDuration : float = self._slidingTime) -> void:
+	self.slide_element_from_to(element,  SLIDING_TRANSITION.TOP.CENTER.END, SLIDING_TRANSITION.TOP.CENTER.START, slideDuration)
+
+func initialize_sliding_element_top_center_to_invisible(element : Object) -> void:
+	element.rect_global_position = SLIDING_TRANSITION.TOP.CENTER.START
+	element.visible = false
 
 ################################################################################
 ################################################################################
@@ -181,32 +272,33 @@ func _ready() -> void:
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _process(_delta) -> void:
-	if self._loader == null:
-		# no need to process anymore
-		self.set_process(false)
-		return
+	if self._state == TRANSITION_MANAGER_STATES.SCENE_TRANSITION:
+		if self._loader == null:
+			# no need to process anymore
+			self.set_process(false)
+			return
 
-	# Wait for frames to let the "loading" animation show up.
-	if self._waitFrames > 0:
-		self._waitFrames -= 1
-		return
+		# Wait for frames to let the "loading" animation show up.
+		if self._waitFrames > 0:
+			self._waitFrames -= 1
+			return
 
-	var t = OS.get_ticks_msec()
-	# Use "_timeMax" to control for how long we block this thread.
-	while OS.get_ticks_msec() < t + self._timeMax:
-		# Poll your _loader.
-		var _err = _loader.poll()
+		var t = OS.get_ticks_msec()
+		# Use "_timeMax" to control for how long we block this thread.
+		while OS.get_ticks_msec() < t + self._timeMax:
+			# Poll your _loader.
+			var _err = _loader.poll()
 
-		if _err == ERR_FILE_EOF: # Finished loading.
-			var resource = self._loader.get_resource()
-			self._loader = null
-			self._set_new_scene(resource)
-			break
+			if _err == ERR_FILE_EOF: # Finished loading.
+				var resource = self._loader.get_resource()
+				self._loader = null
+				self._set_new_scene(resource)
+				break
 
-		elif _err == OK:
-			self._update_progress()
+			elif _err == OK:
+				self._update_progress()
 
-		else: # Error during loading.
-			# show_error()
-			self._loader = null
-			break
+			else: # Error during loading.
+				# show_error()
+				self._loader = null
+				break

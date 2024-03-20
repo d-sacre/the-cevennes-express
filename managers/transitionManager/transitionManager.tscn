@@ -156,7 +156,6 @@ pause_mode = 2
 margin_left = 224.0
 margin_right = 288.0
 margin_bottom = 64.0
-rect_rotation = 32.7952
 rect_pivot_offset = Vector2( 32, 32 )
 texture = ExtResource( 4 )
 
@@ -206,3 +205,6 @@ color = Color( 0, 0, 0, 1 )
 anims/fadeFromBlack = SubResource( 2 )
 anims/fadeLoadingScreen = SubResource( 5 )
 anims/fadeToBlack = SubResource( 1 )
+
+[node name="Tween" type="Tween" parent="."]
+pause_mode = 2

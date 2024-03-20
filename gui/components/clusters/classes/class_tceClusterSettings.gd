@@ -116,7 +116,7 @@ func initialize(context : String) -> void:
 	var _tmp_context = context + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "settings"
 
 	self._clusterEntries = self.SETTINGS_ELEMENTS_CLUSTER
-	self._initialize(_tmp_context)
+	self._initialize(_tmp_context, $CenterContainer/ScrollContainer/MarginContainer/GridContainer)
 	self.set_to_default_values()
 	self.update_size()
 

@@ -49,7 +49,7 @@ var _error : int
 ################################################################################
 #### ONREADY MEMBER VARIABLES ##################################################
 ################################################################################
-onready var _actionItemList : ItemList = $PanelContainer/CenterContainer/actionItemList
+onready var _actionItemList : ItemList = $PanelContainer/MarginContainer/CenterContainer/actionItemList
 onready var _canvasLayerParent : CanvasLayer = get_parent().get_parent()
 
 ################################################################################
@@ -93,6 +93,13 @@ func initialize_selection_to_default() -> void:
 	self._actionItemList.unselect_all() 
 	self._actionItemList.select(_index, true)
 	self._item_selected(_index)
+
+func deactivate_and_hide() -> void:
+	TransitionManager.slide_element_out_to_top_center(self)
+
+func reactivate_and_unhide() -> void:
+	TransitionManager.slide_element_in_from_top_center(self)
+		
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################

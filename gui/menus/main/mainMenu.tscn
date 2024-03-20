@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/2D/project-identity/the-cevennes-express_main-menu_logo.svg" type="Texture" id=1]
 [ext_resource path="res://menus/mainMenu/art/the-cevennes-express_honest-jam-6_main-menu_bg.png" type="Texture" id=2]
@@ -8,20 +8,37 @@
 [ext_resource path="res://menus/menuElements/creditsPopup.tscn" type="PackedScene" id=6]
 [ext_resource path="res://gui/menus/main/components/root/menuMainRootContextSettings.tscn" type="PackedScene" id=7]
 
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.392157, 0.266667, 0.223529, 1 )
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 16
+
 [node name="mainMenu" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 3 )
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="background" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="background"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color( 0.392157, 0.266667, 0.223529, 1 )
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="background"]
 visible = false
-margin_right = 40.0
-margin_bottom = 40.0
+margin_right = 1920.0
+margin_bottom = 1080.0
 texture = ExtResource( 2 )
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -69,20 +86,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="credits_popup_panel" parent="MarginContainer/contentVBoxContainer/rootContext/content" instance=ExtResource( 6 )]
-visible = false
-margin_left = 0.0
-margin_top = 0.0
-margin_right = 800.0
-margin_bottom = 776.0
-focus_mode = 2
-
-[node name="settingsSubmenu" parent="MarginContainer/contentVBoxContainer/rootContext/content" instance=ExtResource( 7 )]
-margin_top = 158.0
-margin_bottom = 638.0
-focus_mode = 2
-theme = null
-
 [node name="buttons" type="HBoxContainer" parent="MarginContainer/contentVBoxContainer/rootContext"]
 margin_left = 1217.0
 margin_right = 1824.0
@@ -98,5 +101,43 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 607.0
 margin_bottom = 796.0
+
+[node name="slidingElements" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="slidingSettingsContext" type="Control" parent="slidingElements"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="slidingElements/slidingSettingsContext"]
+margin_left = 48.0
+margin_top = 339.0
+margin_right = 738.0
+margin_bottom = 941.0
+mouse_filter = 1
+size_flags_vertical = 4
+custom_styles/panel = SubResource( 1 )
+
+[node name="settingsSubmenu" parent="slidingElements/slidingSettingsContext/PanelContainer" instance=ExtResource( 7 )]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 690.0
+margin_bottom = 598.0
+focus_mode = 2
+theme = null
+
+[node name="slidingCreditsContent" type="Control" parent="slidingElements"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="credits_popup_panel" parent="slidingElements/slidingCreditsContent" instance=ExtResource( 6 )]
+margin_right = -1120.0
+margin_bottom = -1080.0
+focus_mode = 2
 
 [node name="contextualLogic" parent="." instance=ExtResource( 5 )]

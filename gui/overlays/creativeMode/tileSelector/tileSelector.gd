@@ -50,6 +50,8 @@ var _lastSelectionAsmr : Vector2 = Vector2(0,0)
 var _asmrRepetitionAllowed : bool = false
 var _asmr_repetition_delay : float = 0.75
 
+var _visible : bool = true
+
 var _error : int 
 
 ################################################################################
@@ -190,14 +192,25 @@ func initialize(context : String, tdm : Object) -> void:
 	var _tmp_uuid : String = self._tileList.get_item_metadata(_index)
 	UserInputManager._curentTileDefinitionUUID = _tmp_uuid
 
+func is_visible() -> bool:
+	return self._visible
+
 func deactivate_and_hide() -> void:
 	# FUTURE: Deactivate tile selection for additional safety and perhaps play hiding animation
-	self.visible = false
+	# self.visible = false
+	# print_debug("Slide ")
+	TransitionManager.slide_element_out_to_right_center(self)
+	self._visible = false
 
 func reactivate_and_unhide() -> void:
-	if not self.visible:
-		# FUTURE: Activate tile selection for additional safety and perhaps play unhiding animation
-		self.visible = true
+	# if not self.visible:
+	# 	# FUTURE: Activate tile selection for additional safety and perhaps play unhiding animation
+	# 	self.visible = true
+	if not self.is_visible():
+		TransitionManager.slide_element_in_from_right_center(self)
+		self._visible = true
+
+
 
 ################################################################################
 #### SIGNAL HANDLING ###########################################################
@@ -233,7 +246,7 @@ func _on_user_input_manager_global_command(tce_event_uuid : String, value) -> vo
 #### GODOT RUNTIME FUNCTION OVERRIDES ##########################################
 ################################################################################
 func _ready() -> void:
-	self._tileList = $PanelContainer/GridContainer/tileList
+	self._tileList = $PanelContainer/MarginContainer/GridContainer/tileList
 
 	# initialize internal signal handling
 	self._tileList.connect("item_selected", self, "_on_item_selected")

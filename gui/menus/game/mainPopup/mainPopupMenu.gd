@@ -43,8 +43,7 @@ onready var _rootContext : PanelContainer = $rootContext
 onready var _settingsContext : PanelContainer = $settingsContext
 
 onready var _buttonClusterRoot : Object = $rootContext/GridContainer/buttonClusterRoot
-# onready var _settingsScroll : Object = $settingsContext/ScrollContainer
-onready var _settingsCluster : Object = $settingsContext/settings_popup_panelContainer2 #$settingsContext/ScrollContainer/settings_popup_panelContainer2
+onready var _settingsCluster : Object = $settingsContext/settings_popup_panelContainer2 
 onready var _settingsClusterContainer : Object = $settingsContext/settings_popup_panelContainer2/CenterContainer/ScrollContainer/MarginContainer/GridContainer# $settingsContext/ScrollContainer/settings_popup_panelContainer2/CenterContainer/GridContainer
 
 ################################################################################
@@ -130,14 +129,7 @@ func _update_size() -> void:
 	# REMARK: Is required due to the fact that Godot can not handle the sizes of class inherited
 	# objects properly and the calculations during _ready do not show any effect
 	self._buttonClusterRoot.update_size()
-	# self._settingsCluster.rect_min_size = self._settingsClusterContainer.rect_size
-	# self._settingsScroll.rect_min_size = self._settingsCluster.rect_min_size + Vector2(24,24)
-	# self._settingsContext.rect_min_size = self._settingsScroll.rect_min_size + Vector2(12,12)
 
-	# DEBUG
-	# print("Settings Cluster: min size: ", self._settingsCluster.rect_min_size)
-	# print("Scroll Container: min size: ", self._settingsScroll.rect_min_size)
-	# print("Settings: Panel Container : min size: ", self._settingsContext.rect_min_size)
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################

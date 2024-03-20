@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://gui/menus/game/mainPopup/mainPopupMenu.gd" type="Script" id=1]
 [ext_resource path="res://gui/menus/game/mainPopup/components/menuGameMainPopupButtonCluster.tscn" type="PackedScene" id=2]
 [ext_resource path="res://gui/menus/game/mainPopup/components/menuGameMainPopupSettings.tscn" type="PackedScene" id=3]
 [ext_resource path="res://themes/creditsPopup_mainMenu.theme" type="Theme" id=4]
 [ext_resource path="res://themes/fonts/lmodern_bold_96px.tres" type="DynamicFont" id=5]
+[ext_resource path="res://gui/themes/popuMenu_default.stylebox" type="StyleBox" id=6]
 
 [node name="mainPopupMenu" type="CenterContainer"]
 anchor_right = 1.0
@@ -17,9 +18,9 @@ script = ExtResource( 1 )
 pause_mode = 2
 visible = false
 margin_left = 936.0
-margin_top = 205.0
+margin_top = 202.0
 margin_right = 984.0
-margin_bottom = 973.0
+margin_bottom = 970.0
 rect_min_size = Vector2( 0, 768 )
 focus_mode = 2
 size_flags_horizontal = 2
@@ -58,25 +59,17 @@ margin_bottom = 910.0
 rect_min_size = Vector2( 512, 768 )
 
 [node name="settingsContext" type="PanelContainer" parent="."]
-margin_left = 580.0
-margin_right = 1340.0
-margin_bottom = 1178.0
+margin_left = 583.0
+margin_right = 1337.0
+margin_bottom = 1172.0
 rect_min_size = Vector2( 0, 700 )
 focus_mode = 2
 size_flags_vertical = 3
+custom_styles/panel = ExtResource( 6 )
 
 [node name="settings_popup_panelContainer2" parent="settingsContext" instance=ExtResource( 3 )]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 753.0
-margin_bottom = 1171.0
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 750.0
+margin_bottom = 1168.0
 rect_min_size = Vector2( 746, 1164 )
-
-[node name="ScrollContainer" type="ScrollContainer" parent="settingsContext"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 753.0
-margin_bottom = 7.0
-focus_mode = 2
-size_flags_vertical = 2
-scroll_horizontal_enabled = false

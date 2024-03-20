@@ -38,6 +38,7 @@ var _tileDefinitionUuid : String = "" # REMARK: Not a good solution; could crash
 const _separator : String = UserInputManager.TCE_EVENT_UUID_SEPERATOR
 
 var _deInCrementStatus : String = "NONE"
+var _is_gui_hidden : bool = false
 
 ################################################################################
 ################################################################################
@@ -185,6 +186,9 @@ func place_tile() -> void:
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: TOOLS ###########################################
 ################################################################################
+func _toggle_gui_visibility() -> void:
+	self._is_gui_hidden = !self._is_gui_hidden
+
 func _hide_gui(_status : bool) -> void:
 	pass
 
@@ -264,10 +268,13 @@ func general_processing_pipeline(tce_event_uuid : String, value) -> void:
 			self.rotate_tile_clockwise()
 
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "gui", "show"]):
+			print_debug("Show Gui")
+			# self._toggle_gui_visibility()
 			self._hide_gui(false)
 		
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "user", "selected", "gui", "hide"]):
-			self._hide_gui(true)
+			self._toggle_gui_visibility()
+			# self._hide_gui(true)
 
 		if self._is_tce_signaling_uuid_matching(tce_event_uuid, ["*", "button", "resume", "pressed"]):
 			var _tmp_eventKeychain : Array = ["UserInputManager", "requesting", "global", "execution", "toggle", "game", "menu", "main", "context"]
