@@ -5,7 +5,7 @@
 [ext_resource path="res://gui/menus/main/mainMenu.gd" type="Script" id=3]
 [ext_resource path="res://gui/menus/main/components/root/menuMainRootContextButtonCluster.tscn" type="PackedScene" id=4]
 [ext_resource path="res://contextualLogic/mainMenu/mainMenu_contextualLogic.tscn" type="PackedScene" id=5]
-[ext_resource path="res://menus/menuElements/creditsPopup.tscn" type="PackedScene" id=6]
+[ext_resource path="res://gui/menus/main/components/root/menuMainRootContextCredits.tscn" type="PackedScene" id=6]
 [ext_resource path="res://gui/menus/main/components/root/menuMainRootContextSettings.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
@@ -135,9 +135,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="credits_popup_panel" parent="slidingElements/slidingCreditsContent" instance=ExtResource( 6 )]
-margin_right = -1120.0
-margin_bottom = -1080.0
-focus_mode = 2
+[node name="creditsSlidingElement" parent="slidingElements/slidingCreditsContent" instance=ExtResource( 6 )]
 
 [node name="contextualLogic" parent="." instance=ExtResource( 5 )]

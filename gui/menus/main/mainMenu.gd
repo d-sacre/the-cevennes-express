@@ -25,7 +25,7 @@ var _error : int
 ################################################################################
 onready var rootContext : HBoxContainer = $MarginContainer/contentVBoxContainer/rootContext
 onready var rootContextButtons : Object = $MarginContainer/contentVBoxContainer/rootContext/buttons/buttonClusterRoot
-onready var rootContextCredits : Object = $slidingElements/slidingCreditsContent/credits_popup_panel
+onready var rootContextCredits : Object = $slidingElements/slidingCreditsContent/creditsSlidingElement
 
 onready var _settingsContext : Object = $slidingElements/slidingSettingsContext
 onready var _settingsCluster : Object = $slidingElements/slidingSettingsContext/PanelContainer/settingsSubmenu
@@ -108,7 +108,7 @@ func _context_fsm(tce_event_uuid : String, _value) -> void:
 				self._initialize_root_context_state()
 
 func _initialize() -> void:
-	self.rootContextCredits.visible = false
+	# self.rootContextCredits.visible = false
 
 	self._settingsCluster.initialize(self._context)
 

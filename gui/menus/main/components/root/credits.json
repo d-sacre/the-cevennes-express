@@ -1,0 +1,139 @@
+[
+	{
+		"section": 
+		{
+			"heading": "Contributors",
+			"content": [
+				{
+					"subsection": 
+						{
+							"heading": "Milatur",
+							"content": [
+								{
+									"itemize": {
+										"content": [
+											"Concept",
+											"Core Game Play Mechanics",
+											"C++ Architecture and Project Management Lead",
+											"CMake and Visual Studio Code Build Pipelines",
+											"Unit Testing",
+											"Windows Testing (native, Firefox, Opera, Edge)"
+										]
+									}
+								}
+							]
+						}
+				},
+				{
+					"vspace": 1
+				},
+				{
+					"subsection": 
+						{
+							"heading": "dsacre",
+							"content": [
+								{
+									"itemize": {
+										"content": [
+											"Concept", 
+											"Core Game Play Mechanics", 
+											"Godot Architecture Lead", 
+											"Python Build Tools", 
+											"UI/UX Design", 
+											"Asset Creation: (LaTeX/TikZ, Blender, GIMP, Krita,\nImagemagick, Audacity)", 
+											"Linux Testing (native, Firefox, Chromium, Brave)"
+										]
+									}
+								}
+							]
+						}
+				}
+			]
+		}
+	},
+	{
+		"vspace" : 1
+	},
+	{
+		"section": {
+			"heading": "Used Assets",
+			"content": [
+                {
+					"subsection": {
+						"heading": "Art:",
+						"content": [
+                            {
+                                "itemize": {
+                                    "content": [
+                                        "Hexagon Tile by Joe Bustamante\n{urlstart}https://github.com/josephmbustamante/\nGodot-3D-Hex-Grid-Tutorial{urlend}",
+                                        "Appelmoesgezeefdzond​ertoegevoegdesuiker:\n{quote}Autorail Billard 213 du Chemin de fer du Vivarais{quote},\nLicense: Creative Commons Attribution 2.0\n{urlstart}https://commons.wikimedia.org/wiki/\nFile:CFV_Billard_213.jpg{urlend}",
+                                        "nicubunu: {quote}RPG map symbols: mountains{quote}\nLicense: Creative Commons Zero\n{urlstart}https://openclipart.org/detail/9454/\nrpg-map-symbols-mountains{urlend}"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {"vspace": 1},
+				{
+					"subsection": {
+						"heading": "SFX:",
+						"content": [
+							{"itemize": 
+								{
+									"content": [
+										"Kenney: {quote}Interface Sounds{quote},\nLicense:  Creative Commons Zero\n{urlstart}https://opengameart.org/content/interface-sounds{urlend}",
+										{
+											"itemize": {
+												"content": [
+													"drop_003.ogg",
+													"switch_005.ogg"
+												]
+											}
+										},
+                                        "Robin Lamp: {quote}UI Sound Effects (Button Clicks, User\nFeedback, Notifications){quote}\nLicense: Creative Commons Zero\n{urlstart}https://opengameart.org/content/ui-sound-effects\n-button-clicks-user-feedback-notifications{urlend}",
+                                        {
+                                            "itemize": {
+                                                "content": [
+                                                    "alarm.ogg"
+                                                ]
+                                            }
+                                        },
+                                        "Versilian Studios: {quote}VSCO 2{quote},\nLicense: Creative Commons Zero\n{urlstart}https://versilian-studios.com/vsco-community/{urlend}",
+                                        {
+                                            "itemize": {
+                                                "content": [
+                                                    "wood_click_pp_1.wav",
+                                                    "ratchet1.wav / ratchet1.ogg",
+                                                    "snare3_rimshot_f_1.wav",
+                                                    "windchimes_asc1.wav"
+                                                ]
+                                            }
+                                        },
+                                        "franzzle: {quote}Paper Crumble{quote}\nLicense: Creative Commons Zero\n{urlstart}https://freesound.org/people/franzzle/sounds/\n713220/713220__franzzle__paper-crumble.wav{urlend}"
+									]
+								}
+							}
+						]
+					}
+				},
+                {"vspace": 1},
+                {
+					"subsection": {
+						"heading": "Fonts:",
+						"content": [
+                            {
+                                "itemize":{
+                                    "content": [
+                                        "Latin Modern Font by GUST\nLicense: GUST-FONT-LICENSE\n{urlstart}https://www.gust.org.pl/projects/e-foundry/\nlatin-modern/download{urlend}"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                } 
+			]
+		}
+	}
+
+]
