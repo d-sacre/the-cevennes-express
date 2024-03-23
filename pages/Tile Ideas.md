@@ -1,0 +1,23 @@
+- # Y-Switch on Bridge with Halte
+	- ![Y Crossing on Bridge, Bouissas, Tarn](https://i.pinimg.com/736x/3c/38/90/3c3890b04e41268c5b038766a58299f2.jpg){:height 408, :width 633}
+	- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=16950&sid=f72f890c417a9ebbc546e6c35ed80c19)
+- # Streetrunning
+	- ## Piere-Ségade
+		- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=16956&sid=f72f890c417a9ebbc546e6c35ed80c19)
+	- ## Moulin Mage
+		- ![](http://passes-montagnes.fr/VF_CFDT_castres-murat/512_lacaune_moulin-mage.jpg)
+		- ![](https://i39.servimg.com/u/f39/10/07/01/10/513-mo11.jpg)
+		- ![](http://passes-montagnes.fr/VF_CFDT_castres-murat/562_lacaune_moulin-mage.jpg)
+		- ![](http://passes-montagnes.fr/VF_CFDT_castres-murat/565_lacaune_moulin-mage.jpg)
+	- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=16948&sid=f72f890c417a9ebbc546e6c35ed80c19)
+	- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=16946)
+- # Level Crossing
+	- ## St. Privat-de-Vallongue
+		- ![](https://www.cparama.com/forum/cartes2013/1361262575-CFD-Loze-re-6-.jpg)
+		- ![](http://centenairecfd.free.fr/Photos/Tunnel%20Cros%20Marveillac.JPG){:height 510, :width 716}
+		- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=11392)
+		- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=11391)
+		- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=11360)
+- # Haltes, Stationes, Gares
+	- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=18106)
+	- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=7481)
