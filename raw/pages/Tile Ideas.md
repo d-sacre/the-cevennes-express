@@ -1,3 +1,5 @@
+public:: true
+
 - # Y-Switch on Bridge with Halte
 	- ![Y Crossing on Bridge, Bouissas, Tarn](https://i.pinimg.com/736x/3c/38/90/3c3890b04e41268c5b038766a58299f2.jpg){:height 408, :width 633}
 	- ![](http://www.passion-metrique.net/forums/gallery/image.php?album_id=214&image_id=16950&sid=f72f890c417a9ebbc546e6c35ed80c19)

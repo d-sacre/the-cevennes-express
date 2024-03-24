@@ -1,0 +1,14 @@
+- # Directly related Costs
+	- ## By Type
+		- ### Art
+			- **Menu Background Sketch**
+				- Date:: 28.02.2024
+				- Amount:: 300.00 €
+				- tags:: #directly-related-costs, #art
+			-
+		- ### Bureaucracy
+			- **Postage Contract Menu Background**
+				- Date:: 29.02.2024
+				- Amount:: 2.45 €
+				- tags:: #directly-related-costs, #bureaucracy
+	- ## Total
