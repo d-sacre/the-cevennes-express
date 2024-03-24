@@ -1,0 +1,33 @@
+/*derived from: https://codepen.io/dcode-software/pen/eYMYXrK*/
+
+.copy-link {
+    display: flex;
+    max-width: 50%;
+}
+
+.copy-link-heading {
+    flex-grow: 1;
+    padding: 0 8px;
+}
+
+.copy-link-button-container {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.copy-link-button {
+    height: auto;
+    min-width: 84px;
+    align-items: center;
+    justify-content: center;
+    background: #dddddd;
+    color: #333333;
+    outline: none;
+    border: 1px solid #cccccc;
+    cursor: pointer;
+}
+
+.copy-link-button:hover {
+    background: #cccccc;
+}
