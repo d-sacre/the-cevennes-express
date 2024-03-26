@@ -148,6 +148,8 @@ const GODOT_MISC_INPUT_EVENTS_TO_TCE_INPUT_EVENTS_LUT : Dictionary = {
 	}
 }
 
+const GUI_HSPLIT = {MONO_R = 0, STEREO_L = 1}
+
 ################################################################################
 ################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
@@ -162,6 +164,9 @@ var _guiLayerReferences : Dictionary = {}
 
 var _currentGuiContext : String 
 var _currentGuiFocus : Object
+var _currentGuiHSplitInput : bool = false
+var _currentGuiHSplitColumn : int = self.GUI_HSPLIT.MONO_R
+
 var _currentInputMethod : String
 var _deviceResponsibleForCurrentInput : String
 var _miscInputEventsToProcess : Dictionary = {}
@@ -269,6 +274,14 @@ func _process_misc_input_events() -> void:
 ################################################################################
 ################################################################################
 
+func enable_gui_input_hsplit() -> void:
+	self._currentGuiHSplitInput = true
+	print_debug(self._currentGuiHSplitInput)
+
+func disable_gui_input_hsplit() -> void:
+	self._currentGuiHSplitInput = false
+	print_debug(self._currentGuiHSplitInput)
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: CONTEXT SETTER/GETTER ############################
 ################################################################################
@@ -282,7 +295,6 @@ func get_context() -> String:
 #### PUBLIC MEMBER FUNCTIONS: CURRENT GUI FOCUS SETTER/GETTER ##################
 ################################################################################
 func get_control_currently_in_focus() -> Object:
-	print(self._currentGuiFocus)
 	return self._currentGuiFocus
 
 ################################################################################
@@ -335,6 +347,18 @@ func set_current_gui_context_to_void() -> void:
 func get_current_gui_context() -> String:
 	return self._currentGuiContext
 
+func set_gui_input_split_column(col : int) -> void:
+	self._currentGuiHSplitColumn = col
+
+func set_gui_input_split_column_to_mono_r() -> void:
+	self.set_gui_input_split_column(GUI_HSPLIT.MONO_R)
+
+func set_gui_input_split_column_to_stereo_l() -> void:
+	self.set_gui_input_split_column(GUI_HSPLIT.STEREO_L)
+
+func get_gui_input_split_column() -> int:
+	return self._currentGuiHSplitColumn
+
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: BOOL INPUT METHODS ###############################
 ################################################################################
@@ -370,6 +394,21 @@ func is_current_gui_context_void() -> bool:
 
 func is_current_gui_context_menu() -> bool: 
 	return self.get_current_gui_context().match("*menu*")
+
+func is_gui_input_hsplit() -> bool:
+	return self._currentGuiHSplitInput
+
+func is_current_gui_input_split_column_mono_r() -> bool:
+	if self.get_gui_input_split_column() == self.GUI_HSPLIT.MONO_R:
+		return true
+
+	return false
+
+func is_current_gui_input_split_column_stereo_l() -> bool:
+	if self.get_gui_input_split_column() == self.GUI_HSPLIT.STEREO_L:
+		return true
+
+	return false
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS: INITIALIZATION ###################################
@@ -448,10 +487,17 @@ func _on_gui_context_changed(tce_event_uuid : String, interaction : String) -> v
 
 # REMARK: Removed typesafety for value to be more flexible and require less signals/parsing logic
 func _on_special_user_input(tce_event_uuid : String, value) -> void:
-	# print(tce_event_uuid) # REMARK: For debugging purposes only
 	self._logic.general_processing_pipeline(tce_event_uuid, value)
 
 func _on_gui_focus_changed(control : Control) -> void:
+	# REMARK: DEBUG ONLY ##############################
+	var _text : String = "no text"
+	if control is Button:
+		_text = control.text
+
+	print_debug("GUI Focus changed: %s, %s" %[control, _text])
+	#####################################################
+
 	self._currentGuiFocus = control
 
 ################################################################################

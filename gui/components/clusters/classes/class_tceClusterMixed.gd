@@ -5,6 +5,16 @@ extends TCEClusterBase
 class_name TCEClusterMixed
 
 ################################################################################
+#### PARENT CLASS PRIVATE MEMBER FUNCTION OVERRIDES ############################
+################################################################################
+func _change_ui_focus_mode(methodName : String) -> void:
+	for _child in self._focusReferences:
+		if _child.has_method(methodName):
+			_child.call(methodName)
+		else:
+			print_debug("ERROR: Child does not have %s method!" %[methodName])
+
+################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
 ################################################################################
 func _parse_elements_into_categories() -> Array:
@@ -81,7 +91,9 @@ func _process_category_element_by_type(elementData : Array, type : String, neigh
 	# FUTURE: Make it progamatic
 	self._update_cluster_width(self._cluster.rect_size.x-24)
 
-	neighbourReference.push_back(_tmp_typeSpecificRoutines.class_instance.get_focus_reference()[0])
+	# REMARK: Using only the first element by adding [0] destroys the focus settings
+	for element in _tmp_typeSpecificRoutines.class_instance.get_focus_reference():
+		neighbourReference.push_back(element) 
 
 func _process_category_elements_according_to_type(category : Array, neighbourReference : Array) -> void:
 	if category != []:
@@ -110,6 +122,8 @@ func _initialize(context : String, cluster : Object = $CenterContainer/GridConta
 
 	var _tmp_categoryCluster : Array = self._parse_elements_into_categories()
 	self._focusReferences = self._process_categories(_tmp_categoryCluster)
+
+	print_debug(self._focusReferences)
 	
 	self.set_focus_neighbours(self._focusReferences)
 	# self.set_focus_to_default()

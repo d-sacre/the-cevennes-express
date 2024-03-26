@@ -9,7 +9,7 @@
 [ext_resource path="res://gui/menus/main/components/root/menuMainRootContextSettings.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.392157, 0.266667, 0.223529, 1 )
+bg_color = Color( 0.392157, 0.266667, 0.223529, 0.745098 )
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
@@ -90,7 +90,6 @@ size_flags_stretch_ratio = 2.0
 margin_left = 1217.0
 margin_right = 1824.0
 margin_bottom = 796.0
-focus_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 

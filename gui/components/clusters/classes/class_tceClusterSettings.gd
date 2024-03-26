@@ -86,7 +86,15 @@ const SETTINGS_ELEMENTS_CLUSTER : Array = [
 				"keychain": ["visual", "fullscreen"],
 				"disabled": false,
 				"default": false
-			}
+			}#,
+			# {
+			# 	"description": "Test",
+			# 	"type": "TCEButtonToggle",
+			# 	"tce_event_uuid_suffix": "visual" + UserInputManager.TCE_EVENT_UUID_SEPERATOR + "test",
+			# 	"keychain": ["visual", "test"],
+			# 	"disabled": false,
+			# 	"default": false
+			# }
 		]
 	}
 ]

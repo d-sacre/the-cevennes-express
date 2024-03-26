@@ -5,12 +5,19 @@ extends Control
 class_name TCEClusterBase
 
 ################################################################################
+#### CONSTANT DEFINITIONS ######################################################
+################################################################################
+const FOCUS_DIRECTION = {VERTICAL = 0, HORIZONTAL = 1}
+
+################################################################################
 #### PRIVATE MEMBER VARIABLES ##################################################
 ################################################################################
 var _context : String 
 var _cluster : Object
 var _elementResource : Object
 var _clusterEntries : Array
+var _clusterFocusMode : int = self.FOCUS_DIRECTION.VERTICAL
+var _clusterInputHsplitColumn : int = UserInputManager.GUI_HSPLIT.MONO_R
 
 var _clearContainerAllowed : bool = true
 
@@ -21,6 +28,9 @@ var _focusReferences : Array = []
 var _spacerAllowed : bool = false
 var _vSpacerHeight : int = 24
 var _vCorrection : int   = 2*self._vSpacerHeight
+
+# ONLY FOR DEBUG
+var _debug_focusListing : Array = []
 
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS ##################################################
@@ -73,6 +83,8 @@ func _change_ui_focus_mode(methodName : String) -> void:
 	for _child in self._cluster.get_children():
 		if _child.has_method(methodName):
 			_child.call(methodName)
+		else:
+			print_debug("ERROR: Child does not have %s method!" %[methodName])
 
 ################################################################################
 #### PUBLIC MEMBER FUNCTIONS ###################################################
@@ -137,26 +149,37 @@ func set_focus_neighbours(focusReference : Array) -> void:
 		for i in focusReference.size():
 			var _current : Object = focusReference[i]
 
-			var _neighboursTopObject : Object
-			var _neighboursBottomObject : Object
+			# DESCRIPTION: Set focus neighbours according to cluster focus direction
+			# REMARK: Need to implement horizontal mode if required
+			match self._clusterFocusMode:
+				FOCUS_DIRECTION.VERTICAL:
+					var _neighboursTopObject : Object
+					var _neighboursBottomObject : Object
 
-			match i:
-				0:
-					_neighboursTopObject = focusReference[-1]
-					_neighboursBottomObject = focusReference[i+1]
-				_maxIndex:
-					_neighboursTopObject = focusReference[i-1]
-					_neighboursBottomObject = focusReference[0]
-				_:
-					_neighboursTopObject = focusReference[i-1]
-					_neighboursBottomObject = focusReference[i+1]
+					match i:
+						0:
+							_neighboursTopObject = focusReference[-1]
+							_neighboursBottomObject = focusReference[i+1]
+						_maxIndex:
+							_neighboursTopObject = focusReference[i-1]
+							_neighboursBottomObject = focusReference[0]
+						_:
+							_neighboursTopObject = focusReference[i-1]
+							_neighboursBottomObject = focusReference[i+1]
 
-			var _neighboursTopPath : NodePath = _neighboursTopObject.get_path()
-			var _neighboursBottomPath : NodePath = _neighboursBottomObject.get_path()
-			_current.set_focus_neighbour(MARGIN_TOP, _neighboursTopPath)
-			_current.set_focus_neighbour(MARGIN_BOTTOM, _neighboursBottomPath)
-			_current.focus_previous = _neighboursTopPath
-			_current.focus_next = _neighboursBottomPath
+					var _neighboursTopPath : NodePath = _neighboursTopObject.get_path()
+					var _neighboursBottomPath : NodePath = _neighboursBottomObject.get_path()
+					_current.set_focus_neighbour(MARGIN_TOP, _neighboursTopPath)
+					_current.set_focus_neighbour(MARGIN_BOTTOM, _neighboursBottomPath)
+
+					# DESCRIPTION: Set left/right focus to self to prevent jumping
+					_current.set_focus_neighbour(MARGIN_LEFT, _current.get_path())
+					_current.set_focus_neighbour(MARGIN_RIGHT, _current.get_path())
+
+					_current.focus_previous = _neighboursTopPath
+					_current.focus_next = _neighboursBottomPath
+					self._debug_focusListing.append(["Element: %s, Focus: TOP: %s, Bottom: %s, Left: %s, Right: %s, Next: %s, Previous: %s" %[_current, _current.focus_neighbour_top, _current.focus_neighbour_bottom, _current.focus_neighbour_left, _current.focus_neighbour_right, _current.focus_next, _current.focus_previous]])
+	JsonFio.save_json("user://cluster.json", self._debug_focusListing)
 
 func set_focus_to_default() -> void:
 	self.emit_signal("item_rect_changed") # Testing purposes to see whether size is updated; seems not to have any effect

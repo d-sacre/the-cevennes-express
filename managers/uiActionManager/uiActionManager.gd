@@ -12,6 +12,13 @@ extends Node
 
 ################################################################################
 ################################################################################
+#### CUSTOM SIGNAL DEFINITIONS #################################################
+################################################################################
+################################################################################
+signal request_current_gui_input_column_change(column)
+
+################################################################################
+################################################################################
 #### CONSTANT DEFINITIONS ######################################################
 ################################################################################
 ################################################################################
@@ -71,12 +78,15 @@ func _is_current_control(type : String) -> bool:
 func _is_current_control_hslider() -> bool:
 	return self._is_current_control("HSlider")
 
+func _is_current_control_checkbutton() -> bool:
+	return self._is_current_control("CheckButton")
+
 ################################################################################
 #### PRIVATE MEMBER FUNCTIONS: UTILITIES AND TOOLS #############################
 ################################################################################
 func _ui_move() -> void:
 	if self._lastMovementAction != "":
-		if not self._is_current_control_hslider():
+		if (not self._is_current_control_hslider()) and (not self._is_current_control_checkbutton()):
 			UserInputManager.trigger_fake_input_event(self._lastMovementAction, true)
 		else:
 			if (self._lastMovementAction != "ui_left") or (self._lastMovementAction != "ui_right"):
@@ -84,6 +94,23 @@ func _ui_move() -> void:
 				# Perhaps too many (hidden) sliders initialized?
 				UserInputManager.trigger_fake_input_event(self._lastMovementAction, true)
 				UserInputManager.trigger_fake_input_event(self._lastMovementAction, true)
+
+func _ui_special_actions() -> void:
+	if self._is_current_control_checkbutton():
+		var _buttonReference : CheckButton = UserInputManager.get_control_currently_in_focus()
+		var _buttonStatus : bool = _buttonReference.is_pressed()
+
+		match self._lastMovementAction:
+			"ui_left":
+				if _buttonStatus:
+					_buttonReference.set_pressed(false)
+					_buttonReference.grab_focus()
+			"ui_right":
+				if not _buttonStatus:
+					_buttonReference.set_pressed(true)
+					_buttonReference.grab_focus()
+
+		print_debug("Button Ref: %s, Control in focus: %s" %[_buttonReference, UserInputManager.get_control_currently_in_focus()])
 
 ################################################################################
 ################################################################################
@@ -107,6 +134,7 @@ func disable_movement_by_asmr(timer : Timer) -> void:
 
 func manage_ui_action_mapping(tce_event_uuid : String, value) -> void:
 	var _tmp_keyChain : Array = []
+	# print_debug("Event: %s, %s" %[tce_event_uuid, value])
 
 	for _event in self.TCE_EVENT_UUID_TO_GODOT_UI_ACTION_LUT:
 		_tmp_keyChain = ["*"]
@@ -125,11 +153,35 @@ func manage_ui_action_mapping(tce_event_uuid : String, value) -> void:
 	for _event in self.TCE_EVENT_UUID_MOVEMENT_CHANNEL_MAPPING_LUT:
 		_tmp_keyChain = ["*"]
 		_tmp_keyChain += DictionaryParsing.get_dict_element_via_keychain(UserInputManager.TCE_INPUT_EVENTS_TO_TCE_EVENT_UUID_LUT, _event["LUT"])
+		
 		if UserInputManager.match_tce_event_uuid(tce_event_uuid, _tmp_keyChain):
 			if value is Vector2:
+				# DESCRIPTION: Logic to process the movement requests if gui input is split
+				if UserInputManager.is_gui_input_hsplit():
+					# print_debug("%s, Gui Input Split Column: %s" %[tce_event_uuid, UserInputManager.get_gui_input_split_column()])
+					
+					# DESCRIPTION: Only process channel1 asmr if current gui input split column is left. 
+					# Otherwise: Request a change of the gui input column to left and break out of for loop
+					# to prevent triggering of UI Actions
+					if tce_event_uuid.match("*channel1*"):
+						if not UserInputManager.is_current_gui_input_split_column_stereo_l():
+							emit_signal("request_current_gui_input_column_change", UserInputManager.GUI_HSPLIT.STEREO_L)
+							break
+					# DESCRIPTION: Only process channel2 asmr if current gui input split column is right. 
+					# Otherwise: Request a change of the gui input column to right and break out of for loop
+					# to prevent triggering of UI Actions
+					elif tce_event_uuid.match("*channel2*"):
+						if not UserInputManager.is_current_gui_input_split_column_mono_r():
+							emit_signal("request_current_gui_input_column_change", UserInputManager.GUI_HSPLIT.MONO_R)
+							break
 
-				# REMARK: For debug purposes only
-				# print("Action Strength: ", value)
+					# DESCRIPTION: For future, when third channel might be implemented
+					elif tce_event_uuid.match("*channel3*"):
+						break
+				
+				# DESCRIPTION: Process the input in the case that:
+				#	1) No gui hsplit is active,
+				#   2) The correct movement channel is active
 
 				var _upDown : float = value.y
 				var _leftRight : float = value.x
@@ -145,7 +197,6 @@ func manage_ui_action_mapping(tce_event_uuid : String, value) -> void:
 						self.enable_movement_by_asmr(uiMovementTimer, self._uiMovementRepetitionDelay)
 
 				# DESCRIPTION: Translate left-right action strength to horizontal movement
-				# REMARK: Needs a case for when a horizontal slider is the element currently in focus
 				if abs(_leftRight) >= 0.501:
 					if _leftRight > 0:
 						self._lastMovementAction = "ui_left"
@@ -160,6 +211,7 @@ func manage_ui_action_mapping(tce_event_uuid : String, value) -> void:
 					self._lastMovementAction = ""
 					self.disable_movement_by_asmr(uiMovementTimer)
 
+				self._ui_special_actions()
 				self._ui_move()
 
 ################################################################################
